@@ -44,11 +44,16 @@ div.home-container {
 
 div.home-background-div {
     height: 600px;
-    width: 600px;
+    width: 35%;
     background-color: #e4ff8c;
     position: fixed;
     top: 0;
     right: 0;
+    /* put the stylistic green div behind everything */
     z-index: -1;
 }
 
+img.cover-image {
+    height: 400px;
+    width: 600px;
+}
