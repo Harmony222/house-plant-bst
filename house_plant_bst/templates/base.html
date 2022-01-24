@@ -13,8 +13,11 @@
       integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" type="text/css" href="{% static 'styles/custom.css' %}" />  
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/base.css' %}" />  
     
+    <!-- Logo Icon for Navbar and Tab -->
     <link rel="icon" type="image/png" href="{% static 'images/navbar_icon.png' %}">
 
 
@@ -39,7 +42,6 @@
               <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
               </li>
-      
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'about' %}">About</a>
               </li>
@@ -62,9 +64,8 @@
 
 
 
-
-
     <div class="container">{% block content %}{% endblock %}</div>
+
 
     <!-- Bootstrap Bundle with Popper -->
     <script

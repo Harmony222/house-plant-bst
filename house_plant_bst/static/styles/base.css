@@ -1,0 +1,22 @@
+/* global styles */
+.btn {
+    background-color: #00b3a1;
+    border: #00b3a1;
+}
+
+.btn:hover {
+    background-color: #b1d60d;
+}
+
+.navbar-nav .nav-item:hover .nav-link {
+    color: #00b3a1;
+}
+
+li.nav-item {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+h1 {
+    font-family: 'Times New Roman', Times, serif;
+}
