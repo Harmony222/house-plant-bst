@@ -8,15 +8,27 @@
     background-color: #b1d60d;
 }
 
+a.navbar-brand span:hover {
+    color: #00b3a1;
+}
+
 .navbar-nav .nav-item:hover .nav-link {
     color: #00b3a1;
 }
 
-li.nav-item {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
+div.collapse.navbar-collapse {
+    margin-right: 1.5rem;
 }
 
-h1 {
+li.nav-item {
+    padding-left: 1.5rem;
+    padding-right: 2rem;
+}
+
+h1, h2, h3 {
     font-family: 'Times New Roman', Times, serif;
+}
+
+span.h-text {
+    color: #b1d60d;
 }

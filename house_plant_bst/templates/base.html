@@ -14,8 +14,10 @@
       crossorigin="anonymous"
     />
 
-    <!-- Global CSS -->
-    <link rel="stylesheet" type="text/css" href="{% static 'styles/base.css' %}" />  
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/base.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/home.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/about.css' %}" />
     
     <!-- Logo Icon for Navbar and Tab -->
     <link rel="icon" type="image/png" href="{% static 'images/navbar_icon.png' %}">
@@ -36,37 +38,35 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="float-right">
-          <div class="collapse navbar-collapse float-right" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'about' %}">About</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Plants</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Sign In</a>
-              </li>
-              </li>
-                <form action="#">
-                  <button type="submit" class="btn btn-primary">Join Now</button>
-                </form>
-              </li>
-            </ul>
-          </div>
+        <div class="collapse navbar-collapse float-right" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'about' %}">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Plants</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Sign In</a>
+            </li>
+            </li>
+              <form action="#">
+                <button type="submit" class="btn btn-primary">Join Now</button>
+              </form>
+            </li>
+          </ul>
         </div>
       </div>
     </nav>
 
 
-
+    <!-- Container for all page content -->
     <div class="container">{% block content %}{% endblock %}</div>
 
-
+  
     <!-- Bootstrap Bundle with Popper -->
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
