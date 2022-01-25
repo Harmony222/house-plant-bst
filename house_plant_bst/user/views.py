@@ -13,7 +13,7 @@ class SignUpView(CreateView):
 
 class UpdateUserView(UpdateView):
     form_class = CustomUserChangeForm
-    success_url = '/user/profile/'
+    success_url = reverse_lazy('user:profile')
     template_name = 'registration/update.html'
     model = CustomUser
 
