@@ -1,8 +1,10 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic import TemplateView
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class SignUpView(CreateView):
@@ -11,7 +13,8 @@ class SignUpView(CreateView):
     template_name = 'registration/signup.html'
 
 
-class UpdateUserView(UpdateView):
+class UpdateUserView(LoginRequiredMixin, UpdateView):
+    login_url = reverse_lazy('login')
     form_class = CustomUserChangeForm
     success_url = reverse_lazy('user:profile')
     template_name = 'registration/update.html'
@@ -21,13 +24,6 @@ class UpdateUserView(UpdateView):
         return get_object_or_404(self.model, pk=self.request.user.pk)
 
 
-def profile(request):
-    return render(request, 'user/profile.html')
-
-
-# def signup(request):
-#     return render(request, 'user/signup.html')
-
-
-# def login(request):
-#     return render(request, 'user/login.html')
+class ProfileView(LoginRequiredMixin, TemplateView):
+    login_url = reverse_lazy('login')
+    template_name = 'user/profile.html'
