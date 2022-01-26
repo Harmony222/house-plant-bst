@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user',
     'plant',
+    'django_extensions',
     'crispy_forms',
     'crispy_bootstrap5',
 ]
@@ -89,8 +90,8 @@ DATABASES = {
         'NAME': os.environ['DB_NAME'],
         'USER': os.environ['DB_USER'],
         'PASSWORD': os.environ['DB_PASSWORD'],
-        'HOST': 'localhost',
-        'PORT': '',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
     }
 }
 
