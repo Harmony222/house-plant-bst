@@ -1,0 +1,19 @@
+img.about-hero {
+    width: 100%;
+    height: 250px;
+    opacity: 0.7;
+}
+
+img.card-img {
+    opacity: 0.5;
+}
+
+div.dev-team {
+    margin-top: 1rem;
+    padding: 1.5rem;
+}
+
+div.about.card {
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+}

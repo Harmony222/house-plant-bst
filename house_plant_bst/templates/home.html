@@ -1,5 +1,28 @@
 {% extends './base.html' %} {% block content %}
 
-<h1>Home Page</h1>
+{% load static %}
+
+<div class="home-container">
+    <div class="row">
+      <div class="col">
+        <main role="main" class="inner cover">
+            <h1 class="cover-heading">Buy, Sell, and Trade <span class="h-text">House Plants</span></h1>
+            <p class="lead">We are an online hub for house plant enthusiasts to share and learn about house plants.</p>
+            <br>
+            <p class="lead">Are you ready to join our community?</p>
+            <p class="lead">
+              <a href="#" class="btn btn-lg btn-secondary">Get Started</a>
+              <a href="#" class="learn-more">Learn More</a>
+            </p>
+        </main>
+      </div>
+      <div class="col">
+        <img src="{% static 'images/home_cover.jpg' %}" class="home-cover-image">
+      </div>
+    </div>
+
+<!-- Decorative green block div in background -->
+<div class="home-background-div"></div>
+
 
 {% endblock %}

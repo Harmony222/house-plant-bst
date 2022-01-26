@@ -1,5 +1,82 @@
 {% extends './base.html' %} {% block content %}
 
-<h1>About Page</h1>
+{% load static %}
+
+<!-- Main about section -->
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <div class="card text-center">
+        <img src="{% static 'images/about_hero.jpg' %}" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h2>House <span class="h-text">Plant</span> Hub</h2>
+          <p class="card-text">
+            The House Plant Hub is a full-stack web application where users can create accounts,
+             buy, sell, or trade house plants, and upload information about different house plants.
+             This project was built for the OSU CS467 Online Capstone Course, Winter 2022.
+          </p>
+          <h3>Inspiration</h3>
+          <p class="card-text">
+            With more people taking a passionate interest in raising houseplants, the House Plant Hub is an excellent 
+            resource for houseplant enthusiasts to find new plants and trade or sell plants they have carefully 
+            raised.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Grid for dev team info -->
+<div class="container text-center dev-team">
+  <h2>Meet the Dev Team</h2>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <div class="about card text-center">
+        <img src="{% static 'images/jennifer.jpg' %}" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h2>Jennifer <span class="h-text">Zhang</span></h2>
+          <p class="card-text">
+            Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. 
+            Quisque volutpat mattis eros.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="about card text-center">
+        <img src="{% static 'images/harmony.jpg' %}" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h2>Harmony<span class="h-text"> Scarlet</span></h2>
+          <p class="card-text">
+            Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. 
+            Quisque volutpat mattis eros.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="about card text-center">
+        <img src="{% static 'images/tiffanie.jpg' %}" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h2>Tiffanie <span class="h-text">Alcaide</span></h2>
+          <p class="card-text">
+            Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Donec odio. 
+            Quisque volutpat mattis eros.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Decorative green block div in background -->
+<div class="home-background-div"></div>
 
 {% endblock %}
