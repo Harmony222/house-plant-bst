@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import Plant, PlantCommonName
 
-# Register your models here.
+admin.site.register(Plant)
+admin.site.register(PlantCommonName)

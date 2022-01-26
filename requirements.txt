@@ -7,3 +7,4 @@ pycodestyle==2.8.0
 pyflakes==2.4.0
 python-dotenv==0.19.2
 sqlparse==0.4.2
+django-extensions
