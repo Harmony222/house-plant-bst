@@ -10,7 +10,7 @@ class Plant(models.Model):
     plant_care = models.TextField(help_text='Share some care info\n'
                                             'Light:\n'
                                             'Water:\n'
-                                            'Fertilizer:\n' 
+                                            'Fertilizer:\n'
                                             'Temperature:\n'
                                             'Humidity:\n'
                                             'Soil:\n'
