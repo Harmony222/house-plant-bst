@@ -48,11 +48,11 @@ class Message(models.Model):
                                null=True,
                                verbose_name='Message Sender',
                                on_delete=models.SET_NULL,
-                               related_name='getUserMessages')
+                               related_name='get_user_messages')
     trade = models.ForeignKey(Trade,
                               verbose_name='Trade',
                               on_delete=models.CASCADE,
-                              related_name='getTradeMessages')
+                              related_name='get_trade_messages')
     message = models.TextField()
     message_sent_time = models.DateTimeField(auto_now_add=True)
 
@@ -71,11 +71,11 @@ class TradeItem(models.Model):
     trade = models.ForeignKey(Trade,
                               verbose_name='Trade',
                               on_delete=models.CASCADE,
-                              related_name='getTradeItems')
+                              related_name='get_trade_items')
     user_plant = models.ForeignKey(UserPlant,
-                                   verbose_name='UserPlant',
+                                   verbose_name='User Plant',
                                    on_delete=models.RESTRICT,
-                                   related_name='getTradeItems')
+                                   related_name='get_trade_items')
     quantity = models.PositiveSmallIntegerField(default=1)
 
     class Meta:

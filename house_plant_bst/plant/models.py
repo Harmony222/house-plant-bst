@@ -34,7 +34,7 @@ class PlantCommonName(models.Model):
     plant = models.ForeignKey(Plant,
                               verbose_name='Plant',
                               on_delete=models.CASCADE,
-                              related_name='getCommonNames')
+                              related_name='get_common_names')
 
     class Meta:
         verbose_name_plural = 'Plant Common Names'
@@ -51,11 +51,11 @@ class UserPlant(models.Model):
                              null=True,
                              verbose_name='User',
                              on_delete=models.SET_NULL,
-                             related_name='getUserPlants')
+                             related_name='get_user_plants')
     plant = models.ForeignKey(Plant,
                               verbose_name='Plant',
                               on_delete=models.RESTRICT,
-                              related_name='getUserPlants')
+                              related_name='get_user_plants')
     is_for_sale = models.BooleanField(default=False)
     is_for_trade = models.BooleanField(default=False)
     is_for_pickup = models.BooleanField(default=False)
