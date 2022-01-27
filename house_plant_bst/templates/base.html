@@ -37,7 +37,7 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse float-right" id="navbarSupportedContent">
+        <div class="collapse navbar-collapse float-right" id="navbarNavDropdown">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
@@ -48,14 +48,29 @@
             <li class="nav-item">
               <a class="nav-link" href="#">Plants</a>
             </li>
+
+            {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Hello, {{ user.username|capfirst }}
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="{% url 'user:profile' %}">Profile</a></li>
+                <li><a class="dropdown-item" href="#">My Plant Marketplace</a></li>
+              </ul>
+            </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Sign In</a>
+              <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            </li>
+
+            {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'login' %}">Sign In</a>
             </li>
             </li>
-              <form action="#">
-                <button type="submit" class="btn btn-primary">Join Now</button>
-              </form>
+              <a class="btn btn-primary" href="{% url 'user:signup' %}" role="button">Join Now</a>
             </li>
+            {% endif %}
           </ul>
         </div>
       </div>

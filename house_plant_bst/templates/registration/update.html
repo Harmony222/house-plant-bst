@@ -2,6 +2,8 @@
 
 {% block title %}Update User - {{ block.super }}{% endblock %}
 
+{% load static %}
+
 {% block content %}
 
 <h2>Update User</h2>
@@ -12,5 +14,8 @@
     <a href="{% url 'user:profile' %}">Cancel</a>
     {{ form.username }}
 </form>
+
+<!-- Decorative green block div in background -->
+<div class="decorative-bg-div"></div>
 
 {% endblock %}

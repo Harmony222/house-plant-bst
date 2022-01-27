@@ -8,11 +8,9 @@
     background-color: #b1d60d;
 }
 
-a.navbar-brand span:hover {
-    color: #00b3a1;
-}
-
-.navbar-nav .nav-item:hover .nav-link {
+a.navbar-brand span:hover,
+.navbar-nav .nav-item:hover .nav-link,
+a.dropdown-item:hover {
     color: #00b3a1;
 }
 
@@ -31,4 +29,15 @@ h1, h2, h3 {
 
 span.h-text {
     color: #b1d60d;
+}
+
+div.decorative-bg-div {
+    height: 90%;
+    width: 35%;
+    background-color: #e4ff8c;
+    position: fixed;
+    top: 0;
+    right: 0;
+    /* put the stylistic green div behind everything */
+    z-index: -1;
 }

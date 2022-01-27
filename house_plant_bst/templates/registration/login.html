@@ -2,13 +2,23 @@
 
 {% block title %}Log In - {{ block.super }}{% endblock %}
 
-{% block content %}
+{% load static %}
 
-<h2>Log In</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Log In</button>
-</form>
+{% block content %}
+{% load crispy_forms_tags %}
+
+<div class="card form">
+    <div class="card-body">
+        <h2>Log In</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-primary">Log In</button>
+        </form>
+    </div>
+</div>
+
+<!-- Decorative green block div in background -->
+<div class="decorative-bg-div"></div>
 
 {% endblock %}
