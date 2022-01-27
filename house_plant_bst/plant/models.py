@@ -72,4 +72,5 @@ class UserPlant(models.Model):
         verbose_name_plural = 'User\'s Plants'
 
     def __str__(self):
-        return f'{self.user_id.username}_{self.plant_id.scientific_name}'
+        return f'owner: {self.user.username}, \
+               plant: {self.plant.scientific_name}'
