@@ -30,7 +30,9 @@ def seed_plant_common_name_table(csv_path):
         for i, row in enumerate(reader):
             # if plant doesn't exist, skip this plant common name entry
             try:
-                id = Plant.objects.get(scientific_name=row['scientific_name'])
+                id = Plant.objects\
+                    .get(scientific_name=row['scientific_name'])\
+                    .id
             except ObjectDoesNotExist as e:
                 print(e)
                 break
