@@ -17,9 +17,5 @@ class PlantDetailView(TemplateTitleMixin, DetailView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['title'] = self.get_title()
-        url_params = self.kwargs
-        pk = url_params.get('pk')
-        qs = PlantCommonName.objects.filter(plant=pk)
-        # print(qs)
-        context['common_names'] = qs
+        context['common_names'] = context['object'].get_common_names.all()
         return context
