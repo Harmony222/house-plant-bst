@@ -134,3 +134,4 @@ workspace.code-workspace
 .local_mariadb_data/
 .idea/
 docker-compose.yaml
+scratch.py
