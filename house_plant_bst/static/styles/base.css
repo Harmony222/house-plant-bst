@@ -41,3 +41,7 @@ div.decorative-bg-div {
     /* put the stylistic green div behind everything */
     z-index: -1;
 }
+
+.card.user-form {
+    width: 35rem;
+}
