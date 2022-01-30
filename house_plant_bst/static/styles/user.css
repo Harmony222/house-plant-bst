@@ -1,0 +1,8 @@
+a.card-link {
+    text-decoration: none;
+    color: black;
+}
+
+a.card-link div.card-body:hover {
+    background-color: #e8e8e8;
+}

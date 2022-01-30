@@ -18,6 +18,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'styles/base.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'styles/home.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'styles/about.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/user.css' %}" />
     
     <!-- Logo Icon for Navbar and Tab -->
     <link rel="icon" type="image/png" href="{% static 'images/navbar_icon.png' %}">
@@ -40,7 +41,7 @@
         <div class="collapse navbar-collapse float-right" id="navbarNavDropdown">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+              <a class="nav-link" aria-current="page" href="{% url 'home' %}">Home</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{% url 'about' %}">About</a>

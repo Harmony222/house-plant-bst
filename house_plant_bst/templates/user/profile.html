@@ -6,9 +6,53 @@
 
 {% block content %}
 
+<h2>My Account</h2>
 <div class="container">
-    <h2>Profile</h2>
+    <div class="row">
+        <div class="col">
+            <div class="card text-center">
+              <div class="card-body">
+                <h2>My<span class="h-text"> Profile</span></h2>
+                <p class="card-text">
+                  {{ user.username }}
+                  <br>
+                  {{ user.first_name }}
+                  <br>
+                  {{ user.last_name }}
+                  <br>
+                  {{ user.email }}
+                  <br>
+                  {{ user.location }}
+                </p>
+                <a href="{% url 'user:update_user' %}" class="btn btn-primary">Update Profile</a>
+              </div>
+            </div>
+        </div>
 
+        <div class="col">
+          <div class="row  mb-3">
+            <a href="#" class="card-link">
+              <div class="card text-center">
+                <div class="card-body">
+                  <h3 class="card-title">Order History</h3>
+                  <p class="card-text text-muted">Track your orders and trades</p>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <div class="row my-3">
+            <a href="#" class="card-link">
+              <div class="card text-center">
+                <div class="card-body">
+                  <h3 class="card-title">My <span class="h-text">Plant </span>Marketplace</h3>
+                  <p class="card-text text-muted">View and edit your plant marketplace</p>
+                </div>
+              </div>
+            </a>
+          </div>
+      </div>
+    </div>
 </div>
 
 
