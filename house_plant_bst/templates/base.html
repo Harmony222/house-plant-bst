@@ -35,7 +35,7 @@
           <img src="{% static 'images/navbar_icon.png' %}" width="40" height="40" class="d-inline-block align-top" alt="House Plant Hub Logo">
           <span>House Plant Hub</span>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse float-right" id="navbarNavDropdown">
@@ -55,10 +55,10 @@
 
             {% if user.is_authenticated %}
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Hello, {{ user.username|capfirst }}
               </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDropdownMenuLink">
                 <li><a class="dropdown-item" href="{% url 'user:profile' %}">Profile</a></li>
                 <li><a class="dropdown-item" href="#">My Plant Marketplace</a></li>
               </ul>
@@ -79,7 +79,6 @@
         </div>
       </div>
     </nav>
-
 
     <!-- Container for all page content -->
     <div class="container">{% block content %}{% endblock %}</div>
