@@ -26,13 +26,3 @@ img.home-cover-image {
     min-width: 500px;
 }
 
-div.home-background-div {
-    height: 90%;
-    width: 35%;
-    background-color: #e4ff8c;
-    position: fixed;
-    top: 0;
-    right: 0;
-    /* put the stylistic green div behind everything */
-    z-index: -1;
-}

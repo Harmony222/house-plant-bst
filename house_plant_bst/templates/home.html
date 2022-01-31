@@ -11,8 +11,8 @@
             <br>
             <p class="lead">Are you ready to join our community?</p>
             <p class="lead">
-              <a href="#" class="btn btn-lg btn-secondary">Get Started</a>
-              <a href="#" class="learn-more">Learn More</a>
+              <a href="{% url 'user:signup' %}" class="btn btn-lg btn-secondary">Get Started</a>
+              <a href="{% url 'about' %}" class="learn-more">Learn More</a>
             </p>
         </main>
       </div>
@@ -22,7 +22,7 @@
     </div>
 
 <!-- Decorative green block div in background -->
-<div class="home-background-div"></div>
+<div class="decorative-bg-div"></div>
 
 
 {% endblock %}

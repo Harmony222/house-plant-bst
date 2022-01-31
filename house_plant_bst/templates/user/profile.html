@@ -2,9 +2,77 @@
 
 {% block title %}Profile - {{ block.super }}{% endblock %}
 
+{% load static %}
+
 {% block content %}
 
-<h2>Profile</h2>
+<h2>My Account</h2>
+<div class="container">
+    <div class="row row-cols-2">
+        <div class="col">
+            <div class="card text-center">
+              <div class="card-body">
+                <h2>My<span class="h-text"> Profile</span></h2>
+                <p class="card-text">
+                  {{ user.username }}
+                  <br>
+                  {{ user.first_name }}
+                  <br>
+                  {{ user.last_name }}
+                  <br>
+                  {{ user.email }}
+                  <br>
+                  {{ user.location }}
+                </p>
+                <a href="{% url 'user:update_user' %}" class="btn btn-primary">Update Profile</a>
+              </div>
+            </div>
+        </div>
 
+        <div class="col">
+          <div class="row">
+            <a href="#" class="card-link">
+              <div class="card text-center">
+                <div class="row g-0">
+                  <div class="col-md-3">
+                    <img src="{% static 'images/orders_icon.png' %}" class="img-fluid rounded-start user-card-icon">
+                  </div>
+                  <div class="col-md-8">
+                    <div class="card-body px-0">
+                      <h3 class="card-title">Order History</h3>
+                      <p class="card-text text-muted">Track your orders and trades</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <div class="row my-3">
+            <a href="#" class="card-link">
+              <div class="card text-center">
+                <div class="row g-0">
+                  <div class="col-md-3">
+                    <img src="{% static 'images/navbar_icon.png' %}" class="img-fluid rounded-start user-card-icon">
+                  </div>
+                  <div class="col-md-8">
+                    <div class="card-body px-0">
+                      <h3 class="card-title">My <span class="h-text">Plant </span>Marketplace</h3>
+                      <p class="card-text text-muted">View and edit your plant marketplace</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+</div>
+
+<!-- Decorative green block div in background -->
+<div class="decorative-bg-div"></div>
 
 {% endblock %}
