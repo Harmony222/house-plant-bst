@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'trade',
     'order',
+    'jquery'
 ]
 
 MIDDLEWARE = [

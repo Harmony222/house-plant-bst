@@ -1,3 +1,8 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block content %}
+
 {% if title %}
 <h2>{{ title }}</h2>
 {% endif %}
@@ -16,3 +21,5 @@
 {% endfor %}
 
 {{ common_names }}
+
+{% endblock %}

@@ -1,3 +1,7 @@
+{% extends 'base.html' %} 
+{% load static %}
+{% block content %}
+
 {% if title %}
 <h2>{{ title }}</h2>
 {% endif %}
@@ -14,3 +18,5 @@ COMMON NAMES!
 {{ object.description }}
 <br>
 {{ object.plant_care }}
+
+{% endblock %}
