@@ -4,12 +4,11 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12 p-5">
-                <h3>{% if user.is_authenticated %}
-                    {{ user.get_username }}'s Conversations
-                    {% else %}
-                    Login to see your conversations
-                    {% endif %}
-                </h3>
+                {% if user.is_authenticated %}
+                    <h3>{{ user.get_username }}'s Conversations</h3>
+                {% else %}
+                    <h3>Login to see your conversations</h3>
+                {% endif %}
         </div>
     </div>
     <div class="row">
@@ -22,8 +21,8 @@
     {% for thread in threads.all %}
     <div class="row mb-3">
         <div class="card col-md-12 p-5 shadow-sm">
-            <h5>{{ thread.user.get_username }} - {{ thread.recipient.get_username }}</h5>
-            <a class="stretched-link" href="{% url 'thread' thread.pk %}"></a>
+            <h5>{{ thread.user.get_username }} : {{ thread.recipient.get_username }}</h5>
+            <a class="stretched-link" href="{% url 'trade:thread' thread.pk %}"></a>
         </div>
     </div>
     {% endfor %}

@@ -43,7 +43,7 @@ class Trade(models.Model):
 
 
 class Thread(models.Model):
-    """Each Thread instance object ties a User's thread to a Trade object"""
+    """Each Thread instance object ties to one Trade object"""
     user = models.ForeignKey(User,
                              null=True,
                              verbose_name='Thread User',
@@ -67,7 +67,7 @@ class Thread(models.Model):
         return f'trade id: {self.trade.id}, \
                thread id: {self.id}, \
                user: {self.user.username}, \
-               recipientL {self.recipient.username}'
+               recipient: {self.recipient.username}'
 
 
 class Message(models.Model):
@@ -88,7 +88,7 @@ class Message(models.Model):
                                related_name='get_thread_messages')
     message = models.TextField()
     message_sent_time = models.DateTimeField(auto_now_add=True)
-
+    recipient
     class Meta:
         verbose_name_plural = 'Messages'
 

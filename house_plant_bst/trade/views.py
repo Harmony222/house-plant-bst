@@ -1,13 +1,10 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
-# from django.conf import settings
 from django.views import View
 from .models import Thread, Message
 from .forms import ThreadForm, MessageForm
 from django.db.models import Q
-# User = settings.AUTH_USER_MODEL
-from django.contrib.auth.models import User
-
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 class CreateThread(View):
     def get(self, request, *args, **kwargs):
@@ -26,26 +23,27 @@ class CreateThread(View):
             username = request.POST.get('username')
             try:
                 recipient = User.objects.get(username=username)
+                print(f'recipient: {recipient.username}')
                 if Thread.objects.filter(user=request.user,
                                          recipient=recipient).exists():
                     thread = Thread.objects.filter(user=request.user,
                                                    recipient=recipient)[0]
-                    return redirect('thread', pk=thread.pk)
+                    return redirect('trade:thread', pk=thread.pk)
                 elif Thread.objects.filter(user=recipient,
                                            recipient=request.user).exists():
                     thread = Thread.objects.filter(user=recipient,
                                                    recipient=request.user)[0]
-                    return redirect('thread', pk=thread.pk)
+                    return redirect('trade:thread', pk=thread.pk)
                 if form.is_valid():
                     sender_thread = Thread(
                         user=request.user,
                         recipient=recipient
                     )
                     sender_thread.save()
-                    thread_pk = sender_thread.pk
-                    return redirect('thread', pk=thread_pk)
+                    thread = sender_thread
+                    return redirect('trade:thread', pk=thread.pk)
             except:
-                return redirect('create-thread')
+                return redirect('trade:create-thread')
         else:
             return redirect('user:profile')
 
@@ -68,14 +66,14 @@ class CreateMessage(View):
                 recipient = thread.user
             else:
                 recipient = thread.recipient
-                message = Message(
-                    thread=thread,
-                    sender_user=request.user,
-                    recipient_user=recipient,
-                    body=request.POST.get('message'),
-                )
-                message.save()
-                return redirect('thread', pk=pk)
+            message = Message(
+                sender=request.user,
+                recipient=recipient,
+                thread=thread,
+                message=request.POST.get('message'),
+            )
+            message.save()
+            return redirect('trade:thread', pk=pk)
         else:
             return redirect('user:profile')
 
