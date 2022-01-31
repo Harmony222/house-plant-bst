@@ -20,12 +20,12 @@ class Trade(models.Model):
                                null=True,
                                verbose_name='Seller',
                                on_delete=models.SET_NULL,
-                               related_name='getSellerTrades')
+                               related_name='get_seller_trades')
     buyer = models.ForeignKey(User,
                               null=True,
                               verbose_name='Buyer',
                               on_delete=models.SET_NULL,
-                              related_name='getBuyerTrades')
+                              related_name='get_buyer_trades')
     request_date = models.DateTimeField(auto_now_add=True)
     response_date = models.DateTimeField(null=True, blank=True)
     trade_status = models.CharField(max_length=2,
@@ -42,17 +42,50 @@ class Trade(models.Model):
                seller: {self.seller.username} '
 
 
+class Thread(models.Model):
+    """Each Thread instance object ties a User's thread to a Trade object"""
+    user = models.ForeignKey(User,
+                             null=True,
+                             verbose_name='Thread User',
+                             on_delete=models.SET_NULL,
+                             related_name='get_user_threads')
+    recipient = models.ForeignKey(User,
+                                  null=True,
+                                  verbose_name='Thread Recipient',
+                                  on_delete=models.SET_NULL,
+                                  related_name='get_recipient_threads')
+    trade = models.ForeignKey(Trade,
+                              verbose_name='Trade',
+                              on_delete=models.CASCADE,
+                              related_name='get_trade_threads')
+    has_unread = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name_plural = 'Threads'
+
+    def __str__(self):
+        return f'trade id: {self.trade.id}, \
+               thread id: {self.id}, \
+               user: {self.user.username}, \
+               recipientL {self.recipient.username}'
+
+
 class Message(models.Model):
-    """Each Message instance object ties a User's message to a Trade object"""
+    """Each Message instance object ties a User's message to a Thread object"""
     sender = models.ForeignKey(User,
                                null=True,
                                verbose_name='Message Sender',
                                on_delete=models.SET_NULL,
-                               related_name='get_user_messages')
-    trade = models.ForeignKey(Trade,
-                              verbose_name='Trade',
-                              on_delete=models.CASCADE,
-                              related_name='get_trade_messages')
+                               related_name='get_sent_messages')
+    recipient = models.ForeignKey(User,
+                                  null=True,
+                                  verbose_name='Message Recipient',
+                                  on_delete=models.SET_NULL,
+                                  related_name='get_received_messages')
+    thread = models.ForeignKey(Thread,
+                               verbose_name='Thread',
+                               on_delete=models.CASCADE,
+                               related_name='get_thread_messages')
     message = models.TextField()
     message_sent_time = models.DateTimeField(auto_now_add=True)
 
@@ -60,9 +93,10 @@ class Message(models.Model):
         verbose_name_plural = 'Messages'
 
     def __str__(self):
-        return f'trade id: {self.trade.id}, \
+        return f'thread id: {self.thread.id}, \
                message id: {self.id}, \
-               sender: {self.sender.username}'
+               sender: {self.sender.username}, \
+               recipient: {self.recipient.username}'
 
 
 class TradeItem(models.Model):
