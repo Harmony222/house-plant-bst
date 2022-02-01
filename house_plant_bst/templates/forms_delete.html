@@ -7,8 +7,8 @@
             {% csrf_token %}
             <h4>Are you sure you want to delete: "{{ object }}"?</h4>
             <br>
-            <input  class="btn btn-danger" type="submit" style="background-color: #dc3545" value="Yes, Delete" />
-            <button type="button" class="btn btn-secondary" style="background-color: #6c757d" onclick="goBack()">Cancel</button>
+            <input  class="btn btn-danger" type="submit" value="Yes, Delete" />
+            <button type="button" class="btn btn-secondary" onclick="goBack()">Cancel</button>
         </form>
     </div>
     </div>

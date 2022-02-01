@@ -1,10 +1,10 @@
 /* global styles */
-.btn {
+.custom-btn {
     background-color: #00b3a1;
     border: #00b3a1;
 }
 
-.btn:hover {
+.custom-btn:hover {
     background-color: #b1d60d;
 }
 
