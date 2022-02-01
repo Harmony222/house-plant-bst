@@ -1,0 +1,22 @@
+{% extends './base.html' %}
+{% block content %}
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+    <div class="modal-body">
+        <form action="" method="post">
+            {% csrf_token %}
+            <h4>Are you sure you want to delete: "{{ object }}"?</h4>
+            <br>
+            <input  class="btn btn-danger" type="submit" style="background-color: #dc3545" value="Yes, Delete" />
+            <button type="button" class="btn btn-secondary" style="background-color: #6c757d" onclick="goBack()">Cancel</button>
+        </form>
+    </div>
+    </div>
+</div>
+
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
+{% endblock content %}
