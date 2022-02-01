@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container">
+    {% if user.is_authenticated %}
+    <h2>Trade Request #{{trade.pk}}</h2>
+    <div class="row my-5">
+        <div class="col-md-12">
+            <p>Trade Status: {{trade.get_trade_status_display}}</p>
+        </div>
+    </div>
+    {% if trade_item_list.all.count == 0 %}
+    <div class="row my-5">
+        <div class="col-md-12">
+            <p>No Trade Items</p>
+        </div>
+    </div>
+    {% endif %}
+
+    {% for trade_item in trade_item_list %}
+    <div class="row">
+        <div class="col-md-12 my-1">
+            {% if trade_item.user_plant.user == trade.seller %}
+            <div class="request-trade my-3">
+                <p>{{ trade.buyer.get_username }} is requesting a trade for {{ trade.seller.get_username }}'s: {{ trade_item.user_plant.plant.scientific_name }}</p>
+            </div>
+            {% elif trade_item.user_plant.user == trade.buyer %}
+            <div class="received-message my-3">
+                <p>{{ trade.seller.get_username }} is offering {{ trade_item.user_plant.plant.scientific_name }}</a> for trade</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if trade_seller == request.user %}
+    <div class="row justify-content-center mt-3 mb-5">
+        <div class="col-md-5 col-sm-12">
+            {% for radio in form.lighting %}
+                <label for="{{ radio.id_for_label }}">
+                    {{ radio.choice_label }}
+                    <span class="radio">{{ radio.tag }}</span>
+                </label>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="card col-md-12 mt-5 p-3 shadow-sm">
+           {% if trade.buyer == request.user %}
+                <h5>Messages to @{{ trade.seller.get_username }}</h5>
+            {% else %}
+                <h5>Messages tp @{{ trade.buyer.get_username }}</h5>
+            {% endif %}
+        </div>
+    </div>
+    {% if message_list.all.count == 0 %}
+    <div class="row my-5">
+        <div class="col-md-12">
+            <p>No Messages</p>
+        </div>
+    </div>
+    {% endif %}
+    {% for message in message_list %}
+    <div class="row">
+        <div class="col-md-12 my-1">
+            {% if message.sender == request.user %}
+            <div class="sent-message my-3">
+                <p>{{ message.sender.get_username }}: {{ message.message }}</p>
+            </div>
+            {% elif message.recipient == request.user %}
+            <div class="received-message my-3">
+                <p>{{ message.sender.get_username }}: {{ message.message }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="row">
+        <div class="card col-md-12 p-3 shadow-sm">
+            <form method="POST" action="{% url 'trade:create_message' trade.pk %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form | crispy }}
+                <div class="d-grid gap-2 mt-3">
+                    <button class="btn btn-light" type="submit">Send Message</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% else %}
+        <h3>Login to see your trade</h3>
+    {% endif %}
+</div>
+{% endblock content %}

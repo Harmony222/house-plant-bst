@@ -1,19 +1,19 @@
 from django.urls import path
-from .views import CreateThread, ListThreads, ThreadView, CreateMessage
+from .views import CreateTrade, ListTrades, TradeView, CreateMessage
 
 app_name = 'trade'
 
 urlpatterns = [
-    path('list-threads/',
-         ListThreads.as_view(),
-         name='list-threads'),
-    path('list-threads/create-thread/',
-         CreateThread.as_view(),
-         name='create-thread'),
-    path('list-threads/<int:pk>/',
-         ThreadView.as_view(),
-         name='thread'),
-    path('list-threads/<int:pk>/create-message/',
+    path('list_trades/',
+         ListTrades.as_view(),
+         name='list_trades'),
+    path('list_trades/create_trade/',
+         CreateTrade.as_view(),
+         name='create_trade'),
+    path('list_trades/<int:pk>/',
+         TradeView.as_view(),
+         name='trade'),
+    path('list_trades/<int:pk>/create_message/',
          CreateMessage.as_view(),
-         name='create-message')
+         name='create_message')
 ]
