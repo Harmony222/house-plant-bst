@@ -43,5 +43,49 @@
     });
 </script>
 
+<!-- HARMONY -->
+        {{ common_names_form|crispy }}
+        <button type="submit" class="btn btn-primary">Save</button>
+        {% if update %}
+        <!-- <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal" style="background-color: #dc3545" class="btn btn-danger">Delete</button> -->
+        <a href="{{ object.get_delete_url }}" style="background-color: #dc3545" class="btn btn-danger" >Delete</a>
+        {% endif %}
+        <button type="button" class="btn btn-secondary" style="background-color: #6c757d" onclick="goBack()">Cancel</button>
+    </form>
+</div>
+<!-- Button trigger modal -->
+<!-- <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal" class="btn btn-primary">
+    Launch demo modal
+  </button> -->
+  
+  <!-- Modal -->
+  <!-- <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Confirm Delete</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form action="" method="post">
+                {% csrf_token %}
+                <h4>Are you sure you want to delete: "{{ object }}"?</h4>
+                <input  class="btn btn-danger" type="submit" style="background-color: #dc3545" value="Yes, Delete" />
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
 
 {% endblock %}

@@ -1,4 +1,11 @@
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    UpdateView,
+    DeleteView,
+)
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
@@ -57,7 +64,7 @@ class PlantCreateView(LoginRequiredMixin, CreateView):
             )
         else:
             context['common_names_form'] = PlantCommonNameFormSet()
-        print(context)
+        # print(context)
         return context
 
     def form_valid(self, form):
@@ -70,6 +77,41 @@ class PlantCreateView(LoginRequiredMixin, CreateView):
         return super(PlantCreateView, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy(
-            'plant:plant_detail', kwargs={'pk': self.object.pk}
-        )
+        return self.object.get_absolute_url()
+
+
+class PlantUpdateView(LoginRequiredMixin, UpdateView):
+    form_class = PlantForm
+    model = Plant
+    template_name = 'plant/plant_create.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(PlantUpdateView, self).get_context_data(**kwargs)
+        if self.request.POST:
+            context['common_names_form'] = PlantCommonNameFormSet(
+                self.request.POST, instance=self.object
+            )
+        else:
+            context['common_names_form'] = PlantCommonNameFormSet(
+                instance=self.object
+            )
+        context['update'] = True
+        return context
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        common_names_form = context['common_names_form']
+        if common_names_form.is_valid():
+            self.object = form.save()
+            common_names_form.instance = self.object
+            common_names_form.save()
+        return super(PlantUpdateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+
+
+class PlantDeleteView(LoginRequiredMixin, DeleteView):
+    model = Plant
+    template_name = 'forms_delete.html'
+    success_url = reverse_lazy('plant:all_plants')
