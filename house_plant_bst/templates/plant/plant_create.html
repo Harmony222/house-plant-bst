@@ -12,6 +12,10 @@
     <form action="" method="post">
         {% csrf_token %}
         {{ form|crispy }}
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
 
         <table class="table table-borderless">
             {{ common_names_form.management_form|crispy }}
@@ -22,7 +26,6 @@
                         <td>
                             {# Include the hidden fields in the form #}
                             {% if forloop.first %}
-                            Name*
                                 {% for hidden in form.hidden_fields %}
                                     {{ hidden }}
                                 {% endfor %}
