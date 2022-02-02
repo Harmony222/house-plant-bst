@@ -19,3 +19,44 @@ urlpatterns = [
         name='plant_delete',
     ),
 ]
+
+# UserPlant paths for Marketplace
+urlpatterns.extend(
+    [
+        path(
+            'marketplace/',
+            views.MarketplacePlantListView.as_view(),
+            name='marketplace_plants',
+        ),
+        path(
+            'marketplace/<int:pk>/',
+            views.MarketplacePlantDetailView.as_view(),
+            name='marketplace_plant_detail',
+        ),
+    ]
+)
+# UserPlant paths for Signed in User
+urlpatterns.extend(
+    [
+        path(
+            'userplant/',
+            views.UserPlantListView.as_view(),
+            name='all_user_plants',
+        ),
+        path(
+            'userplant/<int:pk>/',
+            views.UserPlantDetailView.as_view(),
+            name='userplant_detail',
+        ),
+        path(
+            'userplant/create/',
+            views.UserPlantCreateView.as_view(),
+            name='userplant_create',
+        ),
+        path(
+            'userplant/<int:pk>/update/',
+            views.UserPlantUpdateView.as_view(),
+            name='userplant_update',
+        ),
+    ]
+)

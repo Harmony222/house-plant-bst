@@ -1,0 +1,52 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block content %}
+
+{% if title %}
+<h2>{{ title }}</h2>
+{% endif %}
+
+{% for object in object_list %}
+<div class="card" style="width: 18rem;">
+  <img 
+  src="{% if object.userplant.image_url != '' %} {{ object.userplant.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" 
+  class="card-img-top">
+  <div class="card-body">
+    <h5 class="card-title">
+        <a href="{% url 'plant:userplant_detail' object.userplant.pk %}">
+            {{ object.userplant.plant.scientific_name }}
+        </a>
+    </h5> 
+    <h5>{{ object.userplant.unit_price }}</h5>
+    <h6>Seller: {{ object.userplant.user.username }}</h6>
+    <p class="card-text">Location: {{ object.location }}</p>
+    {% if user.is_authenticated %}
+
+    <a href="{{ object.userplant.get_update_url }}" class="btn custom-btn" >Edit</a>
+    <a href="{{ object.userplant.get_delete_url }}" class="btn btn-danger" >Delete</a>
+    {% else %}
+    TEST
+    {% endif %}
+    <a href="#" class="btn btn-primary">Go somewhere</a>
+  </div>
+  
+</div>
+{% endfor %}
+
+{% if user.is_authenticated %}
+<div class="card" style="width: 18rem;">
+  <div class="card-body">
+    <h5 class="card-title">
+        <a href="{% url 'plant:userplant_create' %}">
+            Add New Plant
+        </a>
+    </h5> 
+  </div>
+</div>
+{% endif %}
+
+
+
+
+{% endblock %}
