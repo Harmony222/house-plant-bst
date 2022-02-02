@@ -28,15 +28,12 @@ SECRET_KEY = os.environ.get(
     'DJANGO_SECRET_KEY',
     'django-insecure-x^(8bb$mjg++o@h$map*=9-3eisr9ajm0!^$axt)%wc%!2dx0i',
 )
-# SECRET_KEY = (
-#     'django-insecure-x^(8bb$mjg++o@h$map*=9-3eisr9ajm0!^$axt)%wc%!2dx0i'
-# )
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
-DEBUG = False
+DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
 
-ALLOWED_HOSTS = ['.herokuapp.com', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['house-plant-bst.herokuapp.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -168,10 +165,10 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Deployment
 # Heroku: Update database configuration from $DATABASE_URL.
-import dj_database_url
+# import dj_database_url
 
-db_from_env = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(db_from_env)
+# db_from_env = dj_database_url.config(conn_max_age=500)
+# DATABASES['default'].update(db_from_env)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
