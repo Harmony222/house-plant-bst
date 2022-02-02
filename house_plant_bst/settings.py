@@ -165,10 +165,10 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Deployment
 # Heroku: Update database configuration from $DATABASE_URL.
-# import dj_database_url
+import dj_database_url
 
-# db_from_env = dj_database_url.config(conn_max_age=500)
-# DATABASES['default'].update(db_from_env)
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
