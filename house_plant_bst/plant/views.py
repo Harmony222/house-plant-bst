@@ -226,7 +226,7 @@ class UserPlantUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'plant/userplant/userplant_create.html'
 
     def get_success_url(self):
-        return reverse_lazy('plant:all_user_plants')
+        return reverse_lazy('plant:userplant_all')
 
     def form_valid(self, form):
         obj = form.save(commit=False)

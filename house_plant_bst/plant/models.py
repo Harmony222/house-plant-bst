@@ -31,15 +31,15 @@ class Plant(models.Model):
 
     def get_absolute_url(self):
         """Returns the absolute url for plant object to view plant details"""
-        return f'/plant/{self.pk}'
+        return reverse_lazy('plant:plant_detail', kwargs={'pk': self.pk})
 
     def get_update_url(self):
         """Return the url to update plant"""
-        return f'/plant/{self.pk}/update'
+        return reverse_lazy('plant:plant_update', kwargs={'pk': self.pk})
 
     def get_delete_url(self):
         """Returns the url to delete plant object"""
-        return f'/plant/{self.pk}/delete'
+        return reverse_lazy('plant:plant_delete', kwargs={'pk': self.pk})
 
 
 class PlantCommonName(models.Model):
