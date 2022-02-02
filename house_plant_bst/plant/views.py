@@ -9,7 +9,7 @@ from django.views.generic import (
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 
-import json
+# import json
 from .models import Plant, UserPlant
 from .mixins import TemplateTitleMixin
 from .forms import PlantCommonNameFormSet, PlantForm, UserPlantForm
@@ -138,17 +138,18 @@ class MarketplacePlantListView(TemplateTitleMixin, ListView):
         """
         context = super().get_context_data(*args, **kwargs)
         userplant_list = []
-        zipcode_file = open('static/zipcode_data.json')
-        zipcode_data = json.load(zipcode_file)
+        # zipcode_file = open('static/zipcode_data.json')
+        # zipcode_data = json.load(zipcode_file)
         for userplant in context['object_list']:
             zipcode = userplant.user.location
-            if zipcode in zipcode_data:
-                city_state = (
-                    f'{zipcode_data[zipcode]["city"]}, '
-                    f'{zipcode_data[zipcode]["state"]}'
-                )
-            else:
-                city_state = "Contact seller"
+            # if zipcode in zipcode_data:
+            #     city_state = (
+            #         f'{zipcode_data[zipcode]["city"]}, '
+            #         f'{zipcode_data[zipcode]["state"]}'
+            #     )
+            # else:
+            #     city_state = "Contact seller"
+            city_state = zipcode
             userplant_list.append(
                 {'userplant': userplant, 'location': city_state}
             )
@@ -211,7 +212,7 @@ class UserPlantCreateView(LoginRequiredMixin, CreateView):
     template_name = 'plant/userplant/userplant_create.html'
 
     def get_success_url(self):
-        return reverse_lazy('plant:userplant')
+        return reverse_lazy('plant:userplant_all')
 
     def form_valid(self, form):
         obj = form.save(commit=False)
