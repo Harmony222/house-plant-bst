@@ -1,1 +1,1 @@
-web: gunicorn house_plant_bst.house_plant_bst.wsgi --log-file -
+web: gunicorn house_plant_bst.wsgi --log-file -
