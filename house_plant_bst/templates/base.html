@@ -48,7 +48,7 @@
               <a class="nav-link" href="{% url 'about' %}">About</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Plant Marketplace</a>
+              <a class="nav-link" href="{% url 'plant:marketplace_plants' %}">Plant Marketplace</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{% url 'plant:all_plants' %}">Plant Resources</a>
@@ -61,7 +61,7 @@
               </a>
               <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDropdownMenuLink">
                 <li><a class="dropdown-item" href="{% url 'user:profile' %}">Profile</a></li>
-                <li><a class="dropdown-item" href="#">My Plant Marketplace</a></li>
+                <li><a class="dropdown-item" href="{% url 'plant:userplant_all' %}">My Plant Marketplace</a></li>
               </ul>
             </li>
             <li class="nav-item">

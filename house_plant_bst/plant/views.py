@@ -127,7 +127,8 @@ class PlantDeleteView(LoginRequiredMixin, DeleteView):
 class MarketplacePlantListView(TemplateTitleMixin, ListView):
     model = UserPlant
     title = 'Marketplace Plants'
-    template_name = 'plant/marketplace_plant_list.html'
+    template_name = 'plant/userplant/userplant_list.html'
+    # template_name = 'plant/marketplace_plant_list.html'
 
     def get_context_data(self, *args, **kwargs):
         """Creates context data for UserPlant.
@@ -152,16 +153,19 @@ class MarketplacePlantListView(TemplateTitleMixin, ListView):
                 {'userplant': userplant, 'location': city_state}
             )
         context['object_list'] = userplant_list
+        context['marketplace'] = True
         return context
 
 
 class MarketplacePlantDetailView(TemplateTitleMixin, DetailView):
     model = UserPlant
     title = 'Market Place Plant Detail'
-    template_name = 'plant/marketplace_plant_detail.html'
+    template_name = 'plant/userplant/userplant_detail.html'
+    # template_name = 'plant/marketplace_plant_detail.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        context['marketplace'] = True
         return context
 
 
@@ -175,6 +179,15 @@ class UserPlantListView(
     model = UserPlant
     title = "Signed in User's Plants"
     template_name = 'plant/userplant/userplant_list.html'
+
+    def get_context_data(self, *args, **kwargs):
+        """Extends functionality of MarketplacePlantListView
+
+        Sets marketplace flag to False
+        """
+        context = super().get_context_data(*args, **kwargs)
+        context['marketplace'] = False
+        return context
 
     def get_queryset(self):
         """Restrict queryset to only the user's UserPlants"""

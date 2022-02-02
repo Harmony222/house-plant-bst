@@ -20,5 +20,9 @@
 <br>
 
 
-<!-- <a href="{{ object.get_update_url }}">Edit Plant</a> -->
+    {% if not marketplace and user.is_authenticated %}
+
+    <a href="{{ object.get_update_url }}" class="btn custom-btn" >Edit</a>
+    <a href="{{ object.get_delete_url }}" class="btn btn-danger" >Delete</a>
+    {% endif %}
 {% endblock %}

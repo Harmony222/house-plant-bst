@@ -41,7 +41,7 @@ urlpatterns.extend(
         path(
             'userplant/',
             views.UserPlantListView.as_view(),
-            name='all_user_plants',
+            name='userplant_all',
         ),
         path(
             'userplant/<int:pk>/',

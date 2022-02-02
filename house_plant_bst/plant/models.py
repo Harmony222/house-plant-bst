@@ -105,8 +105,8 @@ class UserPlant(models.Model):
 
     def get_update_url(self):
         """Return the url to update plant"""
-        return f'{self.pk}/update'
+        return reverse_lazy('plant:userplant_update', kwargs={'pk': self.pk})
 
-    def get_delete_url(self):
-        """Returns the url to delete plant object"""
-        return f'{self.pk}/delete'
+    # def get_delete_url(self):
+    #     """Returns the url to delete plant object"""
+    #     return reverse_lazy('plant:userplant_delete', kwargs={'pk': self.pk})

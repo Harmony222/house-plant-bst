@@ -14,7 +14,12 @@
   class="card-img-top">
   <div class="card-body">
     <h5 class="card-title">
-        <a href="{% url 'plant:userplant_detail' object.userplant.pk %}">
+        <a 
+        href="{% if marketplace %} 
+                {% url 'plant:marketplace_plant_detail' object.userplant.pk %}
+              {% else %}
+                {% url 'plant:userplant_detail' object.userplant.pk %}
+              {% endif %}">
             {{ object.userplant.plant.scientific_name }}
         </a>
     </h5> 
@@ -25,8 +30,6 @@
 
     <a href="{{ object.userplant.get_update_url }}" class="btn custom-btn" >Edit</a>
     <a href="{{ object.userplant.get_delete_url }}" class="btn btn-danger" >Delete</a>
-    {% else %}
-    TEST
     {% endif %}
     <a href="#" class="btn btn-primary">Go somewhere</a>
   </div>
