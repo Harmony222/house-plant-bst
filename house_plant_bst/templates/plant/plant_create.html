@@ -1,5 +1,10 @@
 {% extends 'base.html' %} 
 {% load static %}
+{% block head %}
+<style>
+  .multiField .asteriskField { display: none;}
+</style>
+{% endblock %}
 {% load crispy_forms_tags %}
 {% block content %}
 
@@ -7,7 +12,6 @@
     <form action="" method="post">
         {% csrf_token %}
         {{ form|crispy }}
-
 
         <table class="table table-borderless">
             {{ common_names_form.management_form|crispy }}
@@ -32,7 +36,6 @@
 
         <button type="submit" class="btn btn-primary custom-btn">Save</button>
         {% if update %}
-        <!-- <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal" style="background-color: #dc3545" class="btn btn-danger">Delete</button> -->
         <a href="{{ object.get_delete_url }}" class="btn btn-danger" >Delete</a>
         {% endif %}
         <button type="button" class="btn btn-secondary" onclick="goBack()">Cancel</button>
@@ -52,35 +55,5 @@
         window.history.back();
     }
 </script>
-
-
-<!-- Button trigger modal -->
-<!-- <button type="button" data-bs-toggle="modal" data-bs-target="#deleteModal" class="btn btn-primary">
-    Launch demo modal
-  </button> -->
-  
-  <!-- Modal -->
-  <!-- <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">Confirm Delete</h5>
-          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-            <form action="" method="post">
-                {% csrf_token %}
-                <h4>Are you sure you want to delete: "{{ object }}"?</h4>
-                <input  class="btn btn-danger" type="submit" style="background-color: #dc3545" value="Yes, Delete" />
-            </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        </div>
-      </div>
-    </div>
-  </div> -->
 
 {% endblock %}
