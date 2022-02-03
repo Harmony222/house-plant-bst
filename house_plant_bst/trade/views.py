@@ -4,6 +4,8 @@ from .models import Trade, Message, TradeItem
 from .forms import TradeForm, MessageForm, TradeResponseForm
 from django.db.models import Q
 from django.contrib.auth import get_user_model
+from datetime import datetime
+
 User = get_user_model()
 
 
@@ -11,9 +13,7 @@ class CreateTrade(View):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             form = TradeForm()
-            context = {
-                'form': form
-            }
+            context = {'form': form}
             return render(request, 'trade/create_trade.html', context)
         else:
             return redirect('user:profile')
@@ -45,7 +45,7 @@ class CreateTrade(View):
                 trade = sender_trade
                 return redirect('trade:trade', pk=trade.pk)
             # except:
-                return redirect('trade:create_trade')
+                return redirect('create_trade')
         else:
             return redirect('user:profile')
 
@@ -60,19 +60,19 @@ class ListTrades(View):
             return redirect('user:profile')
 
 
-class SetTradeResponse(View):
+class TradeResponse(View):
     def post(self, request, pk, *args, **kwargs):
         if request.user.is_authenticated:
             trade = Trade.objects.get(pk=pk)
             if trade.seller == request.user:
-                form = TradeResponseForm()
-                context = {'form': form,}
-                return render(request, 'trade/trade.html', context)
-
-
-                # return render_to_response('trades',
-                                           # locals(),
-                                           # context_instance=RequestContext(request))
+                form = TradeResponseForm(request.POST)
+                if form.is_valid():
+                    print('here')
+                    trade.trade_status = request.POST.get('trade_response')
+                    trade.response_date = datetime.now()
+                    print(f'trade.trade_status: {trade.trade_status}')
+                    trade.save()
+            return redirect('trade:trade', pk=trade.pk)
         else:
             return redirect('user:profile')
 
@@ -85,14 +85,16 @@ class CreateMessage(View):
                 recipient = trade.buyer
             else:
                 recipient = trade.seller
-            message = Message(
-                sender=request.user,
-                recipient=recipient,
-                trade=trade,
-                message=request.POST.get('message'),
-            )
-            message.save()
-            return redirect('trade:trade', pk=pk)
+            form = MessageForm(request.POST)
+            if form.is_valid():
+                message = Message(
+                    sender=request.user,
+                    recipient=recipient,
+                    trade=trade,
+                    message=request.POST.get('message'),
+                )
+                message.save()
+                return redirect('trade:trade', pk=pk)
         else:
             return redirect('user:profile')
 
@@ -100,13 +102,15 @@ class CreateMessage(View):
 class TradeView(View):
     def get(self, request, pk, *args, **kwargs):
         if request.user.is_authenticated:
-            form = MessageForm()
+            message_form = MessageForm()
+            trade_response_form = TradeResponseForm()
             trade = Trade.objects.get(pk=pk)
             trade_item_list = TradeItem.objects.filter(trade__pk__contains=pk)
             message_list = Message.objects.filter(trade__pk__contains=pk)
             context = {
                 'trade': trade,
-                'form': form,
+                'message_form': message_form,
+                'trade_response_form': trade_response_form,
                 'trade_item_list': trade_item_list,
                 'message_list': message_list
             }

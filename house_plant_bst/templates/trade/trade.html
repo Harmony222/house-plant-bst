@@ -33,15 +33,21 @@
     </div>
     {% endfor %}
 
-    {% if trade_seller == request.user %}
-    <div class="row justify-content-center mt-3 mb-5">
-        <div class="col-md-5 col-sm-12">
-            {% for radio in form.lighting %}
-                <label for="{{ radio.id_for_label }}">
-                    {{ radio.choice_label }}
-                    <span class="radio">{{ radio.tag }}</span>
-                </label>
-            {% endfor %}
+    {% if trade.seller == trade.seller %}
+    <div class="row">
+        <div class="card col-md-12 p-3 shadow-sm">
+            <form method="POST" action="{% url 'trade:trade_response' trade.pk %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form | crispy }}
+                {% for choice in trade_response_form.trade_response %}
+                <div class="radio_buttons">
+                    {{ choice }}
+                </div>
+                {% endfor %}
+                <div class="d-grid gap-2 mt-3">
+                    <button class="btn btn-light" type="submit">Submit Response</button>
+                </div>
+            </form>
         </div>
     </div>
     {% endif %}
@@ -55,6 +61,7 @@
             {% endif %}
         </div>
     </div>
+
     {% if message_list.all.count == 0 %}
     <div class="row my-5">
         <div class="col-md-12">
@@ -62,6 +69,7 @@
         </div>
     </div>
     {% endif %}
+
     {% for message in message_list %}
     <div class="row">
         <div class="col-md-12 my-1">

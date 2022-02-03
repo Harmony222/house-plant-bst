@@ -8,14 +8,13 @@ class Trade(models.Model):
     # Trade Status Constants
     SENT = 'SE'
     ACCEPTED = 'AC'
-    REJECTED = 'RJ'
+    REJECTED = 'RE'
+    UNAVAILABLE = 'UN'
 
-    TRADE_STATUS_CHOICES = [
-        (SENT, 'sent'),
-        (ACCEPTED, 'accepted'),
-        (REJECTED, 'rejected'),
-    ]
-
+    TRADE_STATUS_CHOICES = [(SENT, 'sent'),
+                            (ACCEPTED, 'accepted'),
+                            (REJECTED, 'rejected'),
+                            (UNAVAILABLE, 'unavailable')]
     seller = models.ForeignKey(User,
                                null=True,
                                verbose_name='Seller',
