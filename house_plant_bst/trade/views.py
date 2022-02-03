@@ -96,7 +96,7 @@ class CreateMessage(View):
                     message=request.POST.get('message'),
                 )
                 message.save()
-                return redirect('trade:trade', pk=pk)
+            return redirect('trade:trade', pk=pk)
         else:
             return redirect('user:profile')
 

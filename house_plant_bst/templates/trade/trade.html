@@ -92,6 +92,7 @@
                 {% csrf_token %}
                 {{ form | crispy }}
                 <div class="d-grid gap-2 mt-3">
+                    {{ message_form }}
                     <button class="btn btn-light" type="submit">Send Message</button>
                 </div>
             </form>
