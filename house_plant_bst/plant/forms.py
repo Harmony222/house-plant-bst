@@ -16,8 +16,8 @@ PlantCommonNameFormSet = inlineformset_factory(
     PlantCommonName,
     form=PlantCommonNameForm,
     fields=['name'],
-    extra=4,
-    can_delete=False,
+    extra=1,
+    can_delete=True,
 )
 
 

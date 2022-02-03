@@ -22,29 +22,29 @@ class CreateTrade(View):
         if request.user.is_authenticated:
             form = TradeForm(request.POST)
             username = request.POST.get('username')
-            # try:
-            recipient = User.objects.get(username=username)
-            print(f'create_trade_recipient: {recipient.username}')
-            if Trade.objects.filter(seller=request.user,
-                                    buyer=recipient).exists():
-                trade = Trade.objects.filter(seller=request.user,
-                                             buyer=recipient)[0]
-                return redirect('trade:trade', pk=trade.pk)
-            elif Trade.objects.filter(seller=recipient,
-                                      buyer=request.user).exists():
-                trade = Trade.objects.filter(seller=recipient,
-                                             buyer=request.user)[0]
-                return redirect('trade:trade', pk=trade.pk)
-            if form.is_valid():
-                sender_trade = Trade(
-                    buyer=request.user,
-                    seller=recipient,
-                    trade_status='SE'
-                )
-                sender_trade.save()
-                trade = sender_trade
-                return redirect('trade:trade', pk=trade.pk)
-            # except:
+            try:
+                recipient = User.objects.get(username=username)
+                print(f'create_trade_recipient: {recipient.username}')
+                if Trade.objects.filter(seller=request.user,
+                                        buyer=recipient).exists():
+                    trade = Trade.objects.filter(seller=request.user,
+                                                 buyer=recipient)[0]
+                    return redirect('trade:trade', pk=trade.pk)
+                elif Trade.objects.filter(seller=recipient,
+                                          buyer=request.user).exists():
+                    trade = Trade.objects.filter(seller=recipient,
+                                                 buyer=request.user)[0]
+                    return redirect('trade:trade', pk=trade.pk)
+                if form.is_valid():
+                    sender_trade = Trade(
+                        buyer=request.user,
+                        seller=recipient,
+                        trade_status='SE'
+                    )
+                    sender_trade.save()
+                    trade = sender_trade
+                    return redirect('trade:trade', pk=trade.pk)
+            except:
                 return redirect('create_trade')
         else:
             return redirect('user:profile')

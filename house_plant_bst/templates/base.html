@@ -18,6 +18,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'styles/base.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'styles/home.css' %}" />
     <link rel="stylesheet" type="text/css" href="{% static 'styles/about.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/user.css' %}" />
     
     <!-- Logo Icon for Navbar and Tab -->
     <link rel="icon" type="image/png" href="{% static 'images/navbar_icon.png' %}">
@@ -34,33 +35,50 @@
           <img src="{% static 'images/navbar_icon.png' %}" width="40" height="40" class="d-inline-block align-top" alt="House Plant Hub Logo">
           <span>House Plant Hub</span>
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse float-right" id="navbarSupportedContent">
+        <div class="collapse navbar-collapse float-right" id="navbarNavDropdown">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+              <a class="nav-link" aria-current="page" href="{% url 'home' %}">Home</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{% url 'about' %}">About</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'plant:all_plants' %}">Plants</a>
+              <a class="nav-link" href="#">Plant Marketplace</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Sign In</a>
+              <a class="nav-link" href="{% url 'plant:all_plants' %}">Plant Resources</a>
+            </li>
+
+            {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Hello, {{ user.username|capfirst }}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDropdownMenuLink">
+                <li><a class="dropdown-item" href="{% url 'user:profile' %}">Profile</a></li>
+                <li><a class="dropdown-item" href="#">My Plant Marketplace</a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            </li>
+
+            {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'login' %}">Sign In</a>
             </li>
             </li>
-              <form action="#">
-                <button type="submit" class="btn btn-primary">Join Now</button>
-              </form>
+              <a class="btn btn-primary custom-btn" href="{% url 'user:signup' %}" role="button">Join Now</a>
             </li>
+            {% endif %}
           </ul>
         </div>
       </div>
     </nav>
-
 
     <!-- Container for all page content -->
     <div class="container">{% block content %}{% endblock %}</div>

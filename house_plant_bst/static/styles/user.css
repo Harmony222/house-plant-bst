@@ -1,0 +1,13 @@
+a.card-link {
+    text-decoration: none;
+    color: black;
+}
+
+a.card-link div.card:hover {
+    background-color: #e8e8e8;
+}
+
+img.img-fluid.user-card-icon {
+    width: 5rem;
+    margin-top: 0.5rem;
+}

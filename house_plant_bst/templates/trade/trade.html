@@ -33,7 +33,7 @@
     </div>
     {% endfor %}
 
-    {% if trade.seller == trade.seller %}
+    {% if request.user == trade.seller %}
     <div class="row">
         <div class="card col-md-12 p-3 shadow-sm">
             <form method="POST" action="{% url 'trade:trade_response' trade.pk %}" enctype="multipart/form-data">

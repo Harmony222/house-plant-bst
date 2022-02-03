@@ -4,11 +4,11 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12 p-5">
-                {% if user.is_authenticated %}
-                    <h3>{{ user.get_username }}'s Trades</h3>
-                {% else %}
-                    <h3>Login to see your trades/h3>
-                {% endif %}
+            {% if user.is_authenticated %}
+                <h3>{{ user.get_username }}'s Trades</h3>
+            {% else %}
+                <h3>Login to see your trades/h3>
+            {% endif %}
         </div>
     </div>
     <div class="row">
