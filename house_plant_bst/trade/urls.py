@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import CreateTrade, ListTrades, TradeView, CreateMessage, TradeResponse
+from .views import CreateTrade, ListTrades, TradeView, CreateMessage, \
+      TradeResponse
 
 app_name = 'trade'
 
