@@ -44,7 +44,8 @@ class CreateTrade(View):
                     sender_trade.save()
                     trade = sender_trade
                     return redirect('trade:trade', pk=trade.pk)
-            except:
+            except Exception as e:
+                print("ERROR saving trade status: " + str(e))
                 return redirect('create_trade')
         else:
             return redirect('user:profile')
@@ -53,7 +54,8 @@ class CreateTrade(View):
 class ListTrades(View):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            trades = Trade.objects.filter(Q(seller=request.user) | Q(buyer=request.user))
+            trades = Trade.objects.\
+                     filter(Q(seller=request.user) | Q(buyer=request.user))
             context = {'trades': trades}
             return render(request, 'trade/list_trades.html', context)
         else:
