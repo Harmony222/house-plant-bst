@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.urls import reverse_lazy
 
 User = settings.AUTH_USER_MODEL
 
@@ -30,22 +31,22 @@ class Plant(models.Model):
 
     def get_absolute_url(self):
         """Returns the absolute url for plant object to view plant details"""
-        return f'/plant/{self.pk}'
+        return reverse_lazy('plant:plant_detail', kwargs={'pk': self.pk})
 
     def get_update_url(self):
         """Return the url to update plant"""
-        return f'/plant/{self.pk}/update'
+        return reverse_lazy('plant:plant_update', kwargs={'pk': self.pk})
 
     def get_delete_url(self):
         """Returns the url to delete plant object"""
-        return f'/plant/{self.pk}/delete'
+        return reverse_lazy('plant:plant_delete', kwargs={'pk': self.pk})
 
 
 class PlantCommonName(models.Model):
     """Each PlantCommonName instance object ties a common name to a Plant
     object"""
 
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=150, verbose_name="Common Name")
     plant = models.ForeignKey(
         Plant,
         verbose_name='Plant',
@@ -97,3 +98,15 @@ class UserPlant(models.Model):
     def __str__(self):
         return f'owner: {self.user.username}, \
                plant: {self.plant.scientific_name}'
+
+    def get_absolute_url(self):
+        """Returns the absolute url for userplant object"""
+        return reverse_lazy('plant:userplant_detail', kwargs={'pk': self.pk})
+
+    def get_update_url(self):
+        """Return the url to update plant"""
+        return reverse_lazy('plant:userplant_update', kwargs={'pk': self.pk})
+
+    # def get_delete_url(self):
+    #     """Returns the url to delete plant object"""
+    #     return reverse_lazy('plant:userplant_delete', kwargs={'pk': self.pk})

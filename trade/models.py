@@ -8,24 +8,23 @@ class Trade(models.Model):
     # Trade Status Constants
     SENT = 'SE'
     ACCEPTED = 'AC'
-    REJECTED = 'RJ'
+    REJECTED = 'RE'
+    UNAVAILABLE = 'UN'
 
-    TRADE_STATUS_CHOICES = [
-        (SENT, 'sent'),
-        (ACCEPTED, 'accepted'),
-        (REJECTED, 'rejected'),
-    ]
-
+    TRADE_STATUS_CHOICES = [(SENT, 'sent'),
+                            (ACCEPTED, 'accepted'),
+                            (REJECTED, 'rejected'),
+                            (UNAVAILABLE, 'unavailable')]
     seller = models.ForeignKey(User,
                                null=True,
                                verbose_name='Seller',
                                on_delete=models.SET_NULL,
-                               related_name='getSellerTrades')
+                               related_name='get_seller_trades')
     buyer = models.ForeignKey(User,
                               null=True,
                               verbose_name='Buyer',
                               on_delete=models.SET_NULL,
-                              related_name='getBuyerTrades')
+                              related_name='get_buyer_trades')
     request_date = models.DateTimeField(auto_now_add=True)
     response_date = models.DateTimeField(null=True, blank=True)
     trade_status = models.CharField(max_length=2,
@@ -43,12 +42,17 @@ class Trade(models.Model):
 
 
 class Message(models.Model):
-    """Each Message instance object ties a User's message to a Trade object"""
+    """Each Message instance object ties a User's message to a Thread object"""
     sender = models.ForeignKey(User,
                                null=True,
                                verbose_name='Message Sender',
                                on_delete=models.SET_NULL,
-                               related_name='get_user_messages')
+                               related_name='get_sent_messages')
+    recipient = models.ForeignKey(User,
+                                  null=True,
+                                  verbose_name='Message Recipient',
+                                  on_delete=models.SET_NULL,
+                                  related_name='get_received_messages')
     trade = models.ForeignKey(Trade,
                               verbose_name='Trade',
                               on_delete=models.CASCADE,
@@ -60,9 +64,10 @@ class Message(models.Model):
         verbose_name_plural = 'Messages'
 
     def __str__(self):
-        return f'trade id: {self.trade.id}, \
+        return f'trade id: {self.trade.pk}, \
                message id: {self.id}, \
-               sender: {self.sender.username}'
+               sender: {self.sender.username}, \
+               recipient: {self.recipient.username}'
 
 
 class TradeItem(models.Model):
