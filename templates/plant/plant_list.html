@@ -1,0 +1,28 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block content %}
+
+{% if title %}
+<h2>{{ title }}</h2>
+{% endif %}
+
+{% for object in object_list %}
+<li> 
+    <a href="{% url 'plant:plant_detail' object.plant.pk %}">
+        {{ object.plant.scientific_name }}
+    </a>
+<ul>
+
+    {% for name in object.common_names %}
+    <li>{{ name }}</li>
+    {% endfor %}
+</ul>
+
+</li>
+
+{% endfor %}
+
+{{ common_names }}
+
+{% endblock %}

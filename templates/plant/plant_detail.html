@@ -1,0 +1,25 @@
+{% extends 'base.html' %} 
+{% load static %}
+{% block content %}
+
+{% if title %}
+<h2>{{ title }}</h2>
+{% endif %}
+
+<h3>{{ object.scientific_name }}</h3>
+COMMON NAMES!
+{% for name in common_names %}
+{{ name }},
+{% endfor %}
+<!-- <h4>{{ common_names }}</h4> -->
+<br>
+<br>
+
+{{ object.description }}
+<br>
+{{ object.plant_care }}
+
+{% if user.is_authenticated %}
+<a href="{{ object.get_update_url }}">Edit Plant</a>
+{% endif %}
+{% endblock %}
