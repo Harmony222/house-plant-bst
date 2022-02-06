@@ -22,6 +22,7 @@ from .forms import PlantCommonNameFormSet, PlantForm, UserPlantForm
 class PlantListView(TemplateTitleMixin, ListView):
     model = Plant
     title = 'Plants'
+    paginate_by = 8
 
     def get_context_data(self, *args, **kwargs):
         """Creates context data.

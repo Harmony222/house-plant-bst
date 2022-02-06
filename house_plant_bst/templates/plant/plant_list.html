@@ -7,21 +7,59 @@
 <h2>{{ title }}</h2>
 {% endif %}
 
+
+
+<div class="container">
+    <div class="row row-cols-2 row-cols-md-2 g-4">
+        {% for object in object_list %}
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <a href="{% url 'plant:plant_detail' object.plant.pk %}">
+                        {{ object.plant.scientific_name }}
+                    </a> 
+                    <p class="card-body mb-0">
+                        {% for name in object.common_names %}
+                        {{ name }}, 
+                        {% endfor %}   
+                    </p> 
+                </div>
+            </div>
+        </div>
+    
+        {% endfor %}
+    </div>
+</div>
+
+
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
+
+
+<!-- 
 {% for object in object_list %}
 <li> 
     <a href="{% url 'plant:plant_detail' object.plant.pk %}">
-        {{ object.plant.scientific_name }}
-    </a>
-<ul>
-
-    {% for name in object.common_names %}
-    <li>{{ name }}</li>
-    {% endfor %}
-</ul>
-
+@ -22,6 +67,7 @@
 </li>
 
 {% endfor %}
+-->
 
 {{ common_names }}
 
