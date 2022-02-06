@@ -95,5 +95,7 @@ class UserPlant(models.Model):
         verbose_name_plural = 'User\'s Plants'
 
     def __str__(self):
-        return f'owner: {self.user.username}, \
+        username = "Deleted User" if self.user is None else\
+                   self.user.username
+        return f'owner: {username}, \
                plant: {self.plant.scientific_name}'
