@@ -141,18 +141,19 @@ class MarketplacePlantListView(TemplateTitleMixin, ListView):
         # zipcode_file = open('static/zipcode_data.json')
         # zipcode_data = json.load(zipcode_file)
         for userplant in context['object_list']:
-            zipcode = userplant.user.location
-            # if zipcode in zipcode_data:
-            #     city_state = (
-            #         f'{zipcode_data[zipcode]["city"]}, '
-            #         f'{zipcode_data[zipcode]["state"]}'
-            #     )
-            # else:
-            #     city_state = "Contact seller"
-            city_state = zipcode
-            userplant_list.append(
-                {'userplant': userplant, 'location': city_state}
-            )
+            if userplant.user is not None:
+                zipcode = userplant.user.location
+                # if zipcode in zipcode_data:
+                #     city_state = (
+                #         f'{zipcode_data[zipcode]["city"]}, '
+                #         f'{zipcode_data[zipcode]["state"]}'
+                #     )
+                # else:
+                #     city_state = "Contact seller"
+                city_state = zipcode
+                userplant_list.append(
+                    {'userplant': userplant, 'location': city_state}
+                )
         context['object_list'] = userplant_list
         context['marketplace'] = True
         return context
