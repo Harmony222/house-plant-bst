@@ -36,9 +36,13 @@ class Trade(models.Model):
 
     def __str__(self):
         """String for representing the Trade object (ex: the Admin site)."""
+        seller_username = "Deleted User" if self.seller is None else\
+            self.seller.username
+        buyer_username = "Deleted User" if self.buyer is None else\
+            self.buyer.username
         return f'trade id: {self.id}, \
-               buyer: {self.buyer.username}, \
-               seller: {self.seller.username} '
+               buyer: {buyer_username}, \
+               seller: {seller_username} '
 
 
 class Message(models.Model):
@@ -64,10 +68,15 @@ class Message(models.Model):
         verbose_name_plural = 'Messages'
 
     def __str__(self):
+        sender_username = "Deleted User" if self.sender is None else\
+            self.sender.username
+        recipient_username = "Deleted User" if self.recipient is None else\
+            self.recipient.username
+
         return f'trade id: {self.trade.pk}, \
                message id: {self.id}, \
-               sender: {self.sender.username}, \
-               recipient: {self.recipient.username}'
+               sender: {sender_username}, \
+               recipient: {recipient_username}'
 
 
 class TradeItem(models.Model):
@@ -87,6 +96,8 @@ class TradeItem(models.Model):
         verbose_name_plural = 'Trade Items'
 
     def __str__(self):
+        owner_username = "Deleted User" if self.user_plant.user is None else\
+                         self.user_plant.user.username
         return f'trade id: {self.trade.id}, item id: {self.id} \
-               owner: {self.user_plant.user.username}, \
+               owner: {owner_username}, \
                plant: {self.user_plant.plant.scientific_name}'

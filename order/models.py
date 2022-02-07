@@ -50,9 +50,13 @@ class Order(models.Model):
 
     def __str__(self):
         """String for representing the Order object (ex: the Admin site)."""
+        seller_username = "Deleted User" if self.seller is None else\
+            self.seller.username
+        buyer_username = "Deleted User" if self.buyer is None else\
+            self.buyer.username
         return f'order id: {self.id}, \
-               buyer: {self.buyer.username}, \
-               seller: {self.seller.username} '
+               buyer: {buyer_username}, \
+               seller: {seller_username} '
 
 
 class OrderItem(models.Model):
@@ -72,6 +76,8 @@ class OrderItem(models.Model):
         verbose_name_plural = 'Order Items'
 
     def __str__(self):
+        username = "Deleted User" if self.user_plant.user is None else\
+            self.user_plant.user
         return f'order id: {self.order.id}, item id: {self.id} \
-               owner: {self.user_plant.user.username}, \
+               owner: {username}, \
                plant: {self.user_plant.plant.scientific_name}'

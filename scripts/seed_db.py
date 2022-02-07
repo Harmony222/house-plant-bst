@@ -2,8 +2,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from plant.models import Plant, PlantCommonName
 import csv
 
-plant_csv_path = r'../data/db_upload_plant.csv'
-plant_common_name_csv_path = r'../data/db_upload_plant_common_name.csv'
+plant_csv_path = r'./data/db_upload_plant.csv'
+plant_common_name_csv_path = r'./data/db_upload_plant_common_name.csv'
 
 
 def seed_plant_table(csv_path):
@@ -14,7 +14,7 @@ def seed_plant_table(csv_path):
             Plant(
                 scientific_name=row['scientific_name'],
                 description=row['description'],
-                plant_care=row['plant_care']
+                plant_care=row['plant_care'],
             )
             for row in reader_rows
         ]
@@ -30,17 +30,14 @@ def seed_plant_common_name_table(csv_path):
         for i, row in enumerate(reader):
             # if plant doesn't exist, skip this plant common name entry
             try:
-                id = Plant.objects\
-                    .get(scientific_name=row['scientific_name'])\
-                    .id
+                id = Plant.objects.get(
+                    scientific_name=row['scientific_name']
+                ).id
             except ObjectDoesNotExist as e:
                 print(e)
                 break
 
-            new_obj = PlantCommonName(
-                name=row['name'],
-                plant_id=id
-            )
+            new_obj = PlantCommonName(name=row['name'], plant_id=id)
             plant_common_name_objs.append(new_obj)
         PlantCommonName.objects.bulk_create(plant_common_name_objs)
 
