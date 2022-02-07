@@ -1,0 +1,42 @@
+div.col-sm-6{
+    width: 25%;
+    min-width: 15rem;
+}
+
+img.card-img-top.marketplace-plant-img {
+    border: 3px solid #b1d60d;
+    border-radius: 20px;
+    width: 100%;
+    height: 9rem;
+    object-fit: cover;
+}
+
+h6.plant-price {
+    color: #00b3a1;
+}
+
+a.bst-link {
+    color: #00b3a1;
+    text-decoration: none;
+    margin: auto;
+}
+
+span.disabled-buy,
+span.disabled-trade {
+    color:lightgray;
+    margin: auto;
+}
+
+span.badge.rounded-pill {
+    border: 1px solid gray;
+}
+
+p.plant-card-text {
+    color: gray;
+}
+
+button.btn.btn-secondary.dropdown-toggle {
+    background-color: white;
+    color: gray;
+    border-color: lightgray;
+}
