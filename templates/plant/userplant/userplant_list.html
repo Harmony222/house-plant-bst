@@ -57,7 +57,7 @@
                       {% else %}
                         {% url 'plant:userplant_detail' object.userplant.pk %}
                       {% endif %}">
-                    {{ object.userplant.plant.scientific_name }}
+                    {{ object.userplant.plant.scientific_name|capfirst }}
                 </a>
               </h5>
 
@@ -72,7 +72,7 @@
 
               <!-- Seller and location info -->
               <p class="plant-card-text">
-                  Seller: {{ object.userplant.user.username }}
+                  Seller: {{ object.userplant.user.username|capfirst }}
                   <br>
                   Location: {{ object.location }}
               </p>
