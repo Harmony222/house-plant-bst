@@ -22,12 +22,14 @@
           </ul>
       </div>
     </div>
+  </div>
 
+  <div class="row mx-auto">
     <!-- Show "Add New Plant" function for authenticated users -->
     {% if user.is_authenticated %}
-      <div class="col-md">
+      <div class="col-sm-6">
         <div class="container">
-          <div class="card card-link text-center  float-end" style="width: 9rem;">
+          <div class="card card-link text-center my-3">
             <a href="{% url 'plant:userplant_create' %}" class="card-link">
                 <div class="card-body px-0">
                   <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-plus-circle-dotted" viewBox="0 0 16 16">
@@ -40,10 +42,6 @@
         </div>  
       </div>
     {% endif %}
-  </div>
-
-  <div class="row mx-auto">
-
     <!-- Create card for every user plant -->
     {% for object in object_list %}
     <div class="col-sm-6">
