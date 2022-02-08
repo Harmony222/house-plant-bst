@@ -23,6 +23,7 @@ class PlantListView(TemplateTitleMixin, ListView):
     model = Plant
     title = 'Plants'
     paginate_by = 8
+    ordering = ['id']
 
     def get_context_data(self, *args, **kwargs):
         """Creates context data.
