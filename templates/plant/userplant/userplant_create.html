@@ -1,5 +1,19 @@
-<form method='POST'>
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type='submit' value='Save' />
-</form>
+{% extends '../../base.html' %} 
+{% load static %}
+
+{% block content %}
+{% load crispy_forms_tags %}
+<div class="card user-form mx-auto my-2">
+    <div class="card-body">
+        <h2>Add New <span class="h-text">Marketplace</span> Plant</h2>
+        <form method='POST'>
+            {% csrf_token %}
+            {{ form|crispy }}
+            <button type='submit' class="btn custom-btn" value='Save'>Save</button>
+        </form>
+</div>
+
+<!-- Decorative green block div in background -->
+<div class="decorative-bg-div"></div>
+
+{% endblock %}

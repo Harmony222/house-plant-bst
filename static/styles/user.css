@@ -3,7 +3,7 @@ a.card-link {
     color: black;
 }
 
-a.card-link div.card:hover {
+div.card.card-link:hover {
     background-color: #e8e8e8;
 }
 

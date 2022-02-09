@@ -2,10 +2,12 @@
 .custom-btn {
     background-color: #00b3a1;
     border: #00b3a1;
+    color: white;
 }
 
 .custom-btn:hover {
     background-color: #b1d60d;
+    color: white;
 }
 
 a.navbar-brand span:hover,
@@ -23,7 +25,7 @@ li.nav-item {
     padding-right: 1rem;
 }
 
-h1, h2, h3 {
+h1, h2, h3, h4, h5, h6 {
     font-family: 'Times New Roman', Times, serif;
 }
 

@@ -10,6 +10,7 @@
 <div class="container">
     <div class="row row-cols-2">
         <div class="col">
+            <!-- User Profile card -->
             <div class="card text-center">
               <div class="card-body">
                 <h2>My<span class="h-text"> Profile</span></h2>
@@ -29,42 +30,44 @@
             </div>
         </div>
 
+        <!-- Order History card link -->
         <div class="col">
           <div class="row">
-            <a href="{% url 'trade:list_trades' %}" class="card-link">
-              <div class="card text-center">
-                <div class="row g-0">
-                  <div class="col-md-3">
-                    <img src="{% static 'images/orders_icon.png' %}" class="img-fluid rounded-start user-card-icon">
-                  </div>
-                  <div class="col-md-8">
-                    <div class="card-body px-0">
-                      <h3 class="card-title">Order History</h3>
-                      <p class="card-text text-muted">Track your orders and trades</p>
+            <div class="card card-link text-center">
+              <a href="{% url 'trade:list_trades' %}" class="card-link">
+                  <div class="row g-0">
+                    <div class="col-md-3">
+                      <img src="{% static 'images/orders_icon.png' %}" class="img-fluid rounded-start user-card-icon">
+                    </div>
+                    <div class="col-md-8">
+                      <div class="card-body px-0">
+                        <h3 class="card-title">Order History</h3>
+                        <p class="card-text text-muted">Track your orders and trades</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </a>
+              </a>
+            </div>
           </div>
 
+          <!-- User Plant Marketplace card link -->
           <div class="row my-3">
-            <a href="#" class="card-link">
-              <div class="card text-center">
-                <div class="row g-0">
-                  <div class="col-md-3">
-                    <img src="{% static 'images/navbar_icon.png' %}" class="img-fluid rounded-start user-card-icon">
-                  </div>
-                  <div class="col-md-8">
-                    <div class="card-body px-0">
-                      <h3 class="card-title">My <span class="h-text">Plant </span>Marketplace</h3>
-                      <p class="card-text text-muted">View and edit your plant marketplace</p>
+            <div class="card card-link text-center">
+              <a href="{% url 'plant:userplant_all' %}" class="card-link">
+                  <div class="row g-0">
+                    <div class="col-md-3">
+                      <img src="{% static 'images/navbar_icon.png' %}" class="img-fluid rounded-start user-card-icon">
+                    </div>
+                    <div class="col-md-8">
+                      <div class="card-body px-0">
+                        <h3 class="card-title">My <span class="h-text">Plant </span>Marketplace</h3>
+                        <p class="card-text text-muted">View and edit your plant marketplace</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              </div>
-            </a>
+              </a>
+            </div>
           </div>
 
         </div>

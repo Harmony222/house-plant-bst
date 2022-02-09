@@ -6,23 +6,32 @@
 <h2>{{ title }}</h2>
 {% endif %}
 
-<h3>{{ object.plant.scientific_name }}</h3>
-  <img class="img-fluid" src="{% if object.image_url != '' %} {{ object.userplant.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" >
-<br>
-<br>
-<h5>Seller: {{ object.user.username }}</h5>
-<h5>${{ object.unit_price }}</h5>
-<h6>Quantity Available: {{ object.quantity }}</h6>
-<p>Seller Comments:</p>
-<p>{{ object.comment }}</p>
 
-<a href="{% url 'plant:plant_detail' object.plant.pk %}"">Learn more about {{ object.plant.scientific_name }}</a>
-<br>
-
-
+<div class="container d-flex justify-content-center my-4">
+  <div class="card" style="width: 23rem;">
+    <img class="img-fluid" src="{% if object.image_url != '' %} {{ object.userplant.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" >
+    <div class="card-body">
+      <h3 class="card-title">{{ object.plant.scientific_name }}</h3>
+      <h5 class="card-title">Seller: {{ object.user.username|capfirst }}</h5>
+      <h5 class="card-title">${{ object.unit_price }}</h5>
+      <h6 class="card-title">Quantity Available: {{ object.quantity }}</h6>
+      <p class="card-text">Seller Comments: {{ object.comment }}</p>
+  
+      <a href="{% url 'plant:plant_detail' object.plant.pk %}">Learn more about {{ object.plant.scientific_name }}</a>
+    </div>
+    
+  
+    <!-- if in user marketplace, give authenticated user Edit/Delete options -->
     {% if not marketplace and user.is_authenticated %}
-
-    <a href="{{ object.get_update_url }}" class="btn custom-btn" >Edit</a>
-    <a href="{{ object.get_delete_url }}" class="btn btn-danger" >Delete</a>
+    <div class="card-footer bg-white" style="display: flex;">
+      <a href="{{ object.get_update_url }}" class="btn custom-btn mx-auto" >Edit</a>
+      <a href="{{ object.get_delete_url }}" class="btn btn-danger mx-auto" >Delete</a>
+    </div>
     {% endif %}
+  </div>
+</div>
+
+<!-- Decorative green block div in background -->
+<div class="decorative-bg-div"></div>
+
 {% endblock %}
