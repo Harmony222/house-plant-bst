@@ -18,9 +18,9 @@ class SignUpView(CreateView):
         """Overrides method to login user after successful signup"""
         # save new user
         self.object = form.save()
-        # get username and password from POST
-        username = self.request.POST['username']
-        password = self.request.POST['password1']
+        # get username and password from form
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password1')
         # authenticate user first, then login and redirect to profile page
         user = authenticate(username=username, password=password)
         login(self.request, user)
