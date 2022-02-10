@@ -178,7 +178,7 @@ class MarketplacePlantListView(TemplateTitleMixin, ListView):
 
         - exclude deleted UserPlants
         """
-        return UserPlant.objects.filter(deleted_by_user=False)
+        return UserPlant.objects.filter(deleted_by_user=False, quantity__gt=0)
 
 
 class MarketplacePlantDetailView(TemplateTitleMixin, DetailView):
