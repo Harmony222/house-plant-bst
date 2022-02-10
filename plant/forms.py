@@ -1,5 +1,5 @@
 from django import forms
-from .models import Plant, PlantCommonName, UserPlant
+from .models import Plant, PlantCommonName, UserPlant, Tag
 from django.forms import inlineformset_factory
 
 
@@ -40,10 +40,33 @@ class UserPlantForm(forms.ModelForm):
             'quantity',
             'unit_price',
             'comment',
+            'tags',
         ]
+
+    tags = forms.ModelMultipleChoiceField(
+        queryset=Tag.objects.all().order_by('name'),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+    )
 
     def __init__(self, *args, **kwargs):
         super(UserPlantForm, self).__init__(*args, **kwargs)
         self.fields['plant'].queryset = self.fields['plant'].queryset.order_by(
             'scientific_name'
         )
+
+
+# class TagForm(forms.ModelFormOptions):
+#     class Meta:
+#         model = Tag
+#         fields = [
+#             'name',
+#         ]
+
+
+# UserPlantTagFormSet = inlineformset_factory(
+#     UserPlant,
+#     Tag,
+#     form=TagForm,
+#     fields=['name'],
+# )
