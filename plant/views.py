@@ -37,9 +37,6 @@ class PlantListView(TemplateTitleMixin, ListView):
         and list of Plant's common names
         """
         context = super().get_context_data(*args, **kwargs)
-        context['object_list'] = sorted(
-            context['object_list'], key=lambda x: x.scientific_name
-        )
         plant_list = []
         for plant in context['object_list']:
             names = plant.get_common_names.all()
@@ -49,6 +46,11 @@ class PlantListView(TemplateTitleMixin, ListView):
             plant_list.append({'plant': plant, 'common_names': common_names})
         context['object_list'] = plant_list
         return context
+
+    def get_queryset(self):
+        """Sort queryset by plant name"""
+        query_set = super().get_queryset().order_by('scientific_name')
+        return query_set
 
 
 class PlantDetailView(TemplateTitleMixin, DetailView):
