@@ -41,3 +41,9 @@ class UserPlantForm(forms.ModelForm):
             'unit_price',
             'comment',
         ]
+
+    def __init__(self, *args, **kwargs):
+        super(UserPlantForm, self).__init__(*args, **kwargs)
+        self.fields['plant'].queryset = self.fields['plant'].queryset.order_by(
+            'scientific_name'
+        )

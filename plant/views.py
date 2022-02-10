@@ -36,6 +36,9 @@ class PlantListView(TemplateTitleMixin, ListView):
         and list of Plant's common names
         """
         context = super().get_context_data(*args, **kwargs)
+        context['object_list'] = sorted(
+            context['object_list'], key=lambda x: x.scientific_name
+        )
         plant_list = []
         for plant in context['object_list']:
             names = plant.get_common_names.all()
