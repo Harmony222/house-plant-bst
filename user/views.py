@@ -1,4 +1,3 @@
-from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView
