@@ -91,13 +91,13 @@ class UserPlant(models.Model):
     comment = models.TextField(
         blank=True, help_text='Share some info about your plant!'
     )
+    deleted_by_user = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = 'User\'s Plants'
 
     def __str__(self):
-        username = "Deleted User" if self.user is None else\
-                   self.user.username
+        username = "Deleted User" if self.user is None else self.user.username
         return f'owner: {username}, \
                plant: {self.plant.scientific_name}'
 
@@ -109,6 +109,6 @@ class UserPlant(models.Model):
         """Return the url to update plant"""
         return reverse_lazy('plant:userplant_update', kwargs={'pk': self.pk})
 
-    # def get_delete_url(self):
-    #     """Returns the url to delete plant object"""
-    #     return reverse_lazy('plant:userplant_delete', kwargs={'pk': self.pk})
+    def get_delete_url(self):
+        """Returns the url to delete plant object"""
+        return reverse_lazy('plant:userplant_delete', kwargs={'pk': self.pk})

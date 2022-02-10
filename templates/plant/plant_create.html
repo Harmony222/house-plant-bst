@@ -10,7 +10,7 @@
 
 <div class="card user-form mx-auto my-2">
     <div class="card-body">
-        <h2>Create <span class="h-text">New</span> Plant</h2>
+        <h2><span class="h-text">{{ title }}</span> Plant</h2>
         <form action="" method="post">
             {% csrf_token %}
             {{ form|crispy }}

@@ -8,10 +8,11 @@ from django.views.generic import (
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-import os
 from django.conf import settings
+from django.shortcuts import redirect
 
 import json
+import os
 
 from .models import Plant, UserPlant
 from .mixins import TemplateTitleMixin
@@ -61,11 +62,12 @@ class PlantDetailView(TemplateTitleMixin, DetailView):
         return context
 
 
-class PlantCreateView(LoginRequiredMixin, CreateView):
+class PlantCreateView(TemplateTitleMixin, LoginRequiredMixin, CreateView):
     model = Plant
     form_class = PlantForm
     template_name = 'plant/plant_create.html'
     success_url = None
+    title = "Add New"
 
     def get_context_data(self, **kwargs):
         context = super(PlantCreateView, self).get_context_data(**kwargs)
@@ -91,10 +93,11 @@ class PlantCreateView(LoginRequiredMixin, CreateView):
         return self.object.get_absolute_url()
 
 
-class PlantUpdateView(LoginRequiredMixin, UpdateView):
+class PlantUpdateView(TemplateTitleMixin, LoginRequiredMixin, UpdateView):
     form_class = PlantForm
     model = Plant
     template_name = 'plant/plant_create.html'
+    title = "Update"
 
     def get_context_data(self, **kwargs):
         context = super(PlantUpdateView, self).get_context_data(**kwargs)
@@ -168,6 +171,13 @@ class MarketplacePlantListView(TemplateTitleMixin, ListView):
         context['marketplace'] = True
         return context
 
+    def get_queryset(self):
+        """Restrict queryset to:
+
+        - exclude deleted UserPlants
+        """
+        return UserPlant.objects.filter(deleted_by_user=False)
+
 
 class MarketplacePlantDetailView(TemplateTitleMixin, DetailView):
     model = UserPlant
@@ -202,8 +212,14 @@ class UserPlantListView(
         return context
 
     def get_queryset(self):
-        """Restrict queryset to only the user's UserPlants"""
-        return UserPlant.objects.filter(user=self.request.user)
+        """Restrict queryset to:
+
+        - include only the user's UserPlants
+        - exclude UserPlants deleted by the user
+        """
+        return UserPlant.objects.filter(
+            user=self.request.user, deleted_by_user=False
+        )
 
 
 class UserPlantDetailView(LoginRequiredMixin, TemplateTitleMixin, DetailView):
@@ -213,14 +229,14 @@ class UserPlantDetailView(LoginRequiredMixin, TemplateTitleMixin, DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        print(context)
         return context
 
 
-class UserPlantCreateView(LoginRequiredMixin, CreateView):
+class UserPlantCreateView(TemplateTitleMixin, LoginRequiredMixin, CreateView):
     form_class = UserPlantForm
     model = UserPlant
     template_name = 'plant/userplant/userplant_create.html'
+    title = "Add New"
 
     def get_success_url(self):
         return reverse_lazy('plant:userplant_all')
@@ -232,10 +248,16 @@ class UserPlantCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class UserPlantUpdateView(LoginRequiredMixin, UpdateView):
+class UserPlantUpdateView(TemplateTitleMixin, LoginRequiredMixin, UpdateView):
     form_class = UserPlantForm
     model = UserPlant
     template_name = 'plant/userplant/userplant_create.html'
+    title = "Update"
+
+    def get_context_data(self, **kwargs):
+        context = super(UserPlantUpdateView, self).get_context_data(**kwargs)
+        context['update'] = True
+        return context
 
     def get_success_url(self):
         return reverse_lazy('plant:userplant_all')
@@ -245,3 +267,15 @@ class UserPlantUpdateView(LoginRequiredMixin, UpdateView):
         obj.user = self.request.user
         obj.save()
         return super().form_valid(form)
+
+
+class UserPlantDeleteView(LoginRequiredMixin, DeleteView):
+    model = UserPlant
+    template_name = 'forms_delete.html'
+    success_url = reverse_lazy('plant:userplant_all')
+
+    def form_valid(self, form):
+        """Set UserPlant deleted_by_user field to True"""
+        self.object.deleted_by_user = True
+        self.object.save()
+        return redirect(self.success_url)
