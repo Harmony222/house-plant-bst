@@ -135,4 +135,4 @@ workspace.code-workspace
 .idea/
 docker-compose.yaml
 scratch.py
-backup.sql
+staticfiles/

@@ -8,8 +8,11 @@ from django.views.generic import (
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+import os
+from django.conf import settings
 
-# import json
+import json
+
 from .models import Plant, UserPlant
 from .mixins import TemplateTitleMixin
 from .forms import PlantCommonNameFormSet, PlantForm, UserPlantForm
@@ -130,7 +133,6 @@ class MarketplacePlantListView(TemplateTitleMixin, ListView):
     model = UserPlant
     title = 'Marketplace Plants'
     template_name = 'plant/userplant/userplant_list.html'
-    # template_name = 'plant/marketplace_plant_list.html'
 
     def get_context_data(self, *args, **kwargs):
         """Creates context data for UserPlant.
@@ -140,19 +142,22 @@ class MarketplacePlantListView(TemplateTitleMixin, ListView):
         """
         context = super().get_context_data(*args, **kwargs)
         userplant_list = []
-        # zipcode_file = open('static/zipcode_data.json')
-        # zipcode_data = json.load(zipcode_file)
+        if settings.DEBUG:
+            file_path = os.path.join(settings.STATIC_ROOT, 'zipcode_data.json')
+        else:
+            file_path = 'static/zipcode_data.json'
+        zipcode_file = open(file_path)
+        zipcode_data = json.load(zipcode_file)
         for userplant in context['object_list']:
             if userplant.user is not None:
                 zipcode = userplant.user.location
-                # if zipcode in zipcode_data:
-                #     city_state = (
-                #         f'{zipcode_data[zipcode]["city"]}, '
-                #         f'{zipcode_data[zipcode]["state"]}'
-                #     )
-                # else:
-                #     city_state = "Contact seller"
-                city_state = zipcode
+                if zipcode in zipcode_data:
+                    city_state = (
+                        f'{zipcode_data[zipcode]["city"]}, '
+                        f'{zipcode_data[zipcode]["state"]}'
+                    )
+                else:
+                    city_state = "Contact seller"
                 userplant_list.append(
                     {'userplant': userplant, 'location': city_state}
                 )
