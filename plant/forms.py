@@ -1,6 +1,6 @@
 from django import forms
 from .models import Plant, PlantCommonName, UserPlant, Tag
-from django.forms import inlineformset_factory
+from django.forms import modelformset_factory, inlineformset_factory
 
 
 class PlantCommonNameForm(forms.ModelForm):
@@ -56,17 +56,19 @@ class UserPlantForm(forms.ModelForm):
         )
 
 
-# class TagForm(forms.ModelFormOptions):
-#     class Meta:
-#         model = Tag
-#         fields = [
-#             'name',
-#         ]
+class TagForm(forms.ModelForm):
+    class Meta:
+        model = Tag
+        fields = [
+            'name',
+        ]
 
 
-# UserPlantTagFormSet = inlineformset_factory(
-#     UserPlant,
-#     Tag,
-#     form=TagForm,
-#     fields=['name'],
-# )
+TagFormSet = modelformset_factory(
+    Tag,
+    form=TagForm,
+    fields=['name'],
+    # form does not work when extra=1 and you add use + button
+    extra=2,
+    can_delete=True,
+)

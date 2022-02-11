@@ -14,9 +14,9 @@ from django.shortcuts import redirect
 import json
 import os
 
-from .models import Plant, UserPlant
+from .models import Plant, UserPlant, Tag
 from .mixins import TemplateTitleMixin
-from .forms import PlantCommonNameFormSet, PlantForm, UserPlantForm
+from .forms import PlantCommonNameFormSet, PlantForm, UserPlantForm, TagFormSet
 
 
 ##########################################################################
@@ -243,11 +243,29 @@ class UserPlantCreateView(TemplateTitleMixin, LoginRequiredMixin, CreateView):
     def get_success_url(self):
         return reverse_lazy('plant:userplant_all')
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        if self.request.POST:
+            context['tag_form'] = TagFormSet(self.request.POST)
+        else:
+            context['tag_form'] = TagFormSet(queryset=Tag.objects.none())
+        return context
+
     def form_valid(self, form):
-        obj = form.save(commit=False)
-        obj.user = self.request.user
-        obj.save()
-        return super().form_valid(form)
+        context = self.get_context_data()
+        tag_form = context['tag_form']
+
+        # have to save userplant object before adding extra tags
+        userplant_object = form.save()
+        userplant_object.user = self.request.user
+        if tag_form.is_valid():
+            # tag_form.instance = userplant_object
+            tag_obj = tag_form.save()
+            for tag in tag_obj:
+                userplant_object.tags.add(tag)
+        userplant_object.save()
+
+        return redirect(self.get_success_url())
 
 
 class UserPlantUpdateView(TemplateTitleMixin, LoginRequiredMixin, UpdateView):
@@ -256,19 +274,30 @@ class UserPlantUpdateView(TemplateTitleMixin, LoginRequiredMixin, UpdateView):
     template_name = 'plant/userplant/userplant_create.html'
     title = "Update"
 
-    def get_context_data(self, **kwargs):
-        context = super(UserPlantUpdateView, self).get_context_data(**kwargs)
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
         context['update'] = True
+        if self.request.POST:
+            context['tag_form'] = TagFormSet(self.request.POST)
+        else:
+            context['tag_form'] = TagFormSet(queryset=Tag.objects.none())
         return context
 
     def get_success_url(self):
         return reverse_lazy('plant:userplant_all')
 
     def form_valid(self, form):
-        obj = form.save(commit=False)
-        obj.user = self.request.user
-        obj.save()
-        return super().form_valid(form)
+        context = self.get_context_data()
+        tag_form = context['tag_form']
+        # have to save userplant object before adding extra tags
+        userplant_object = form.save()
+        userplant_object.user = self.request.user
+        if tag_form.is_valid():
+            tag_obj = tag_form.save()
+            for tag in tag_obj:
+                userplant_object.tags.add(tag)
+        userplant_object.save()
+        return redirect(self.get_success_url())
 
 
 class UserPlantDeleteView(LoginRequiredMixin, DeleteView):
