@@ -248,13 +248,14 @@ class UserPlantCreateView(TemplateTitleMixin, LoginRequiredMixin, CreateView):
         if self.request.POST:
             context['tag_form'] = TagFormSet(self.request.POST)
         else:
+            # set qeuryset to none so that the form is not prepopulated
+            # with Tag objects
             context['tag_form'] = TagFormSet(queryset=Tag.objects.none())
         return context
 
     def form_valid(self, form):
         context = self.get_context_data()
         tag_form = context['tag_form']
-
         # have to save userplant object before adding extra tags
         userplant_object = form.save()
         userplant_object.user = self.request.user

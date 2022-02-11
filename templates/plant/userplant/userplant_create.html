@@ -11,14 +11,13 @@
 <div class="card user-form mx-auto my-2">
     <div class="card-body">
         <h2>{{ title }} <span class="h-text">Marketplace</span> Plant</h2>
-        <form action="" method='POST'>
+        <form action="" method='POST' id="form-container">
             {% csrf_token %}
             {{ form|crispy }}
 
-            <label class="form-label">Add additional tags</label>
+            <label class="form-label">Add additional Tags:</label>
             <table class="table table-borderless">
                 {{ tag_form.management_form|crispy }}
-
                 {% for form in tag_form.forms %}
                     <tr class="{% cycle row1 row2 %} formset_row">
                         {% for field in form.visible_fields %}
@@ -43,6 +42,7 @@
             {% endif %}
             <button type="button" class="btn btn-secondary" onclick="goBack()">Cancel</button>
         </form>
+    </div>
 </div>
 
 <!-- Decorative green block div in background -->
@@ -54,9 +54,9 @@
     $('.formset_row').formset({
         addText: '<i class="bi bi-plus-circle"></i>',
         deleteText: 'Remove',
-        prefix: 'tag_form'
+        // prefix: 'get_tags'
     });
-
+    
     function goBack() {
         window.history.back();
     }

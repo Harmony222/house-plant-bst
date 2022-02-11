@@ -68,7 +68,6 @@ TagFormSet = modelformset_factory(
     Tag,
     form=TagForm,
     fields=['name'],
-    # form does not work when extra=1 and you add use + button
-    extra=2,
+    extra=1,
     can_delete=True,
 )
