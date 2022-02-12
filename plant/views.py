@@ -150,9 +150,10 @@ class MarketplacePlantListView(TemplateTitleMixin, ListView):
         """
         context = super().get_context_data(*args, **kwargs)
         userplant_list = []
-        if settings.DEBUG:
+        if not settings.DEBUG:
             file_path = os.path.join(settings.STATIC_ROOT, 'zipcode_data.json')
         else:
+            print('test')
             file_path = 'static/zipcode_data.json'
         zipcode_file = open(file_path)
         zipcode_data = json.load(zipcode_file)
