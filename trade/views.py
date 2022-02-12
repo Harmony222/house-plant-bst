@@ -51,7 +51,7 @@ class CreateTrade(View):
             return redirect('user:profile')
 
 
-class ListTrades(View):
+class OrderHistory(View):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             trades = Trade.objects \
@@ -67,7 +67,7 @@ class ListTrades(View):
                 'trades_pending': trades_pending,
                 'trades_closed': trades_closed
             }
-            return render(request, 'trade/list_trades.html', context)
+            return render(request, 'trade/order_history.html', context)
         else:
             return redirect('user:profile')
 
