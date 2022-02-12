@@ -43,10 +43,11 @@
         </div>  
       </div>
     {% endif %}
+  
     <!-- Create card for every user plant -->
     {% for object in object_list %}
-    <div class="col-sm-6">
-      <div class="card border-light my-2">
+    <div class="col-sm-6 py-3">
+      <div class="card border-light h-100">
           <img class="card-img-top marketplace-plant-img" src="{% if object.userplant.image_url != '' %} {{ object.userplant.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" alt="Card image cap">
           <div class="card-body">
               <h5 class="card-subtitle my-1" style="display: inline-block; white-space: nowrap;">
@@ -64,10 +65,14 @@
               <!-- Show user plant unit price -->
               <h6 class="plant-price my-1">${{ object.userplant.unit_price }}</h6>
 
-              <!-- Placeholder tags -->
+              <!-- Pill-Tags -->
               <div class="tags my-2">
-                  <span class="badge rounded-pill bg-light text-dark fw-light">Pet-friendly</span>
-                  <span class="badge rounded-pill bg-light text-dark fw-light">Easy care</span>
+                  {% if object.userplant.is_for_shipping %}
+                  <span class="badge rounded-pill bg-light text-dark fw-light">Shipping</span>
+                  {% endif %}
+                  {% if object.userplant.is_for_pickup %}
+                  <span class="badge rounded-pill bg-light text-dark fw-light">Pick Up</span>
+                  {% endif %}
               </div>
 
               <!-- Seller and location info -->
