@@ -153,7 +153,6 @@ class MarketplacePlantListView(TemplateTitleMixin, ListView):
         if not settings.DEBUG:
             file_path = os.path.join(settings.STATIC_ROOT, 'zipcode_data.json')
         else:
-            print('test')
             file_path = 'static/zipcode_data.json'
         zipcode_file = open(file_path)
         zipcode_data = json.load(zipcode_file)
