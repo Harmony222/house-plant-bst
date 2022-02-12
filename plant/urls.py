@@ -58,5 +58,10 @@ urlpatterns.extend(
             views.UserPlantUpdateView.as_view(),
             name='userplant_update',
         ),
+        path(
+            'userplant/<int:pk>/delete/',
+            views.UserPlantDeleteView.as_view(),
+            name='userplant_delete',
+        ),
     ]
 )

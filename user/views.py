@@ -1,16 +1,29 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import TemplateView
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import authenticate, login
 
 
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm
-    success_url = reverse_lazy('login')
     template_name = 'registration/signup.html'
+    success_url = reverse_lazy('user:profile')
+
+    def form_valid(self, form):
+        """Overrides method to login user after successful signup"""
+        # save new user
+        self.object = form.save()
+        # get username and password from form
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password1')
+        # authenticate user first, then login and redirect to profile page
+        user = authenticate(username=username, password=password)
+        login(self.request, user)
+        return redirect(self.success_url)
 
 
 class UpdateUserView(LoginRequiredMixin, UpdateView):

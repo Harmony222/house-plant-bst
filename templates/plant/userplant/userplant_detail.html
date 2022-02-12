@@ -9,7 +9,7 @@
 
 <div class="container d-flex justify-content-center my-4">
   <div class="card" style="width: 23rem;">
-    <img class="img-fluid" src="{% if object.image_url != '' %} {{ object.userplant.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" >
+    <img class="img-fluid" src="{% if object.image_url != '' %} {{ object.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" >
     <div class="card-body">
       <h3 class="card-title">{{ object.plant.scientific_name }}</h3>
       <h5 class="card-title">Seller: {{ object.user.username|capfirst }}</h5>
