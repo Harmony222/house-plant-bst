@@ -92,6 +92,7 @@ class UserPlant(models.Model):
         blank=True, help_text='Share some info about your plant!'
     )
     deleted_by_user = models.BooleanField(default=False)
+    tags = models.ManyToManyField('Tag', blank=True)
 
     class Meta:
         verbose_name_plural = 'User\'s Plants'
@@ -112,3 +113,12 @@ class UserPlant(models.Model):
     def get_delete_url(self):
         """Returns the url to delete plant object"""
         return reverse_lazy('plant:userplant_delete', kwargs={'pk': self.pk})
+
+
+class Tag(models.Model):
+    """Tag to be used for a UserPlant"""
+
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
