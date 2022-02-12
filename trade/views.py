@@ -54,9 +54,19 @@ class CreateTrade(View):
 class ListTrades(View):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            trades = Trade.objects.\
-                     filter(Q(seller=request.user) | Q(buyer=request.user))
-            context = {'trades': trades}
+            trades = Trade.objects \
+                .filter(Q(seller=request.user) | Q(buyer=request.user))
+            trades_pending = Trade.objects \
+                .filter(trade_status='SE') \
+                .filter(Q(seller=request.user) | Q(buyer=request.user))
+            trades_closed = Trade.objects \
+                .exclude(trade_status='SE') \
+                .filter(Q(seller=request.user) | Q(buyer=request.user))
+            context = {
+                'trades': trades,
+                'trades_pending': trades_pending,
+                'trades_closed': trades_closed
+            }
             return render(request, 'trade/list_trades.html', context)
         else:
             return redirect('user:profile')

@@ -11,10 +11,10 @@ class Trade(models.Model):
     REJECTED = 'RE'
     UNAVAILABLE = 'UN'
 
-    TRADE_STATUS_CHOICES = [(SENT, 'sent'),
-                            (ACCEPTED, 'accepted'),
-                            (REJECTED, 'rejected'),
-                            (UNAVAILABLE, 'unavailable')]
+    TRADE_STATUS_CHOICES = [(SENT, 'Sent'),
+                            (ACCEPTED, 'Accepted'),
+                            (REJECTED, 'Rejected'),
+                            (UNAVAILABLE, 'Unavailable')]
     seller = models.ForeignKey(User,
                                null=True,
                                verbose_name='Seller',
