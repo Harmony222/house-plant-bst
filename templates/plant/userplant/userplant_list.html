@@ -13,12 +13,16 @@
   <div class="row mx-auto">
     <div class="col-md">
       <h4>{{ object_list|length}} Results</h4>
+
       <div class="btn-group my-2">
           <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
             Filter by tag
           </button>
           <ul class="dropdown-menu">
-              <div class=""></div>
+              <li><a class="dropdown-item" href="{{ request.path }}">Show all plants</a></li>
+            {% for tag in tags %}
+              <li><a class="dropdown-item" href="{{ request.path }}?tags={{ tag.pk }}" data-value="{{ tag.name }}">{{ tag.name }}</a></li>
+            {% endfor %}
           </ul>
       </div>
     </div>
@@ -67,13 +71,11 @@
 
               <!-- Pill-Tags -->
               <div class="tags my-2">
-                  {% if object.userplant.is_for_shipping %}
-                  <span class="badge rounded-pill bg-light text-dark fw-light">Shipping</span>
-                  {% endif %}
-                  {% if object.userplant.is_for_pickup %}
-                  <span class="badge rounded-pill bg-light text-dark fw-light">Pick Up</span>
-                  {% endif %}
+              {% for tag in object.userplant.tags.all %}
+                  <span class="badge rounded-pill bg-light text-dark fw-light">{{ tag.name }}</span>
+              {% endfor %}
               </div>
+
 
               <!-- Seller and location info -->
               <p class="plant-card-text">
