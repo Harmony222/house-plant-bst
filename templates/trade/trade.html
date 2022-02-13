@@ -34,6 +34,7 @@
     {% endfor %}
 
     {% if request.user == trade.seller %}
+        {% if trade.trade_status == 'SE' %}
     <div class="row">
         <div class="card col-md-12 p-3 shadow-sm">
             <form method="POST" action="{% url 'trade:trade_response' trade.pk %}" enctype="multipart/form-data">
@@ -50,6 +51,7 @@
             </form>
         </div>
     </div>
+        {% endif %}
     {% endif %}
 
     <div class="row">

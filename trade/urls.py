@@ -1,23 +1,23 @@
 from django.urls import path
-from .views import CreateTrade, ListTrades, TradeView, CreateMessage, \
+from .views import CreateTrade, OrderHistory, TradeView, CreateMessage, \
       TradeResponse
 
 app_name = 'trade'
 
 urlpatterns = [
-    path('list_trades/',
-         ListTrades.as_view(),
-         name='list_trades'),
-    path('list_trades/create_trade/',
+    path('order_history/',
+         OrderHistory.as_view(),
+         name='order_history'),
+    path('order_history/create_trade/',
          CreateTrade.as_view(),
          name='create_trade'),
-    path('list_trades/<int:pk>/',
+    path('order_history/<int:pk>/',
          TradeView.as_view(),
          name='trade'),
-    path('list_trades/<int:pk>/create_message/',
+    path('order_history/<int:pk>/create_message/',
          CreateMessage.as_view(),
          name='create_message'),
-    path('list_trades/<int:pk>/trade_response/',
+    path('order_history/<int:pk>/trade_response/',
          TradeResponse.as_view(),
          name='trade_response')
 ]
