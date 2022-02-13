@@ -12,8 +12,8 @@ User = get_user_model()
 class CreateTrade(View):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            form = TradeForm()
-            context = {'form': form}
+            create_trade_form = TradeForm(user=request.user)
+            context = {'form': create_trade_form}
             return render(request, 'trade/create_trade.html', context)
         else:
             return redirect('user:profile')
@@ -21,32 +21,10 @@ class CreateTrade(View):
     def post(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             form = TradeForm(request.POST)
-            username = request.POST.get('username')
-            try:
-                recipient = User.objects.get(username=username)
-                print(f'create_trade_recipient: {recipient.username}')
-                if Trade.objects.filter(seller=request.user,
-                                        buyer=recipient).exists():
-                    trade = Trade.objects.filter(seller=request.user,
-                                                 buyer=recipient)[0]
-                    return redirect('trade:trade', pk=trade.pk)
-                elif Trade.objects.filter(seller=recipient,
-                                          buyer=request.user).exists():
-                    trade = Trade.objects.filter(seller=recipient,
-                                                 buyer=request.user)[0]
-                    return redirect('trade:trade', pk=trade.pk)
-                if form.is_valid():
-                    sender_trade = Trade(
-                        buyer=request.user,
-                        seller=recipient,
-                        trade_status='SE'
-                    )
-                    sender_trade.save()
-                    trade = sender_trade
-                    return redirect('trade:trade', pk=trade.pk)
-            except Exception as e:
-                print("ERROR saving trade status: " + str(e))
-                return redirect('create_trade')
+            user_plants_for_trade = []
+            for user_plant in form.getlist('user_plants_for_trade'):
+                user_plants_for_trade.append(user_plant)
+            return redirect('create_trade')
         else:
             return redirect('user:profile')
 
@@ -54,8 +32,6 @@ class CreateTrade(View):
 class OrderHistory(View):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            trades = Trade.objects \
-                .filter(Q(seller=request.user) | Q(buyer=request.user))
             trades_pending = Trade.objects \
                 .filter(trade_status='SE') \
                 .filter(Q(seller=request.user) | Q(buyer=request.user))
@@ -63,7 +39,6 @@ class OrderHistory(View):
                 .exclude(trade_status='SE') \
                 .filter(Q(seller=request.user) | Q(buyer=request.user))
             context = {
-                'trades': trades,
                 'trades_pending': trades_pending,
                 'trades_closed': trades_closed
             }
