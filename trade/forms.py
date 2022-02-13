@@ -1,27 +1,7 @@
 from django import forms
 from plant.models import UserPlant
-
-
-class NameChoiceField(forms.ModelMultipleChoiceField):
-    def label_from_instance(self, obj):
-        return f'{obj.plant.scientific_name}'
-
-
-class TradeForm(forms.Form):
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        super(TradeForm, self).__init__(*args, **kwargs)
-
-        self.fields['user_plants_for_trade'] = NameChoiceField(
-            widget=forms.CheckboxSelectMultiple,
-            queryset=UserPlant.objects.filter(
-                user=self.user,
-                is_for_trade=True,
-                quantity__gt=0,
-            )
-        )
-
-        self.fields['user_plants_for_trade'].label = ''
+from django.utils.safestring import mark_safe
+from django.templatetags.static import static
 
 
 class MessageForm(forms.Form):
@@ -36,3 +16,69 @@ class TradeResponseForm(forms.Form):
         widget=forms
         .RadioSelect(choices=RESPONSE_CHOICES)
     )
+
+
+class NameChoiceField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, user_plant_obj):
+        # return f'{obj.plant.scientific_name}'
+        # return user_plant_obj
+        return mark_safe(_card_html_builder(user_plant_obj))
+
+
+class TradeForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        self.seller_plant = kwargs.pop('seller_plant', None)
+        super(TradeForm, self).__init__(*args, **kwargs)
+
+        self.fields['seller_plant'] = forms.CharField(
+            widget=forms.HiddenInput,
+            required=True,
+            initial=self.seller_plant
+        )
+        self.fields['user_plants_for_trade'] = NameChoiceField(
+            widget=forms.CheckboxSelectMultiple,
+            queryset=UserPlant.objects.filter(
+                user=self.user,
+                is_for_trade=True,
+                quantity__gt=0,
+                deleted_by_user=False
+            )
+        )
+        self.fields['user_plants_for_trade'].label = ''
+
+
+def _card_html_builder(user_plant_obj):
+    image_url = user_plant_obj.image_url if user_plant_obj.image_url \
+                else static('images/default_userplant_image.png')
+    image_html_element = '<img class ="card-img-top marketplace-plant-img"'\
+                         f'src="{image_url}" alt=\"Card image cap\">'
+    owner = user_plant_obj.user.username.capitalize()
+    location = user_plant_obj.user.location.capitalize()
+    tags = user_plant_obj.tags.all()
+    tags_html = ''
+    if tags:
+        for tag in tags:
+            tags_html += '<span class ="badge rounded-pill bg-light'\
+                         f' text-dark fw-light"> {tag.name} </span >'
+    card_html_element = \
+        '<div class ="card-body" >'\
+        '<h5 class ="card-subtitle my-1" style="display: inline-block;'\
+        'white-space: nowrap;">' \
+        '<!-- Placeholder tags -->' \
+        '<div class ="tags my-2" >' \
+        f'{tags_html}' \
+        '</div>'\
+        '<!-- Scientific name links to userplant detail page -->'\
+        f'{user_plant_obj.plant.scientific_name.capitalize()}'\
+        '</a>'\
+        '</h5>' \
+        '<!-- For trade items, don\'t show the unit price -->' \
+        '<!-- Seller and location info -->'\
+        f'<p class ="plant-card-text" > Owner: {owner} <br>'\
+        f'Location: {location} </p>' \
+        '<!-- Don\'t show Buy / Trade / Info since all plants in this list'\
+        'are for trade-->'\
+        '</div>'
+
+    return mark_safe(image_html_element + card_html_element)

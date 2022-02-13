@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from .models import Trade, Message, TradeItem
+from plant.models import UserPlant
 from .forms import TradeForm, MessageForm, TradeResponseForm
 from django.db.models import Q
 from django.contrib.auth import get_user_model
@@ -12,7 +13,7 @@ User = get_user_model()
 class CreateTrade(View):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            create_trade_form = TradeForm(user=request.user)
+            create_trade_form = TradeForm(user=request.user, seller_plant=UserPlant.objects.get(pk=3))
             context = {'form': create_trade_form}
             return render(request, 'trade/create_trade.html', context)
         else:
@@ -20,11 +21,23 @@ class CreateTrade(View):
 
     def post(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            form = TradeForm(request.POST)
-            user_plants_for_trade = []
-            for user_plant in form.getlist('user_plants_for_trade'):
-                user_plants_for_trade.append(user_plant)
-            return redirect('create_trade')
+            form = TradeForm(
+                request.POST,
+                user=request.user,
+                seller_plant=UserPlant.objects.get(pk=3)
+            )
+            if form.is_valid():
+                print(request.POST)
+                # new_trade = Trade(
+                #     seller=form.cleaned_data['seller_plant'].owner,
+                #     buyer=request.user,
+                #     trade_status='SE'
+                # )
+                # for user_plant in form.cleaned_data['user_plants_for_trade']:
+                #     user_plants_for_trade.append(user_plant)
+
+
+            return redirect('trade:create_trade')
         else:
             return redirect('user:profile')
 

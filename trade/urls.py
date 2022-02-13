@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 from .views import CreateTrade, OrderHistory, TradeView, CreateMessage, \
       TradeResponse
 
@@ -23,5 +23,5 @@ urlpatterns = [
          name='create_trade'),
     path('order_history/<int:pk>/create_trade/',
          CreateTrade.as_view(),
-         name='create_trade'),
+         name='create_trade_submit'),
 ]

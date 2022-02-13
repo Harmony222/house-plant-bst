@@ -9,14 +9,20 @@
     </div>
     <div class="row justify-content-center mt-5">
         <div class="col-md-5 col-sm-12">
-            <h5>Offer a plant for trade</h5>
+            <h5>Choose some plants you have for trade</h5>
+            <p>(You can offer multiple plants for the trade. Only one will be chosen.)</p>
         </div>
     </div>
     <div class="row justify-content-center mt-3 mb-5">
         <div class="col-md-5 col-sm-12">
-            <form method="POST"action="{% url 'trade:create_trade' request.user.pk %}" enctype="multipart/form-data">
+            <form method="POST"action="{% url 'trade:create_trade_submit' request.user.pk %}" enctype="multipart/form-data">
                 {% csrf_token %}
-                {{ form|crispy }}
+                {% for field in form.visible_fields %}
+                    <div class="fieldWrapper">
+                        {{ field.errors }}
+                        {{ field }}
+                    </div>
+                {% endfor %}
                 <div class="d-grid gap-2">
                 <button type="submit" class="btn btn-success mt-3">Submit</button>
                 </div>
