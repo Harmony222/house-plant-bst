@@ -195,9 +195,15 @@ class MarketplacePlantListView(TemplateTitleMixin, ListView):
         queryset = super().get_queryset()
         queryset = queryset.filter(deleted_by_user=False, quantity__gt=0)
         tags = self.request.GET.get('tags')
+        shipping = self.request.GET.get('shipping')
+        pickup = self.request.GET.get('pickup')
         if tags:
             tag_ids = [int(str_pk) for str_pk in tags.split(',')]
             queryset = queryset.filter(tags__id__in=tag_ids)
+        if shipping:
+            queryset = queryset.filter(is_for_shipping=True)
+        if pickup:
+            queryset = queryset.filter(is_for_pickup=True)
         return queryset
 
 
@@ -242,9 +248,15 @@ class UserPlantListView(
             user=self.request.user, deleted_by_user=False
         )
         tags = self.request.GET.get('tags')
+        shipping = self.request.GET.get('shipping')
+        pickup = self.request.GET.get('pickup')
         if tags:
             tag_ids = [int(str_pk) for str_pk in tags.split(',')]
             queryset = queryset.filter(tags__id__in=tag_ids)
+        if shipping:
+            queryset = queryset.filter(is_for_shipping=True)
+        if pickup:
+            queryset = queryset.filter(is_for_pickup=True)
         return queryset
 
 

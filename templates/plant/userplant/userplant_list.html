@@ -20,6 +20,8 @@
           </button>
           <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="{{ request.path }}">Show all plants</a></li>
+              <li><a class="dropdown-item" href="{{ request.path }}?shipping=true" data-value="shipping">Shipping</a></li>
+              <li><a class="dropdown-item" href="{{ request.path }}?pickup=true" data-value="pickup">Pick up</a></li>
             {% for tag in tags %}
               <li><a class="dropdown-item" href="{{ request.path }}?tags={{ tag.pk }}" data-value="{{ tag.name }}">{{ tag.name }}</a></li>
             {% endfor %}
@@ -70,6 +72,12 @@
 
               <!-- Placeholder tags -->
               <div class="tags my-2">
+              {% if object.userplant.is_for_shipping %}
+                <span class="badge rounded-pill bg-light text-dark fw-light">Shipping</span>
+                {% endif %}
+                {% if object.userplant.is_for_pickup %}
+                <span class="badge rounded-pill bg-light text-dark fw-light">Pick Up</span>
+              {% endif %}
               {% for tag in object.userplant.tags.all %}
                   <span class="badge rounded-pill bg-light text-dark fw-light">{{ tag.name }}</span>
               {% endfor %}
