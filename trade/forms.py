@@ -20,8 +20,6 @@ class TradeResponseForm(forms.Form):
 
 class NameChoiceField(forms.ModelMultipleChoiceField):
     def label_from_instance(self, user_plant_obj):
-        # return f'{obj.plant.scientific_name}'
-        # return user_plant_obj
         return mark_safe(_card_html_builder(user_plant_obj))
 
 
@@ -30,10 +28,10 @@ class TradeForm(forms.Form):
         self.user = kwargs.pop('user', None)
         self.seller_plant = kwargs.pop('seller_plant', None)
         super(TradeForm, self).__init__(*args, **kwargs)
-
-        self.fields['seller_plant'] = forms.CharField(
+        self.fields['seller_plant'] = forms.ModelChoiceField(
             widget=forms.HiddenInput,
             required=True,
+            queryset=UserPlant.objects.filter(pk=self.seller_plant.id),
             initial=self.seller_plant
         )
         self.fields['user_plants_for_trade'] = NameChoiceField(
@@ -81,4 +79,4 @@ def _card_html_builder(user_plant_obj):
         'are for trade-->'\
         '</div>'
 
-    return mark_safe(image_html_element + card_html_element)
+    return image_html_element + card_html_element

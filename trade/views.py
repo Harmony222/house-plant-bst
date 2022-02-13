@@ -10,10 +10,74 @@ from datetime import datetime
 User = get_user_model()
 
 
+def _trade_exists(seller, buyer, seller_plant):
+    existing_trades = Trade.objects.filter(
+        seller=seller,
+        buyer=buyer,
+    )
+    if existing_trades:
+        for trade in existing_trades:
+            trade_items = trade.get_trade_items
+            for item in trade_items:
+                if item.user_plant == seller_plant:
+                    return trade.id
+    return None
+
+
+def _plant_is_available(user_plant_obj):
+    return user_plant_obj.quantity > 0
+
+
+def _trade_plants_are_available(seller_plant, buyer_plants):
+    # check that the seller and buyer plants are available
+    if not _plant_is_available(seller_plant):
+        return None
+    buyer_plants_list = []
+    for buyer_plant in buyer_plants:
+        if _plant_is_available(buyer_plant):
+            buyer_plants_list.append(buyer_plant)
+    if not buyer_plants:
+        return None
+    return buyer_plants_list
+
+
+def _create_new_trade_and_items(seller, buyer, seller_plant, buyer_plants):
+    buyer_plants = _trade_plants_are_available(seller_plant, buyer_plants)
+    print(f'buyer plants: {buyer_plants}')
+    if not buyer_plants:
+        return None
+    new_trade = Trade(
+        buyer=buyer,
+        seller=seller,
+        trade_status='SE'
+    )
+    new_trade.save()
+
+    seller_trade_item = TradeItem(
+        trade=new_trade,
+        user_plant=seller_plant,
+        quantity=1
+    )
+    seller_trade_item.save()
+
+    for buyer_plant in buyer_plants:
+        buyer_trade_item = TradeItem(
+            trade=new_trade,
+            user_plant=buyer_plant,
+            quantity=1
+        )
+        buyer_trade_item.save()
+
+    return new_trade.id
+
+
 class CreateTrade(View):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            create_trade_form = TradeForm(user=request.user, seller_plant=UserPlant.objects.get(pk=3))
+            create_trade_form = TradeForm(
+                user=request.user,
+                seller_plant=UserPlant.objects.get(pk=3)
+            )
             context = {'form': create_trade_form}
             return render(request, 'trade/create_trade.html', context)
         else:
@@ -21,22 +85,38 @@ class CreateTrade(View):
 
     def post(self, request, *args, **kwargs):
         if request.user.is_authenticated:
+            print('here')
+            print(request.POST)
             form = TradeForm(
                 request.POST,
                 user=request.user,
                 seller_plant=UserPlant.objects.get(pk=3)
             )
             if form.is_valid():
-                print(request.POST)
-                # new_trade = Trade(
-                #     seller=form.cleaned_data['seller_plant'].owner,
-                #     buyer=request.user,
-                #     trade_status='SE'
-                # )
-                # for user_plant in form.cleaned_data['user_plants_for_trade']:
-                #     user_plants_for_trade.append(user_plant)
+                print('there')
+                seller_plant = form.cleaned_data['seller_plant']
+                seller = seller_plant.user
+                buyer = request.user
+                print(type(form.cleaned_data['user_plants_for_trade']))
+                try:
+                    existing_trade_id = _trade_exists(seller, buyer,
+                                                      seller_plant)
+                    if existing_trade_id is not None:
+                        return redirect('trade:trade',
+                                        pk=existing_trade_id)
 
-
+                    trade_id = _create_new_trade_and_items(
+                        seller,
+                        buyer,
+                        seller_plant,
+                        form.cleaned_data['user_plants_for_trade']
+                    )
+                    if trade_id is None:
+                        return redirect('plant:marketplace_plants')
+                    else:
+                        return redirect('trade:trade', pk=trade_id)
+                except Exception as e:
+                    print("ERROR saving trade: " + str(e))
             return redirect('trade:create_trade')
         else:
             return redirect('user:profile')

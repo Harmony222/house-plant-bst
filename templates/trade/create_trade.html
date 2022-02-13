@@ -17,12 +17,7 @@
         <div class="col-md-5 col-sm-12">
             <form method="POST"action="{% url 'trade:create_trade_submit' request.user.pk %}" enctype="multipart/form-data">
                 {% csrf_token %}
-                {% for field in form.visible_fields %}
-                    <div class="fieldWrapper">
-                        {{ field.errors }}
-                        {{ field }}
-                    </div>
-                {% endfor %}
+                {{ form|crispy }}
                 <div class="d-grid gap-2">
                 <button type="submit" class="btn btn-success mt-3">Submit</button>
                 </div>

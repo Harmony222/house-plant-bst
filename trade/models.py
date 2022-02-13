@@ -11,25 +11,33 @@ class Trade(models.Model):
     REJECTED = 'RE'
     UNAVAILABLE = 'UN'
 
-    TRADE_STATUS_CHOICES = [(SENT, 'Sent'),
-                            (ACCEPTED, 'Accepted'),
-                            (REJECTED, 'Rejected'),
-                            (UNAVAILABLE, 'Unavailable')]
-    seller = models.ForeignKey(User,
-                               null=True,
-                               verbose_name='Seller',
-                               on_delete=models.SET_NULL,
-                               related_name='get_seller_trades')
-    buyer = models.ForeignKey(User,
-                              null=True,
-                              verbose_name='Buyer',
-                              on_delete=models.SET_NULL,
-                              related_name='get_buyer_trades')
+    TRADE_STATUS_CHOICES = [
+        (SENT, 'Sent'),
+        (ACCEPTED, 'Accepted'),
+        (REJECTED, 'Rejected'),
+        (UNAVAILABLE, 'Unavailable')
+    ]
+    seller = models.ForeignKey(
+        User,
+        null=True,
+        verbose_name='Seller',
+        on_delete=models.SET_NULL,
+        related_name='get_seller_trades'
+    )
+    buyer = models.ForeignKey(
+        User,
+        null=True,
+        verbose_name='Buyer',
+        on_delete=models.SET_NULL,
+        related_name='get_buyer_trades'
+    )
     request_date = models.DateTimeField(auto_now_add=True)
     response_date = models.DateTimeField(null=True, blank=True)
-    trade_status = models.CharField(max_length=2,
-                                    choices=TRADE_STATUS_CHOICES,
-                                    default=SENT)
+    trade_status = models.CharField(
+        max_length=2,
+        choices=TRADE_STATUS_CHOICES,
+        default=SENT
+    )
 
     class Meta:
         verbose_name_plural = 'Trades'
@@ -47,20 +55,26 @@ class Trade(models.Model):
 
 class Message(models.Model):
     """Each Message instance object ties a User's message to a Thread object"""
-    sender = models.ForeignKey(User,
-                               null=True,
-                               verbose_name='Message Sender',
-                               on_delete=models.SET_NULL,
-                               related_name='get_sent_messages')
-    recipient = models.ForeignKey(User,
-                                  null=True,
-                                  verbose_name='Message Recipient',
-                                  on_delete=models.SET_NULL,
-                                  related_name='get_received_messages')
-    trade = models.ForeignKey(Trade,
-                              verbose_name='Trade',
-                              on_delete=models.CASCADE,
-                              related_name='get_trade_messages')
+    sender = models.ForeignKey(
+        User,
+        null=True,
+        verbose_name='Message Sender',
+        on_delete=models.SET_NULL,
+        related_name='get_sent_messages'
+    )
+    recipient = models.ForeignKey(
+        User,
+        null=True,
+        verbose_name='Message Recipient',
+        on_delete=models.SET_NULL,
+        related_name='get_received_messages'
+    )
+    trade = models.ForeignKey(
+        Trade,
+        verbose_name='Trade',
+        on_delete=models.CASCADE,
+        related_name='get_trade_messages'
+    )
     message = models.TextField()
     message_sent_time = models.DateTimeField(auto_now_add=True)
 
@@ -82,14 +96,18 @@ class Message(models.Model):
 class TradeItem(models.Model):
     """Each TradeItem instance object indicates a relationship between a Trade
     object and a UserPlant object."""
-    trade = models.ForeignKey(Trade,
-                              verbose_name='Trade',
-                              on_delete=models.CASCADE,
-                              related_name='get_trade_items')
-    user_plant = models.ForeignKey(UserPlant,
-                                   verbose_name='User Plant',
-                                   on_delete=models.RESTRICT,
-                                   related_name='get_trade_items')
+    trade = models.ForeignKey(
+        Trade,
+        verbose_name='Trade',
+        on_delete=models.CASCADE,
+        related_name='get_trade_items'
+    )
+    user_plant = models.ForeignKey(
+        UserPlant,
+        verbose_name='User Plant',
+        on_delete=models.RESTRICT,
+        related_name='get_trade_items'
+    )
     quantity = models.PositiveSmallIntegerField(default=1)
 
     class Meta:
