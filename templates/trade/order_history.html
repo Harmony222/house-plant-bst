@@ -8,12 +8,13 @@
     <!-- Show Order History if user is logged in -->
         <h3>{{ user.get_username|capfirst }}'s <span class="h-text">Order</span> History</h3>
         <br>
-        <!-- Buy/Sell Orders Section -->
+        <!-- TODO: Buy/Sell Orders Section -->
         
 
         <!-- Trades Section -->
         <h3> Trades </h3>
         <div class="row">
+            <!-- Row headers -->
             <div class="col">
                 <h4>Pending Trades</h4>
             </div>
@@ -21,12 +22,13 @@
                 <h4>Closed Trades</h4>
             </div>
         </div>
+
         <div class="row">
             <!-- Pending Trades -->
             <div class="col bg-white rounded border border-1 m-1">
                 {% if trades_pending %}
                     {% for trade in trades_pending %}
-                    <div class="card shadow-sm my-2">
+                    <div class="card shadow-sm my-2 custom-card">
                         <h6 class="card-header">
                             <div class="row">
                                 <div class="col">
@@ -72,7 +74,7 @@
             <div class="col bg-white rounded border border-1 m-1">
                 {% if trades_closed %}
                     {% for trade in trades_closed %}
-                    <div class="card shadow-sm my-2">
+                    <div class="card shadow-sm my-2 custom-card">
                         <h6 class="card-header">
                             <div class="row">
                                 <div class="col">

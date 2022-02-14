@@ -47,3 +47,8 @@ div.decorative-bg-div {
 .card.user-form {
     width: 35rem;
 }
+
+div.card.custom-card {
+    border: 1.5px solid #b1d60d;
+    border-radius: 10px;
+}
