@@ -9,13 +9,20 @@ class MessageForm(forms.Form):
 
 
 class TradeResponseForm(forms.Form):
-    RESPONSE_CHOICES = [('AC', 'Accept'),
-                        ('RE', 'Reject')]
-    trade_response = forms.CharField(
-        label='Accept or Reject the request?',
-        widget=forms
-        .RadioSelect(choices=RESPONSE_CHOICES)
-    )
+    def __init__(self, *args, **kwargs):
+        self.items = kwargs.pop('items', None)
+        super(TradeResponseForm, self).__init__(*args, **kwargs)
+        self.RESPONSE_CHOICES = [(
+            'AC ' + str(item.id),
+            'Accept ' + str(item.user_plant.plant.scientific_name)
+        ) for item in self.items
+        ]
+        self.RESPONSE_CHOICES.append(('RE', 'Reject'))
+        self.fields['trade_response'] = forms.CharField(
+            label='Accept or Reject the request?',
+            widget=forms
+            .RadioSelect(choices=self.RESPONSE_CHOICES)
+        )
 
 
 class NameChoiceField(forms.ModelMultipleChoiceField):

@@ -43,7 +43,6 @@ def _trade_plants_are_available(seller_plant, buyer_plants):
 
 def _create_new_trade_and_items(seller, buyer, seller_plant, buyer_plants):
     buyer_plants = _trade_plants_are_available(seller_plant, buyer_plants)
-    print(f'buyer plants: {buyer_plants}')
     if not buyer_plants:
         return None
     new_trade = Trade(
@@ -85,19 +84,15 @@ class CreateTrade(View):
 
     def post(self, request, *args, **kwargs):
         if request.user.is_authenticated:
-            print('here')
-            print(request.POST)
             form = TradeForm(
                 request.POST,
                 user=request.user,
                 seller_plant=UserPlant.objects.get(pk=3)
             )
             if form.is_valid():
-                print('there')
                 seller_plant = form.cleaned_data['seller_plant']
                 seller = seller_plant.user
                 buyer = request.user
-                print(type(form.cleaned_data['user_plants_for_trade']))
                 try:
                     existing_trade_id = _trade_exists(seller, buyer,
                                                       seller_plant)
@@ -145,12 +140,35 @@ class TradeResponse(View):
         if request.user.is_authenticated:
             trade = Trade.objects.get(pk=pk)
             if trade.seller == request.user:
-                form = TradeResponseForm(request.POST)
+                print(request.POST)
+                seller = Trade.objects.get(pk=pk).seller
+                buyer_trade_item_list = TradeItem.objects.filter(
+                    trade__pk__contains=pk
+                ).exclude(
+                    user_plant__user=seller
+                )
+                form = TradeResponseForm(
+                    request.POST,
+                    items=buyer_trade_item_list
+                )
                 if form.is_valid():
-                    print('here')
-                    trade.trade_status = request.POST.get('trade_response')
+                    # parse response
+                    parsed_trade_response_tokens = request.POST.\
+                        get('trade_response').split()
+                    trade.trade_status = (
+                        parsed_trade_response_tokens[0]
+                    )
+                    if trade.trade_status=='AC':
+                        # decrement quantity of chosen trade item
+                        chosen_trade_item_id = parsed_trade_response_tokens[1]
+                        chosen_trade_item = TradeItem.objects\
+                            .get(pk=chosen_trade_item_id)
+                        chosen_trade_item.chosen_flag = True
+                        chosen_trade_item.save()
+                        chosen_user_plant = chosen_trade_item.user_plant
+                        chosen_user_plant.quantity -= 1
+                        chosen_user_plant.save()
                     trade.response_date = datetime.now()
-                    print(f'trade.trade_status: {trade.trade_status}')
                     trade.save()
             return redirect('trade:trade', pk=trade.pk)
         else:
@@ -183,10 +201,16 @@ class TradeView(View):
     def get(self, request, pk, *args, **kwargs):
         if request.user.is_authenticated:
             message_form = MessageForm()
-            trade_response_form = TradeResponseForm()
             trade = Trade.objects.get(pk=pk)
             trade_item_list = TradeItem.objects.filter(trade__pk__contains=pk)
+            seller = Trade.objects.get(pk=pk).seller
+            buyer_trade_item_list = trade_item_list.exclude(
+                user_plant__user=seller
+            )
             message_list = Message.objects.filter(trade__pk__contains=pk)
+            trade_response_form = TradeResponseForm(
+                items=buyer_trade_item_list
+            )
             context = {
                 'trade': trade,
                 'message_form': message_form,
