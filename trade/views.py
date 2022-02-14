@@ -111,7 +111,7 @@ class TradeResponse(View):
                     trade.trade_status = (
                         parsed_trade_response_tokens[0]
                     )
-                    if trade.trade_status=='AC':
+                    if trade.trade_status == 'AC':
                         # decrement quantity of the seller's user plant
                         seller_plant.user_plant.quantity -= 1
                         seller_plant.user_plant.save()
@@ -264,4 +264,4 @@ def _update_unavailable_trades(trade, seller):
 
 
 def _buyer_is_seller(user, seller):
-    return user==seller
+    return user == seller
