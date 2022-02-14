@@ -109,7 +109,11 @@ class TradeItem(models.Model):
         related_name='get_trade_items'
     )
     quantity = models.PositiveSmallIntegerField(default=1)
-    chosen_flag = models.BooleanField(default=None)
+    chosen_flag = models.BooleanField(
+        default=None,
+        blank=True,
+        null=True
+    )
 
     class Meta:
         verbose_name_plural = 'Trade Items'
