@@ -56,6 +56,7 @@ class PlantCommonName(models.Model):
 
     class Meta:
         verbose_name_plural = 'Plant Common Names'
+        unique_together = ['name', 'plant']
 
     def __str__(self):
         return self.name
@@ -99,9 +100,11 @@ class UserPlant(models.Model):
 
     def __str__(self):
         username = "Deleted User" if self.user is None else self.user.username
-        return f'user plant id: {self.id} '\
-               f'owner: {username}, '\
-               f'plant: {self.plant.scientific_name}'
+        return (
+            f'user plant id: {self.id} '
+            f'owner: {username}, '
+            f'plant: {self.plant.scientific_name}'
+        )
 
     def get_absolute_url(self):
         """Returns the absolute url for userplant object"""
