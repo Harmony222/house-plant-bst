@@ -105,17 +105,26 @@
           {% if marketplace and user.is_authenticated %}
           <div class="card-footer bg-white" style="display: flex;">
               {% if object.userplant.is_for_sale %}
-              <!-- used to launch modal and pass UserPlant info to modal -->
-              <a href="#" 
-                data-bs-plantname="{{ object.userplant.plant.scientific_name|capfirst }}"
-                data-bs-orderurl="{% url 'order:order_plant' object.userplant.pk %}"  
-                data-bs-userplantpk="{{ object.userplant.pk }}" 
+                {% if object.userplant.user == user %}
+                <!-- modal pop up error message to user that they can't buy their own plant -->
+                <a href="#" 
                 data-bs-toggle="modal" 
-                data-bs-target="#confirmBuyModal" 
-                class="bst-link">Buy</a>
+                data-bs-target="#errorModal" 
+                class="bst-link">Buy</a>              
+                {% else %}
+                <!-- launch modal and pass UserPlant info to modal -->
+                <a href="#" 
+                  data-bs-plantname="{{ object.userplant.plant.scientific_name|capfirst }}"
+                  data-bs-orderurl="{% url 'order:order_plant' object.userplant.pk %}"  
+                  data-bs-userplantpk="{{ object.userplant.pk }}" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#confirmBuyModal" 
+                  class="bst-link">Buy</a>
+                {% endif %}
               {% else %}
               <span class="disabled-buy">Buy</span>
               {% endif %}
+
               {% if object.userplant.is_for_trade %}
               <a href="{% url 'trade:create_trade_new' object.userplant.pk %}" class="bst-link">Trade</a>
               {% else %}
@@ -140,7 +149,7 @@
 
 
 
-<!-- Modal -->
+<!-- Confirm Buy Modal -->
 <div class="modal fade" id="confirmBuyModal" tabindex="-1" aria-labelledby="confirmBuyModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -148,7 +157,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <h5 id="exampleModalLabel">Would you like to purchase <span class="h-text" id="modalPlantName">Plant name</span></h5>
+        <h4>Would you like to purchase <span class="h-text" id="modalPlantName">Plant name</span></h4>
       </div>
       <div class="modal-footer">
         <a type="button" class="btn custom-btn" href="" id="modalPlantConfirm">Yes! Buy Plant</a>
@@ -158,6 +167,22 @@
   </div>
 </div>
 
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h5>You own this plant, please select a different plant to purchase.</h5>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script type="text/javascript">
 // https://getbootstrap.com/docs/5.0/components/modal/#varying-modal-content
