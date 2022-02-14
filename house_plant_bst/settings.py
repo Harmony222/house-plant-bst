@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'trade',
     'order',
     'jquery',
+    'bootstrap_modal_forms'
 ]
 
 MIDDLEWARE = [
