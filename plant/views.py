@@ -1,3 +1,4 @@
+from django.http import Http404
 from django.views.generic import (
     ListView,
     DetailView,
@@ -270,6 +271,13 @@ class UserPlantDetailView(LoginRequiredMixin, TemplateTitleMixin, DetailView):
         context = super().get_context_data(*args, **kwargs)
         return context
 
+    def get_object(self, queryset=None):
+        """raise 404 error if UserPlant does not belong to signed-in user"""
+        obj = super().get_object(queryset)
+        if obj.user != self.request.user:
+            raise Http404("UserPlant not found for signed-in user")
+        return obj
+
 
 class UserPlantCreateView(TemplateTitleMixin, LoginRequiredMixin, CreateView):
     form_class = UserPlantForm
@@ -343,6 +351,13 @@ class UserPlantUpdateView(TemplateTitleMixin, LoginRequiredMixin, UpdateView):
         userplant_object.save()
         return redirect(self.get_success_url())
 
+    def get_object(self, queryset=None):
+        """raise 404 error if UserPlant does not belong to signed-in user"""
+        obj = super().get_object(queryset)
+        if obj.user != self.request.user:
+            raise Http404("UserPlant not found for signed-in user")
+        return obj
+
 
 class UserPlantDeleteView(LoginRequiredMixin, DeleteView):
     model = UserPlant
@@ -354,3 +369,10 @@ class UserPlantDeleteView(LoginRequiredMixin, DeleteView):
         self.object.deleted_by_user = True
         self.object.save()
         return redirect(self.success_url)
+
+    def get_object(self, queryset=None):
+        """raise 404 error if UserPlant does not belong to signed-in user"""
+        obj = super().get_object(queryset)
+        if obj.user != self.request.user:
+            raise Http404("UserPlant not found for signed-in user")
+        return obj
