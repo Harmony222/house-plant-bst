@@ -1,5 +1,13 @@
 {% extends 'base.html' %} 
 {% load static %}
+<!-- For use with the bootstrap_modal_forms app -->
+<head>
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap.css' %}">
+</head>
+
+<body>
+    <script src="{% static 'js/jquery.bootstrap.modal.forms.min.js' %}"></script>
+</body>
 
 {% block content %}
 
@@ -20,6 +28,8 @@
           </button>
           <ul class="dropdown-menu">
               <li><a class="dropdown-item" href="{{ request.path }}">Show all plants</a></li>
+              <li><a class="dropdown-item" href="{{ request.path }}?shipping=true" data-value="shipping">Shipping</a></li>
+              <li><a class="dropdown-item" href="{{ request.path }}?pickup=true" data-value="pickup">Pick up</a></li>
             {% for tag in tags %}
               <li><a class="dropdown-item" href="{{ request.path }}?tags={{ tag.pk }}" data-value="{{ tag.name }}">{{ tag.name }}</a></li>
             {% endfor %}
@@ -71,6 +81,12 @@
 
               <!-- Pill-Tags -->
               <div class="tags my-2">
+              {% if object.userplant.is_for_shipping %}
+                <span class="badge rounded-pill bg-light text-dark fw-light">Shipping</span>
+                {% endif %}
+                {% if object.userplant.is_for_pickup %}
+                <span class="badge rounded-pill bg-light text-dark fw-light">Pick Up</span>
+              {% endif %}
               {% for tag in object.userplant.tags.all %}
                   <span class="badge rounded-pill bg-light text-dark fw-light">{{ tag.name }}</span>
               {% endfor %}
@@ -95,7 +111,7 @@
               <span class="disabled-buy">Buy</span>
               {% endif %}
               {% if object.userplant.is_for_trade %}
-              <a href="#" class="bst-link">Trade</a>
+              <a href="{% url 'trade:create_trade_new' object.userplant.pk %}" class="bst-link">Trade</a>
               {% else %}
               <span class="disabled-trade">Trade</span>
               {% endif %}
