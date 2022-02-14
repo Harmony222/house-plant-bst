@@ -48,17 +48,20 @@ class CreateTrade(View):
                     if existing_trade_id is not None:
                         return redirect('trade:trade',
                                         pk=existing_trade_id)
-
-                    trade_id = _create_new_trade_and_items(
-                        seller,
-                        buyer,
-                        seller_plant,
-                        form.cleaned_data['user_plants_for_trade']
-                    )
-                    if trade_id is None:
-                        return redirect('plant:marketplace_plants')
+                    if _plant_is_available(seller_plant):
+                        trade_id = _create_new_trade_and_items(
+                            seller,
+                            buyer,
+                            seller_plant,
+                            form.cleaned_data['user_plants_for_trade']
+                        )
+                        if trade_id is None:
+                            return redirect('plant:marketplace_plants')
+                        else:
+                            return redirect('trade:trade', pk=trade_id)
                     else:
-                        return redirect('trade:trade', pk=trade_id)
+                        # nice to have: plant no longer available message
+                        return redirect('plant:marketplace_plants')
                 except Exception as e:
                     print("ERROR saving trade: " + str(e))
             return redirect('trade:create_trade', pk=pk)
