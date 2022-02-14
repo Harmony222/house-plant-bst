@@ -102,7 +102,7 @@
               <span class="disabled-buy">Buy</span>
               {% endif %}
               {% if object.userplant.is_for_trade %}
-              <a href="#" class="bst-link">Trade</a>
+              <a href="{% url 'trade:create_trade_new' object.userplant.pk %}" class="bst-link">Trade</a>
               {% else %}
               <span class="disabled-trade">Trade</span>
               {% endif %}

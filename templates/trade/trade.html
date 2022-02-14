@@ -26,7 +26,7 @@
             </div>
             {% elif trade_item.user_plant.user == trade.buyer %}
             <div class="received-message my-3">
-                <p>{{ trade.seller.get_username }} is offering {{ trade_item.user_plant.plant.scientific_name }}</a> for trade
+                <p>{{ trade.buyer.get_username }} is offering {{ trade_item.user_plant.plant.scientific_name }}</a> for trade
                 <!-- if plant was chosen, show that it was chosen with a schnazzy sticker (just text, really) -->
                 {% if trade_item.chosen_flag %}
                     <span><em>  ~*CHOSEN*~ </em></span>

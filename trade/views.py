@@ -11,23 +11,32 @@ User = get_user_model()
 
 
 class CreateTrade(View):
-    def get(self, request, *args, **kwargs):
+    def get(self, request, pk, *args, **kwargs):
         if request.user.is_authenticated:
+            seller_plant = UserPlant.objects.get(pk=pk)
+            seller = seller_plant.user
+
+            if _buyer_is_seller(request.user, seller):
+                return redirect('plant:marketplace_plants')
+
             create_trade_form = TradeForm(
                 user=request.user,
-                seller_plant=UserPlant.objects.get(pk=3)
+                seller_plant=seller_plant
             )
-            context = {'form': create_trade_form}
+            context = {
+                'form': create_trade_form,
+                'seller_plant_pk': pk
+            }
             return render(request, 'trade/create_trade.html', context)
         else:
             return redirect('user:profile')
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, pk, *args, **kwargs):
         if request.user.is_authenticated:
             form = TradeForm(
                 request.POST,
                 user=request.user,
-                seller_plant=UserPlant.objects.get(pk=3)
+                seller_plant=UserPlant.objects.get(pk=pk)
             )
             if form.is_valid():
                 seller_plant = form.cleaned_data['seller_plant']
@@ -37,7 +46,6 @@ class CreateTrade(View):
                     existing_trade_id = _trade_exists(seller, buyer,
                                                       seller_plant)
                     if existing_trade_id is not None:
-                        print('here')
                         return redirect('trade:trade',
                                         pk=existing_trade_id)
 
@@ -53,7 +61,7 @@ class CreateTrade(View):
                         return redirect('trade:trade', pk=trade_id)
                 except Exception as e:
                     print("ERROR saving trade: " + str(e))
-            return redirect('trade:create_trade')
+            return redirect('trade:create_trade', pk=pk)
         else:
             return redirect('user:profile')
 
@@ -81,10 +89,14 @@ class TradeResponse(View):
         if request.user.is_authenticated:
             trade = Trade.objects.get(pk=pk)
             if trade.seller == request.user:
-                print(request.POST)
                 seller = Trade.objects.get(pk=pk).seller
+                seller_plant = TradeItem.objects.filter(
+                    trade__pk=pk,
+                    user_plant__user=seller,
+                    user_plant__deleted_by_user=False
+                )[0]
                 buyer_trade_item_list = TradeItem.objects.filter(
-                    trade__pk__contains=pk
+                    trade__pk=pk
                 ).exclude(
                     user_plant__user=seller
                 )
@@ -100,6 +112,9 @@ class TradeResponse(View):
                         parsed_trade_response_tokens[0]
                     )
                     if trade.trade_status=='AC':
+                        # decrement quantity of the seller's user plant
+                        seller_plant.user_plant.quantity -= 1
+                        seller_plant.user_plant.save()
                         # decrement quantity of chosen trade item
                         chosen_trade_item_id = parsed_trade_response_tokens[1]
                         chosen_trade_item = TradeItem.objects\
@@ -246,3 +261,7 @@ def _update_unavailable_trades(trade, seller):
         if _plant_is_available(seller_trade_item.user_plant):
             trade.trade_status = 'SE'
             trade.save()
+
+
+def _buyer_is_seller(user, seller):
+    return user==seller

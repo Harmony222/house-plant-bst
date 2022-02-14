@@ -23,5 +23,5 @@ urlpatterns = [
          name='create_trade'),
     path('order_history/<int:pk>/create_trade/',
          CreateTrade.as_view(),
-         name='create_trade_submit'),
+         name='create_trade_new'),
 ]
