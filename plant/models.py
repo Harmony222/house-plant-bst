@@ -56,6 +56,7 @@ class PlantCommonName(models.Model):
 
     class Meta:
         verbose_name_plural = 'Plant Common Names'
+        unique_together = ['name', 'plant']
 
     def __str__(self):
         return self.name
