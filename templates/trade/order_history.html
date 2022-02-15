@@ -25,11 +25,11 @@
 
         <div class="row">
             <!-- Pending Trades -->
-            <div class="col bg-white rounded border border-1 m-1">
+            <div class="col bg-white m-1 custom-card">
                 {% if trades_pending %}
                     {% for trade in trades_pending %}
-                    <div class="card shadow-sm my-2 custom-card">
-                        <h6 class="card-header">
+                    <div class="card shadow-sm my-2">
+                        <h6 class="card-header" style="background: #dff2e7;">
                             <div class="row">
                                 <div class="col">
                                     Trade #: {{trade.pk}}
@@ -46,7 +46,7 @@
                                         {% if trade.seller.get_username == None %}
                                         Deleted User
                                         {% else %}
-                                        {{ trade.seller.get_username }}
+                                        {{ trade.seller.get_username|capfirst }}
                                         {% endif %} 
                                     </h6>
                                 </div>
@@ -55,7 +55,7 @@
                                         {% if trade.buyer.get_username == None %}
                                         Deleted User
                                         {% else %}
-                                        {{ trade.buyer.get_username }}
+                                        {{ trade.buyer.get_username|capfirst }}
                                         {% endif %} 
                                     </h6>
                                 </div>
@@ -71,11 +71,11 @@
             </div>
 
             <!-- Closed Trades -->
-            <div class="col bg-white rounded border border-1 m-1">
+            <div class="col bg-white m-1 custom-card">
                 {% if trades_closed %}
                     {% for trade in trades_closed %}
-                    <div class="card shadow-sm my-2 custom-card">
-                        <h6 class="card-header">
+                    <div class="card shadow-sm my-2">
+                        <h6 class="card-header" style="background: #dff2e7;">
                             <div class="row">
                                 <div class="col">
                                     Trade #: {{trade.pk}}
@@ -92,7 +92,7 @@
                                         {% if trade.seller.get_username == None %}
                                         Deleted User
                                         {% else %}
-                                        {{ trade.seller.get_username }}
+                                        {{ trade.seller.get_username|capfirst }}
                                         {% endif %}
                                     </h6>
                                 </div>
@@ -101,7 +101,7 @@
                                         {% if trade.buyer.get_username == None %}
                                         Deleted User
                                         {% else %}
-                                        {{ trade.buyer.get_username }}
+                                        {{ trade.buyer.get_username|capfirst }}
                                         {% endif %}
                                     </h6>
                                 </div>

@@ -48,7 +48,7 @@ div.decorative-bg-div {
     width: 35rem;
 }
 
-div.card.custom-card {
+div.col.custom-card {
     border: 1.5px solid #b1d60d;
     border-radius: 10px;
 }
