@@ -27,34 +27,34 @@
 
             <!-- Show the trade request -->
             <div class="container bg-white p-1 d-flex justify-content-center">
-                <div class="row justify-content-center">
+                <div class="row">
                     {% for trade_item in trade_item_list %}
                         <!-- Show what buyer is offering -->
                         {% if trade_item.user_plant.user == trade.buyer %}
                             <div class="col-sm-6 m-2">
-                                <div class="row">
+                                <div class="card border-white">
                                     {% if trade_item.chosen_flag %}
                                     <img src="{% static 'images/chosen_trade_plant.png' %}" style="position: absolute;" class="img-fluid rounded-start user-card-icon">
                                     {% endif %}
                                     <img class="card-img-top marketplace-plant-img px-0" src="{% if trade_item.user_plant.image_url != '' %} {{ trade_item.user_plant.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" alt="Card image cap">
-                                </div>
-                                <div class="row text-center">
-                                    <p>{{ trade.buyer.get_username|capfirst }} is offering {{ trade_item.user_plant.plant.scientific_name|capfirst }}</p>
+                                    <div class="card-body px-0 text-center">
+                                        <p class="card-text">{{ trade.buyer.get_username|capfirst }} is offering {{ trade_item.user_plant.plant.scientific_name|capfirst }}</p>
+                                    </div>
                                 </div>
                             </div>
                         
                         {% elif trade_item.user_plant.user == trade.seller %}
                             <!-- Show what buyer is requesting from trader -->
                             <div class="col-sm-6 m-2">
-                                <div class="row">
+                                <div class="card border-white">
                                     <img class="card-img-top marketplace-plant-img px-0" src="{% if trade_item.user_plant.image_url != '' %} {{ trade_item.user_plant.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" alt="Card image cap">
-                                </div>
-                                <div class="row text-center">
-                                    {{ trade.buyer.get_username|capfirst }} is requesting a trade for {{ trade.seller.get_username|capfirst }}'s {{ trade_item.user_plant.plant.scientific_name|capfirst }}
+                                    <div class="card-body px-0 text-center">
+                                        <p class="card-text">{{ trade.buyer.get_username|capfirst }} is requesting a trade for {{ trade.seller.get_username|capfirst }}'s {{ trade_item.user_plant.plant.scientific_name|capfirst }}</p>
+                                    </div>
                                 </div>
                             </div>
                             <!-- Trade arrows icon -->
-                            <div class="col-sm-3 px-3 align-self-center d-flex justify-content-center">
+                            <div class="col px-3 align-self-center d-flex justify-content-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
                                     <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
                                 </svg>
@@ -64,30 +64,29 @@
                 </div>
             </div>
         </div>
+
+            <!-- If user is seller, show form to accept desired plant from buyer -->
+            {% if request.user == trade.seller %}
+                {% if trade.trade_status == 'SE' %}
+                    <div class="card-footer">
+                        <form method="POST" action="{% url 'trade:trade_response' trade.pk %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form | crispy }}
+                            {% for choice in trade_response_form.trade_response %}
+                            <div class="radio_buttons">
+                                {{ choice }}
+                            </div>
+                            {% endfor %}
+                            <div class="d-grid gap-2 mt-3">
+                                <button class="btn custom-btn" type="submit">Submit Response</button>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+            {% endif %}
     </div> <!-- Trade request card end -->
 </div>
 
-<!-- If user is seller, show form to accept desired plant from buyer -->
-{% if request.user == trade.seller %}
-{% if trade.trade_status == 'SE' %}
-<div class="container m-3 w-100">
-    <div class="card p-3 shadow-sm">
-        <form method="POST" action="{% url 'trade:trade_response' trade.pk %}" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form | crispy }}
-            {% for choice in trade_response_form.trade_response %}
-            <div class="radio_buttons">
-                {{ choice }}
-            </div>
-            {% endfor %}
-            <div class="d-grid gap-2 mt-3">
-                <button class="btn custom-btn" type="submit">Submit Response</button>
-            </div>
-        </form>
-    </div>
-</div>
-{% endif %}
-{% endif %}
 
 
  <!-- Messages -->
