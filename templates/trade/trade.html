@@ -3,15 +3,22 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-
-<div class="container">
-    {% if user.is_authenticated %}
-    <h2>Trade #: {{trade.pk}}</h2>
+{% if user.is_authenticated %}
+<div class="container d-flex justify-content-center m-3">
 
     <div class="card">
+        <!-- Header for Trade # and Trade Status -->
         <h6 class="card-header" style="background: #dff2e7;">
-            Trade Status: {{trade.get_trade_status_display}}
+            <div class="row">
+                <div class="col">
+                    <h5>Trade #: {{trade.pk}}</h5>
+                </div>
+                <div class="col d-flex justify-content-end">
+                    <h5>Trade Status: {{trade.get_trade_status_display}}</h5>
+                </div>
+            </div>
         </h6>
+
         <div class="card-body">
             <!-- show message if no trade items exist -->
             {% if trade_item_list.all.count == 0 %}
@@ -19,11 +26,12 @@
             {% endif %}
 
             <!-- Show the trade request -->
-            <div class="container bg-white p-2 d-flex justify-content-center">
+            <div class="container bg-white p-1 d-flex justify-content-center">
                 <div class="row justify-content-center">
                     {% for trade_item in trade_item_list %}
-                        {% if trade_item.user_plant.user == trade.seller %}
-                            <div class="col-sm-6">
+                        <!-- Show what buyer is offering -->
+                        {% if trade_item.user_plant.user == trade.buyer %}
+                            <div class="col-sm-6 m-2">
                                 <div class="row">
                                     <img class="card-img-top marketplace-plant-img px-0" src="{% if trade_item.user_plant.image_url != '' %} {{ trade_item.user_plant.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" alt="Card image cap">
                                 </div>
@@ -32,21 +40,21 @@
                                 </div>
                             </div>
                         
-                        <!-- Trade arrows icon -->
-                        <div class="col-sm-2 align-self-center d-flex justify-content-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
-                            </svg>
-                        </div>
-                        
-                        {% elif trade_item.user_plant.user == trade.buyer %}
-                            <div class="col-sm-6">
+                        {% elif trade_item.user_plant.user == trade.seller %}
+                            <!-- Show what buyer is requesting from trader -->
+                            <div class="col-sm-6 m-2">
                                 <div class="row">
                                     <img class="card-img-top marketplace-plant-img px-0" src="{% if trade_item.user_plant.image_url != '' %} {{ trade_item.user_plant.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" alt="Card image cap">
                                 </div>
                                 <div class="row text-center">
-                                    <p>To trade for {{ trade.seller.get_username|capfirst }}'s {{ trade_item.user_plant.plant.scientific_name|capfirst }}</p>
+                                    {{ trade.buyer.get_username|capfirst }} is requesting a trade for {{ trade.seller.get_username|capfirst }}'s {{ trade_item.user_plant.plant.scientific_name|capfirst }}
                                 </div>
+                            </div>
+                            <!-- Trade arrows icon -->
+                            <div class="col-sm-3 px-3 align-self-center d-flex justify-content-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-arrow-left-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
+                                </svg>
                             </div>
                         {% endif %}
                     {% endfor %}
@@ -54,15 +62,33 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> <!-- Trade request card end -->
 
-
-
-
-    {% else %}
-        <h3>Login to see your trade</h3>
+    <!-- If user is seller, show form to accept desired plant from buyer -->
+    {% if request.user == trade.seller %}
+        {% if trade.trade_status == 'SE' %}
+        <div class="container m-3">
+            <div class="card p-3 shadow-sm">
+                <form method="POST" action="{% url 'trade:trade_response' trade.pk %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form | crispy }}
+                    {% for choice in trade_response_form.trade_response %}
+                    <div class="radio_buttons">
+                        {{ choice }}
+                    </div>
+                    {% endfor %}
+                    <div class="d-grid gap-2 mt-3">
+                        <button class="btn custom-btn" type="submit">Submit Response</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
     {% endif %}
 </div>
+{% else %}
+    <h3>Login to see your trade</h3>
+{% endif %}
 
 
 <p>-----------------------------------------</p>
