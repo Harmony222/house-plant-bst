@@ -25,11 +25,11 @@
 
         <div class="row">
             <!-- Pending Trades -->
-            <div class="col bg-white m-1 custom-card">
+            <div class="col bg-white m-1 custom-card py-2">
                 {% if trades_pending %}
                     {% for trade in trades_pending %}
                     <div class="card shadow-sm my-2">
-                        <h6 class="card-header" style="background: #dff2e7;">
+                        <h6 class="card-header trade-card-header">
                             <div class="row">
                                 <div class="col">
                                     Trade #: {{trade.pk}}
@@ -66,16 +66,16 @@
                    {% endfor %}
                 
                 {% else %}
-                    <h5>There are no pending trades</h5>
+                <h5 class="text-center text-muted">There are no pending trades</h5>
                 {% endif %}
             </div>
 
             <!-- Closed Trades -->
-            <div class="col bg-white m-1 custom-card">
+            <div class="col bg-white m-1 custom-card py-2">
                 {% if trades_closed %}
                     {% for trade in trades_closed %}
                     <div class="card shadow-sm my-2">
-                        <h6 class="card-header" style="background: #dff2e7;">
+                        <h6 class="card-header trade-card-header">
                             <div class="row">
                                 <div class="col">
                                     Trade #: {{trade.pk}}
@@ -111,7 +111,7 @@
                     </div>
                    {% endfor %}
                 {% else %}
-                   <h5>There are no closed trades</h5>
+                   <h5 class="text-center text-muted">There are no closed trades</h5>
                 {% endif %}
             </div>
         </div>

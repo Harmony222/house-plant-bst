@@ -8,7 +8,7 @@
 
     <div class="card">
         <!-- Header for Trade # and Trade Status -->
-        <h6 class="card-header" style="background: #dff2e7;">
+        <h6 class="card-header trade-card-header">
             <div class="row">
                 <div class="col">
                     <h5>Trade #: {{trade.pk}}</h5>
@@ -33,6 +33,9 @@
                         {% if trade_item.user_plant.user == trade.buyer %}
                             <div class="col-sm-6 m-2">
                                 <div class="row">
+                                    {% if trade_item.chosen_flag %}
+                                    <img src="{% static 'images/chosen_trade_plant.png' %}" style="position: absolute;" class="img-fluid rounded-start user-card-icon">
+                                    {% endif %}
                                     <img class="card-img-top marketplace-plant-img px-0" src="{% if trade_item.user_plant.image_url != '' %} {{ trade_item.user_plant.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" alt="Card image cap">
                                 </div>
                                 <div class="row text-center">
@@ -58,110 +61,43 @@
                             </div>
                         {% endif %}
                     {% endfor %}
-                    </div>
                 </div>
             </div>
         </div>
     </div> <!-- Trade request card end -->
-
-    <!-- If user is seller, show form to accept desired plant from buyer -->
-    {% if request.user == trade.seller %}
-        {% if trade.trade_status == 'SE' %}
-        <div class="container m-3">
-            <div class="card p-3 shadow-sm">
-                <form method="POST" action="{% url 'trade:trade_response' trade.pk %}" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    {{ form | crispy }}
-                    {% for choice in trade_response_form.trade_response %}
-                    <div class="radio_buttons">
-                        {{ choice }}
-                    </div>
-                    {% endfor %}
-                    <div class="d-grid gap-2 mt-3">
-                        <button class="btn custom-btn" type="submit">Submit Response</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        {% endif %}
-    {% endif %}
 </div>
-{% else %}
-    <h3>Login to see your trade</h3>
+
+<!-- If user is seller, show form to accept desired plant from buyer -->
+{% if request.user == trade.seller %}
+{% if trade.trade_status == 'SE' %}
+<div class="container m-3 w-100">
+    <div class="card p-3 shadow-sm">
+        <form method="POST" action="{% url 'trade:trade_response' trade.pk %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form | crispy }}
+            {% for choice in trade_response_form.trade_response %}
+            <div class="radio_buttons">
+                {{ choice }}
+            </div>
+            {% endfor %}
+            <div class="d-grid gap-2 mt-3">
+                <button class="btn custom-btn" type="submit">Submit Response</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
 {% endif %}
 
 
-<p>-----------------------------------------</p>
-
-
-
-
-
-
+ <!-- Messages -->
 <div class="container">
-    {% if user.is_authenticated %}
-    <h2>Trade Request #{{trade.pk}}</h2>
-    <div class="row my-5">
-        <div class="col-md-12">
-            <p>Trade Status: {{trade.get_trade_status_display}}</p>
-        </div>
-    </div>
-    {% if trade_item_list.all.count == 0 %}
-    <div class="row my-5">
-        <div class="col-md-12">
-            <p>No Trade Items</p>
-        </div>
-    </div>
-    {% endif %}
-
-    {% for trade_item in trade_item_list %}
-    <div class="row">
-        <div class="col-md-12 my-1">
-            {% if trade_item.user_plant.user == trade.seller %}
-            <div class="request-trade my-3">
-                <p>{{ trade.buyer.get_username }} is requesting a trade for {{ trade.seller.get_username }}'s: {{ trade_item.user_plant.plant.scientific_name }}</p>
-            </div>
-            {% elif trade_item.user_plant.user == trade.buyer %}
-            <div class="received-message my-3">
-                <p>{{ trade.buyer.get_username }} is offering {{ trade_item.user_plant.plant.scientific_name }}</a> for trade
-                <!-- if plant was chosen, show that it was chosen with a schnazzy sticker (just text, really) -->
-                {% if trade_item.chosen_flag %}
-                    <span><em>  ~*CHOSEN*~ </em></span>
-                {% endif %}
-                </p>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-    {% endfor %}
-
-    {% if request.user == trade.seller %}
-        {% if trade.trade_status == 'SE' %}
-    <div class="row">
-        <div class="card col-md-12 p-3 shadow-sm">
-            <form method="POST" action="{% url 'trade:trade_response' trade.pk %}" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form | crispy }}
-                {% for choice in trade_response_form.trade_response %}
-                <div class="radio_buttons">
-                    {{ choice }}
-                </div>
-                {% endfor %}
-                <div class="d-grid gap-2 mt-3">
-                    <button class="btn btn-light" type="submit">Submit Response</button>
-                </div>
-            </form>
-        </div>
-    </div>
-        {% endif %}
-    {% endif %}
-
     <div class="row">
         <div class="card col-md-12 mt-5 p-3 shadow-sm">
            {% if trade.buyer == request.user %}
                 <h5>Messages to @{{ trade.seller.get_username }}</h5>
             {% else %}
-                <h5>Messages tp @{{ trade.buyer.get_username }}</h5>
+                <h5>Messages to @{{ trade.buyer.get_username }}</h5>
             {% endif %}
         </div>
     </div>
@@ -202,11 +138,12 @@
             </form>
         </div>
     </div>
-
-    {% else %}
-        <h3>Login to see your trade</h3>
-    {% endif %}
 </div>
+
+
+{% else %}
+    <h3>Login to see your trade</h3>
+{% endif %}
 
 <!-- Decorative green block div in background -->
 <div class="decorative-bg-div"></div>
