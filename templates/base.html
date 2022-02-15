@@ -62,6 +62,8 @@
               </a>
               <ul class="dropdown-menu dropdown-menu-light" aria-labelledby="navbarDropdownMenuLink">
                 <li><a class="dropdown-item" href="{% url 'user:profile' %}">Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'order:user_orders_all' %}">My Purchase Order History</a></li>
+                <li><a class="dropdown-item" href="{% url 'trade:order_history' %}">My Trade Order History</a></li>
                 <li><a class="dropdown-item" href="{% url 'plant:userplant_all' %}">My Plant Marketplace</a></li>
               </ul>
             </li>

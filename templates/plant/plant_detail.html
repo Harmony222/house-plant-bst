@@ -14,8 +14,12 @@
         <h3 class="card-title">{{ object.scientific_name }}</h3>
         <h4 class="card-subtitle text-muted">Common names:
             <span>
-                {% for name in common_names %}
-                {{ name }},
+                {% for name in object.get_common_names.all %}
+                    {% if forloop.last %}
+                        {{ name }}
+                    {% else %}
+                        {{ name }}, 
+                    {% endif %}
                 {% endfor %}
             </span>
         </h4>

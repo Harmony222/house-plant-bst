@@ -5,7 +5,6 @@ from order import views
 app_name = 'order'
 
 urlpatterns = [
-    # path('create/<int:pk>/', views.order_plant, name='order_plant'),
     path(
         'create/<int:userplant_pk>/',
         views.OrderCreateView.as_view(),
@@ -16,4 +15,5 @@ urlpatterns = [
         views.AddressCreateView.as_view(),
         name='address_create',
     ),
+    path('', views.UserOrderListView.as_view(), name='user_orders_all'),
 ]

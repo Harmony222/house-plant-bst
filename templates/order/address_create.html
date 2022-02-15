@@ -21,6 +21,7 @@
 </div>
 
 <script type="text/javascript">
+    // https://stackoverflow.com/questions/11398356/refreshing-parent-window-after-closing-popup
     window.onunload = function() {
         window.opener.location.reload();
     }

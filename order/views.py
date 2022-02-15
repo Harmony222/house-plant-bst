@@ -1,8 +1,11 @@
 from django.shortcuts import redirect, get_object_or_404, HttpResponse
 from django.views.generic import (
     CreateView,
+    ListView,
 )
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 
 from plant.mixins import TemplateTitleMixin
 from order.models import Order, Address
@@ -10,7 +13,7 @@ from order.forms import OrderForm, OrderItemFormSet, AddressForm
 from plant.models import UserPlant
 
 
-class OrderCreateView(TemplateTitleMixin, CreateView):
+class OrderCreateView(TemplateTitleMixin, CreateView, LoginRequiredMixin):
     model = Order
     title = "Order"
     form_class = OrderForm
@@ -71,10 +74,10 @@ class OrderCreateView(TemplateTitleMixin, CreateView):
         return redirect(self.get_success_url())
 
     def get_success_url(self):
-        return reverse_lazy('plant:marketplace_plants')
+        return reverse_lazy('order:user_orders_all')
 
 
-class AddressCreateView(TemplateTitleMixin, CreateView):
+class AddressCreateView(TemplateTitleMixin, CreateView, LoginRequiredMixin):
     model = Address
     title = "Address create"
     form_class = AddressForm
@@ -97,3 +100,15 @@ class AddressCreateView(TemplateTitleMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy('plant:marketplace_plants')
+
+
+class UserOrderListView(TemplateTitleMixin, ListView, LoginRequiredMixin):
+    model = Order
+    title = 'User Orders'
+    template_name = 'order/user_order_list.html'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(
+            Q(seller=self.request.user) | Q(buyer=self.request.user)
+        )
