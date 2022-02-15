@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import inlineformset_factory, modelformset_factory
+from django.forms import inlineformset_factory
 
 from order.models import Order, Address, OrderItem
 
@@ -13,17 +13,16 @@ class AddressForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = []
-        # fields = ['address', 'total_price']
+        fields = ['address']
 
 
-AddressFormSet = modelformset_factory(
-    Address,
-    form=AddressForm,
-    fields=['street', 'city', 'state', 'zip'],
-    extra=1,
-    can_delete=False,
-)
+# AddressFormSet = modelformset_factory(
+#     Address,
+#     form=AddressForm,
+#     fields=['street', 'city', 'state', 'zip'],
+#     extra=1,
+#     can_delete=False,
+# )
 
 
 class OrderItemForm(forms.ModelForm):

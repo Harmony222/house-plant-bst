@@ -1,4 +1,4 @@
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404, HttpResponse
 from django.views.generic import (
     CreateView,
 )
@@ -6,13 +6,8 @@ from django.urls import reverse_lazy
 
 from plant.mixins import TemplateTitleMixin
 from order.models import Order, Address
-from order.forms import OrderForm, AddressFormSet, OrderItemFormSet
+from order.forms import OrderForm, OrderItemFormSet, AddressForm
 from plant.models import UserPlant
-
-
-def order_plant(request, pk):
-    context = {'pk': pk}
-    return render(request, 'order/order_plant.html', context)
 
 
 class OrderCreateView(TemplateTitleMixin, CreateView):
@@ -28,49 +23,77 @@ class OrderCreateView(TemplateTitleMixin, CreateView):
         userplant = get_object_or_404(UserPlant, pk=userplant_pk)
         context['userplant'] = userplant
         if self.request.POST:
-            context['address_form'] = AddressFormSet(self.request.POST)
             context['order_item_form'] = OrderItemFormSet(self.request.POST)
         else:
-            context['address_form'] = AddressFormSet(
-                queryset=Address.objects.none()
-            )
             context['order_item_form'] = OrderItemFormSet()
-        print("context from get_context_data", context)
         return context
 
+    def get_form(self, *args, **kwargs):
+        """Limits form address field to address's owned by user"""
+        form = super(OrderCreateView, self).get_form(*args, **kwargs)
+        form.fields[
+            'address'
+        ].queryset = self.request.user.get_user_addresses.all()
+        return form
+
     def _calculate_total_price(self, quantity, order_item):
-        return float(quantity * order_item.price)
+        return float(quantity * order_item.user_plant.unit_price)
 
     def form_valid(self, form):
         context = self.get_context_data()
-        print("context form form_valid", context)
         userplant_obj = context['userplant']
+
+        # validate and save Order form
         if form.is_valid():
-            print("test form valid")
             order_obj = form.save(commit=False)
-            print(order_obj)
             order_obj.seller = userplant_obj.user
             order_obj.buyer = self.request.user
-
-        address_form = context['address_form'][0]
-        if address_form.is_valid():
-            address_obj = address_form.save()
-            order_obj.address = address_obj
-
         order_obj.save()
+
+        # validate and save OrderItem form
         order_item_form = context['order_item_form'][0]
         if order_item_form.is_valid():
-            print("order item form is valid")
             order_item_obj = order_item_form.save(commit=False)
             order_item_obj.order = order_obj
             order_item_obj.user_plant = userplant_obj
             order_item_obj.save()
-            print(order_item_obj)
 
-        else:
-            print("NOT VALID")
+        # reduce userplant quantity by ordered amount
+        purchase_quantity = order_item_obj.quantity
+        userplant_obj.quantity -= purchase_quantity
+        userplant_obj.save()
+
+        # add order total to order
+        order_obj.total_price = self._calculate_total_price(
+            purchase_quantity, order_item_obj
+        )
+        order_obj.save()
         return redirect(self.get_success_url())
-        # return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('plant:marketplace_plants')
+
+
+class AddressCreateView(TemplateTitleMixin, CreateView):
+    model = Address
+    title = "Address create"
+    form_class = AddressForm
+    template_name = 'order/address_create.html'
+    success_url = None
+
+    def form_valid(self, form):
+        if form.is_valid():
+            address_obj = form.save(commit=False)
+            address_obj.user = self.request.user
+            address_obj.save()
+
+            # https://stackoverflow.com/questions/14782460/how-can-i-close-a-popup-and-redirect-to-another-page-in-a-django-view
+            return HttpResponse(
+                '<script type="text/javascript">'
+                'window.close(); '
+                'window.parent.location.href = window.parent.location.href;'
+                '</script>'
+            )
 
     def get_success_url(self):
         return reverse_lazy('plant:marketplace_plants')

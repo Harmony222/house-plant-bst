@@ -11,4 +11,9 @@ urlpatterns = [
         views.OrderCreateView.as_view(),
         name='order_plant',
     ),
+    path(
+        'address/create/',
+        views.AddressCreateView.as_view(),
+        name='address_create',
+    ),
 ]
