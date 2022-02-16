@@ -27,10 +27,9 @@
 
             <!-- Show the trade request -->
             <div class="container bg-white p-1 d-flex justify-content-center">  
-                <!-- Show what buyer is offering -->
+                <!-- Show what buyer is requesting from trader -->
                 {% for trade_item in trade_item_list %}
                     {% if trade_item.user_plant.user == trade.seller %}
-                        <!-- Show what buyer is requesting from trader -->
                         <div class="col m-2 align-self-center">
                             <div class="card border-white">
                                 <img class="card-img-top marketplace-plant-img px-0" src="{% if trade_item.user_plant.image_url != '' %} {{ trade_item.user_plant.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" alt="Card image cap">
@@ -49,6 +48,7 @@
                     </svg>
                 </div>
                 
+                <!-- Show all plants buyer is offering -->
                 <div class="col m-2">
                     {% for trade_item in trade_item_list %}
                         {% if trade_item.user_plant.user == trade.buyer %}
