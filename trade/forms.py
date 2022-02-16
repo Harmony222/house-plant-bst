@@ -56,7 +56,7 @@ class TradeForm(forms.Form):
 def _card_html_builder(user_plant_obj):
     image_url = user_plant_obj.image_url if user_plant_obj.image_url \
                 else static('images/default_userplant_image.png')
-    image_html_element = '<img class ="card-img-top marketplace-plant-img"'\
+    image_html_element = '<img class ="card-img-top create-trade-plant-img"'\
                          f'src="{image_url}" alt=\"Card image cap\">'
     owner = user_plant_obj.user.username.capitalize()
     location = user_plant_obj.user.location.capitalize()
