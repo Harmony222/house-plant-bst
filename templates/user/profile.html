@@ -30,9 +30,28 @@
             </div>
         </div>
 
-        <!-- Order History card link -->
+        <!-- Order Purchase History card link -->
         <div class="col">
           <div class="row">
+            <div class="card card-link text-center">
+              <a href="{% url 'order:user_orders_all' %}" class="card-link">
+                  <div class="row g-0">
+                    <div class="col-md-3">
+                      <img src="{% static 'images/orders_icon.png' %}" class="img-fluid rounded-start user-card-icon">
+                    </div>
+                    <div class="col-md-8">
+                      <div class="card-body px-0">
+                        <h3 class="card-title">Purchase Order History</h3>
+                        <p class="card-text text-muted">Track your purchase orders</p>
+                      </div>
+                    </div>
+                  </div>
+              </a>
+            </div>
+          </div>
+
+        <!-- Trade Order History card link -->
+          <div class="row my-3">
             <div class="card card-link text-center">
               <a href="{% url 'trade:order_history' %}" class="card-link">
                   <div class="row g-0">
@@ -41,8 +60,8 @@
                     </div>
                     <div class="col-md-8">
                       <div class="card-body px-0">
-                        <h3 class="card-title">Order History</h3>
-                        <p class="card-text text-muted">Track your orders and trades</p>
+                        <h3 class="card-title">Trade Order History</h3>
+                        <p class="card-text text-muted">Track your trades</p>
                       </div>
                     </div>
                   </div>

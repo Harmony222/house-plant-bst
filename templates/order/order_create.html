@@ -1,0 +1,73 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+{% load crispy_forms_tags %}
+
+<div class="card user-form mx-auto my-2">
+    <div class="card-body">
+        <h2><span class="h-text">{{ title }}</span> Plant</h2>
+        <div>
+            <h3>BASIC INFO ABOUT PLANT HERE - NEED TO ADD</h3>
+        </div>
+        <form action="" method="post">
+            <div>
+
+            {% csrf_token %}
+            {{ form|crispy }}
+            <a id="openAddressLink" href="{% url 'order:address_create' %}" target="popup"
+                onclick="openAddressWindow()">Add new address</a>
+            </div>
+            <br>
+            <table class="table table-borderless">
+                {{ order_item_form.management_form|crispy }}
+                {% for form in order_item_form.forms %}
+                    <label class="form-label">Quantity</label>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            {{ form.quantity }}
+                        </div>
+                        <div class="col-auto">
+                            <span id="max_quantity" 
+                                  data-bs-max_quantity="{{ userplant.quantity }}" 
+                                  class="form-text">
+                                  {{ userplant.quantity }} available
+                            </span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </table>
+
+            <button type="submit" class="btn btn-primary custom-btn">Place Order</button>
+            <button type="button" class="btn btn-secondary" onclick="goBack()">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function updateQuantityMax() {
+        // get max quantity from span attribute (which is populated from UserPlant max quantity)
+        let quantitySpan = document.getElementById('max_quantity')
+        let maxQuantity = quantitySpan.getAttribute('data-bs-max_quantity')
+        console.log(maxQuantity)
+        // update max quantity of Form's number input selector
+        var quantityField = document.getElementById("quantity_field")
+        quantityField.max = maxQuantity
+    }
+
+    window.onload = updateQuantityMax()
+
+    function openAddressWindow() {
+        openAddressLink = document.getElementById('openAddressLink');
+        url = openAddressLink.href;
+        window.open(url, 'window', 'toolbar=no, menubar=no, resizable=yes, width=600, height=600');
+    }
+
+    function goBack() {
+        window.history.back();
+    }
+</script>
+{% endblock %}
