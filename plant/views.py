@@ -31,24 +31,6 @@ class PlantListView(TemplateTitleMixin, ListView):
     paginate_by = 8
     ordering = ['id']
 
-    def get_context_data(self, *args, **kwargs):
-        """Creates context data.
-
-        Adds title to context.
-        Adds a list of objects to context, each object contains Plant object
-        and list of Plant's common names
-        """
-        context = super().get_context_data(*args, **kwargs)
-        plant_list = []
-        for plant in context['object_list']:
-            names = plant.get_common_names.all()
-            common_names = []
-            for name in names:
-                common_names.append(name.name)
-            plant_list.append({'plant': plant, 'common_names': common_names})
-        context['object_list'] = plant_list
-        return context
-
     def get_queryset(self):
         """Sort queryset by plant name"""
         query_set = super().get_queryset().order_by('scientific_name')
@@ -58,12 +40,6 @@ class PlantListView(TemplateTitleMixin, ListView):
 class PlantDetailView(TemplateTitleMixin, DetailView):
     model = Plant
     title = 'Plant Detail'
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        context['title'] = self.get_title()
-        context['common_names'] = context['object'].get_common_names.all()
-        return context
 
 
 class PlantCreateView(TemplateTitleMixin, LoginRequiredMixin, CreateView):

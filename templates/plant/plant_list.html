@@ -32,15 +32,19 @@
         {% for object in object_list %}
         <div class="col">
             <div class="card card-link h-100">
-                <a href="{% url 'plant:plant_detail' object.plant.pk %}" class="card-link">
+                <a href="{% url 'plant:plant_detail' object.pk %}" class="card-link">
                     <div class="card-body">
                         <h4 class="card-title">
-                            {{ object.plant.scientific_name }}      
+                            {{ object.scientific_name }}      
                         </h4>
                         <p class="card-text text-muted">
                             Common names:
-                            {% for name in object.common_names %}
-                            {{ name }}, 
+                            {% for name in object.get_common_names.all %}
+                                {% if forloop.last %}
+                                    {{ name }}
+                                {% else %}
+                                    {{ name }}, 
+                                {% endif %}
                             {% endfor %}   
                         </p> 
                     </div>
