@@ -1,28 +1,36 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 {% block content %}
 <div class="container">
-    <div class="row mt-5">
+    <div class="row mt-4">
         <div class="col-md-3 col-sm-6">
-            <a href="{% url 'plant:marketplace_plants' %}" class="btn btn-light">Back To The Marketplace</a>
+            <a href="{% url 'plant:marketplace_plants' %}" class="btn custom-back-btn">Back to the Marketplace</a>
         </div>
     </div>
-    <div class="row justify-content-center mt-5">
-        <div class="col-md-5 col-sm-12">
-            <h5>Choose some plants you have for trade</h5>
-            <p>(You can offer multiple plants for the trade. Only one will be chosen.)</p>
-        </div>
-    </div>
-    <div class="row justify-content-center mt-3 mb-5">
-        <div class="col-md-5 col-sm-12">
-            <form method="POST"action="{% url 'trade:create_trade_new' seller_plant_pk %}" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-success mt-3">Submit</button>
+    <div class="row justify-content-center">
+        <div class="card create-trade-card px-0 my-3">
+            <div class="card-header text-center trade-card-header">
+                <h5>Choose some plants you have for trade</h5>
+                <h6 class="card-subtitle">(You can offer multiple plants for the trade. Only one will be chosen.)</h6>
+            </div>
+            <div class="card-body">
+                <div class="row justify-content-center mt-3 mb-5">
+                    <div class="col d-flex justify-content-center">
+                        <form method="POST"action="{% url 'trade:create_trade_new' seller_plant_pk %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <div class="d-grid gap-2">
+                            <button type="submit" class="btn custom-btn mt-3">Submit</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Decorative green block div in background -->
+<div class="decorative-bg-div"></div>
 {% endblock content %}

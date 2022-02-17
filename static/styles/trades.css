@@ -1,3 +1,21 @@
-h6.trade-card-header {
+h6.trade-card-header,
+div.trade-card-header {
     background: #dff2e7;
+}
+
+img.card-img-top.create-trade-plant-img {
+    border: 3px solid #b1d60d;
+    border-radius: 20px;
+    width: 16rem;
+    height: 9rem;
+    object-fit: cover;
+}
+
+div.card.create-trade-card {
+    width: 75%;
+    min-width: 22rem;
+}
+
+.btn.custom-back-btn {
+    background-color: #e6f2f0;
 }
