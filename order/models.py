@@ -1,6 +1,7 @@
 from django.db import models
 from plant.models import UserPlant
 from django.conf import settings
+from django.urls import reverse_lazy
 
 User = settings.AUTH_USER_MODEL
 
@@ -74,6 +75,22 @@ class Order(models.Model):
         return f'order id: {self.id}, \
                buyer: {buyer_username}, \
                seller: {seller_username} '
+
+    def get_total_num_items(self):
+        count = 0
+        for item in self.get_order_items.all():
+            count += item.quantity
+        return count
+
+    def calculate_total_price(self):
+        total_price = 0.0
+        for item in self.get_order_items.all():
+            total_price += float(item.user_plant.unit_price * item.quantity)
+        return total_price
+
+    def get_buyer_update_url(self):
+        """Return the url for buyer to update order"""
+        return reverse_lazy('order:buyer_order_update', kwargs={'pk': self.pk})
 
 
 class OrderItem(models.Model):

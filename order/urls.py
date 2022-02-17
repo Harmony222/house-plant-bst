@@ -21,4 +21,9 @@ urlpatterns = [
         views.BuyerOrderDetailView.as_view(),
         name='buyer_order_detail',
     ),
+    path(
+        '<int:pk>/update/',
+        views.BuyerOrderUpdateView.as_view(),
+        name='buyer_order_update',
+    ),
 ]

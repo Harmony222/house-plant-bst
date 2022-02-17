@@ -42,7 +42,7 @@
           based on whether plant is buyable or tradeable -->
           {% if marketplace and user.is_authenticated %}
           <div class="card-footer bg-white" style="display: flex;">
-              {% if object.is_for_sale %}
+              {% if object.is_for_sale and object.quantity > 0 %}
                 {% if object.userplant.user == user %}
                 <!-- modal pop up error message to user that they can't buy their own plant -->
                 <a href="#" 

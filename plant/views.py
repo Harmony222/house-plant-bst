@@ -275,14 +275,15 @@ class UserPlantCreateView(TemplateTitleMixin, LoginRequiredMixin, CreateView):
         userplant_object.user = self.request.user
         for tag_form in tag_forms:
             if tag_form.is_valid():
-                tag_name = tag_form.cleaned_data['name']
-                # try getting object with tag name, if Tag exists, use
-                # existing Tag, otherwise create new Tag object
-                try:
-                    tag_obj = Tag.objects.get(name=tag_name)
-                except ObjectDoesNotExist:
-                    tag_obj = tag_form.save()
-                userplant_object.tags.add(tag_obj)
+                tag_name = tag_form.cleaned_data.get('name')
+                if tag_name is not None:
+                    # try getting object with tag name, if Tag exists, use
+                    # existing Tag, otherwise create new Tag object
+                    try:
+                        tag_obj = Tag.objects.get(name=tag_name)
+                    except ObjectDoesNotExist:
+                        tag_obj = tag_form.save()
+                    userplant_object.tags.add(tag_obj)
 
         userplant_object.save()
 

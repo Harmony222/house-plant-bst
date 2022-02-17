@@ -66,7 +66,7 @@
         {% else %}
             <li class="list-group-item">
                 <input class="form-check-input me-1"  type="checkbox" value="" disabled>
-                Waiting on seller to acknowledge order
+                In progress: Waiting on seller to acknowledge order
             </li>
         {% endif %}
 
@@ -78,7 +78,7 @@
         {% else %}
             <li class="list-group-item">
                 <input class="form-check-input me-1"  type="checkbox" value="" disabled>
-                Waiting on seller to ship order
+                Order shipped: Waiting on seller to ship order
             </li>
         {% endif %}
         </ul>
@@ -88,7 +88,7 @@
         <!-- Allow authenticated BUYER to edit the order details -->
         {% if object.buyer == user and user.is_authenticated %}
         <div class="card-footer bg-white mb-0 ps-0" style="display: flex;">
-            <a href="" class="btn custom-btn">Edit Order</a>
+            <a href="{{ object.get_buyer_update_url }}" class="btn custom-btn">Edit Order</a>
         </div>
         {% endif %}
       </div>
