@@ -17,7 +17,7 @@ import json
 import os
 
 from .models import Plant, UserPlant, Tag
-from .mixins import TemplateTitleMixin
+from .mixins import TemplateTitleMixin, ZipcodeCityStateMixin
 from .forms import PlantCommonNameFormSet, PlantForm, UserPlantForm, TagFormSet
 
 
@@ -115,7 +115,9 @@ class PlantDeleteView(LoginRequiredMixin, DeleteView):
 # UserPlant Views for MarketPlace
 
 
-class MarketplacePlantListView(TemplateTitleMixin, ListView):
+class MarketplacePlantListView(
+    TemplateTitleMixin, ZipcodeCityStateMixin, ListView
+):
     model = UserPlant
     title = 'Marketplace Plants'
     template_name = 'plant/userplant/userplant_list.html'
@@ -125,17 +127,6 @@ class MarketplacePlantListView(TemplateTitleMixin, ListView):
         queryset = Tag.objects.all().filter(userplant__isnull=False)
         return queryset.distinct().order_by('name')
 
-    def _get_citystate_from_zipcode(self, zipcode, zipcode_data):
-        """Translates zipcode to city, state string"""
-        if zipcode in zipcode_data:
-            city_state = (
-                f'{zipcode_data[zipcode]["city"]}, '
-                f'{zipcode_data[zipcode]["state"]}'
-            )
-        else:
-            city_state = "Contact seller"
-        return city_state
-
     def get_context_data(self, *args, **kwargs):
         """Creates context data for UserPlant.
 
@@ -144,12 +135,7 @@ class MarketplacePlantListView(TemplateTitleMixin, ListView):
         """
         context = super().get_context_data(*args, **kwargs)
         userplant_list = []
-        if not settings.DEBUG:
-            file_path = os.path.join(settings.STATIC_ROOT, 'zipcode_data.json')
-        else:
-            file_path = 'static/zipcode_data.json'
-        zipcode_file = open(file_path)
-        zipcode_data = json.load(zipcode_file)
+        zipcode_data = self._get_zipcode_data()
         for userplant in context['object_list']:
             city_state = self._get_citystate_from_zipcode(
                 userplant.user.location, zipcode_data
@@ -185,14 +171,23 @@ class MarketplacePlantListView(TemplateTitleMixin, ListView):
         return queryset
 
 
-class MarketplacePlantDetailView(TemplateTitleMixin, DetailView):
+class MarketplacePlantDetailView(
+    TemplateTitleMixin, ZipcodeCityStateMixin, DetailView
+):
     model = UserPlant
-    title = 'Market Place Plant Detail'
+    title = 'Marketplace Plant Detail'
     template_name = 'plant/userplant/userplant_detail.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['marketplace'] = True
+        zipcode = context['object'].user.location
+        zipcode_data = self._get_zipcode_data()
+        context['location'] = self._get_citystate_from_zipcode(
+            zipcode, zipcode_data
+        )
+        print(context)
+
         return context
 
 
@@ -245,6 +240,7 @@ class UserPlantDetailView(LoginRequiredMixin, TemplateTitleMixin, DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+        context['marketplace'] = False
         return context
 
     def get_object(self, queryset=None):

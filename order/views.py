@@ -2,6 +2,7 @@ from django.shortcuts import redirect, get_object_or_404, HttpResponse
 from django.views.generic import (
     CreateView,
     ListView,
+    DetailView,
 )
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -104,7 +105,7 @@ class AddressCreateView(TemplateTitleMixin, CreateView, LoginRequiredMixin):
 
 class UserOrderListView(TemplateTitleMixin, ListView, LoginRequiredMixin):
     model = Order
-    title = 'User Orders'
+    title = 'User Purchase Order History'
     template_name = 'order/user_order_list.html'
 
     def get_queryset(self):
@@ -112,3 +113,9 @@ class UserOrderListView(TemplateTitleMixin, ListView, LoginRequiredMixin):
         return queryset.filter(
             Q(seller=self.request.user) | Q(buyer=self.request.user)
         )
+
+
+class BuyerOrderDetailView(TemplateTitleMixin, DetailView, LoginRequiredMixin):
+    model = Order
+    title = 'Buyer Order Detail'
+    template_name = 'order/buyer_order_detail.html'

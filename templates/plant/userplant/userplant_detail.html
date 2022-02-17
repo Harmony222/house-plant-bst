@@ -2,24 +2,76 @@
 {% load static %}
 {% block content %}
 
+
+
+<div class="container d-flex justify-content-center my-4">
 {% if title %}
 <h2>{{ title }}</h2>
 {% endif %}
-
-
+</div>
 <div class="container d-flex justify-content-center my-4">
   <div class="card" style="width: 23rem;">
     <img class="img-fluid" src="{% if object.image_url != '' %} {{ object.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" >
     <div class="card-body">
       <h3 class="card-title">{{ object.plant.scientific_name }}</h3>
-      <h5 class="card-title">Seller: {{ object.user.username|capfirst }}</h5>
       <h5 class="card-title">${{ object.unit_price }}</h5>
       <h6 class="card-title">Quantity Available: {{ object.quantity }}</h6>
+      <!-- Pill-Tags -->
+      <div class="tags my-2">
+      {% if object.is_for_shipping %}
+        <span class="badge rounded-pill bg-light text-dark fw-light">Shipping</span>
+        {% endif %}
+        {% if object.is_for_pickup %}
+        <span class="badge rounded-pill bg-light text-dark fw-light">Pick Up</span>
+      {% endif %}
+      {% for tag in object.tags.all %}
+          <span class="badge rounded-pill bg-light text-dark fw-light">{{ tag.name }}</span>
+      {% endfor %}
+      </div>
+      <p class="card-text my-1">Seller: {{ object.user.username|capfirst }}</p>
+      <p class="card-text text-muted my-1">
+          Location: {{ location }}
+      </p>
       <p class="card-text">Seller Comments: {{ object.comment }}</p>
   
-      <a href="{% url 'plant:plant_detail' object.plant.pk %}">Learn more about {{ object.plant.scientific_name }}</a>
+
+
     </div>
     
+          <!-- If in main marketplace, show authenticated user Buy/Trade/Info links
+          based on whether plant is buyable or tradeable -->
+          {% if marketplace and user.is_authenticated %}
+          <div class="card-footer bg-white" style="display: flex;">
+              {% if object.is_for_sale %}
+                {% if object.userplant.user == user %}
+                <!-- modal pop up error message to user that they can't buy their own plant -->
+                <a href="#" 
+                data-bs-toggle="modal" 
+                data-bs-target="#errorModal" 
+                class="bst-link">Buy</a>              
+                {% else %}
+                <!-- launch modal and pass UserPlant info to modal -->
+                <a href="#" 
+                  data-bs-plantname="{{ object.plant.scientific_name|capfirst }}"
+                  data-bs-orderurl="{% url 'order:order_plant' object.pk %}"  
+                  data-bs-userplantpk="{{ object.pk }}" 
+                  data-bs-toggle="modal" 
+                  data-bs-target="#confirmBuyModal" 
+                  class="bst-link">Buy</a>
+                {% endif %}
+              {% else %}
+              <span class="disabled-buy">Buy</span>
+              {% endif %}
+
+              {% if object.is_for_trade %}
+              <a href="{% url 'trade:create_trade_new' object.pk %}" class="bst-link">Trade</a>
+              {% else %}
+              <span class="disabled-trade">Trade</span>
+              {% endif %}
+              <!-- Info link goes to that plant's detail page -->
+              <a href="{% url 'plant:plant_detail' object.plant.pk %}" class="bst-link">Info</a>
+          </div>
+          {% endif %}
   
     <!-- if in user marketplace, give authenticated user Edit/Delete options -->
     {% if not marketplace and user.is_authenticated %}
@@ -34,4 +86,57 @@
 <!-- Decorative green block div in background -->
 <div class="decorative-bg-div"></div>
 
+<!-- Confirm Buy Modal -->
+<div class="modal fade" id="confirmBuyModal" tabindex="-1" aria-labelledby="confirmBuyModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h4>Would you like to purchase <span class="h-text" id="modalPlantName">Plant name</span></h4>
+      </div>
+      <div class="modal-footer">
+        <a type="button" class="btn custom-btn" href="" id="modalPlantConfirm">Yes! Buy Plant</a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h5>You own this plant, please select a different plant to purchase.</h5>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+// https://getbootstrap.com/docs/5.0/components/modal/#varying-modal-content
+var confirmBuyModal = document.getElementById('confirmBuyModal')
+confirmBuyModal.addEventListener('show.bs.modal', function (event) {
+  // Button that triggered the modal
+  var button = event.relatedTarget
+  // Extract info from data-bs-* attributes
+  var userplantpk = button.getAttribute('data-bs-userplantpk')
+  var plantName = button.getAttribute('data-bs-plantname')
+  var orderPlantUrl = button.getAttribute('data-bs-orderurl')
+  // Update the modal's content.
+  var plantNameSpan = confirmBuyModal.querySelector('#modalPlantName')
+  var orderConfirmModal = confirmBuyModal.querySelector('#modalPlantConfirm')
+
+  plantNameSpan.textContent = plantName
+  orderConfirmModal.href = orderPlantUrl
+})
+</script>
 {% endblock %}
