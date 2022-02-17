@@ -9,12 +9,9 @@ from django.views.generic import (
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.conf import settings
 from django.shortcuts import redirect
 from django.core.exceptions import ObjectDoesNotExist
 
-import json
-import os
 
 from .models import Plant, UserPlant, Tag
 from .mixins import TemplateTitleMixin, ZipcodeCityStateMixin

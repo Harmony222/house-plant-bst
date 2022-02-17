@@ -119,3 +119,17 @@ class BuyerOrderDetailView(TemplateTitleMixin, DetailView, LoginRequiredMixin):
     model = Order
     title = 'Buyer Order Detail'
     template_name = 'order/buyer_order_detail.html'
+
+    def _get_total_num_items(self, order):
+        count = 0
+        for order_item in order.get_order_items.all():
+            count += int(order_item.quantity)
+        return count
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        order = context['object']
+        total_num_items = self._get_total_num_items(order)
+        context['total_num_items'] = total_num_items
+        print(context)
+        return context
