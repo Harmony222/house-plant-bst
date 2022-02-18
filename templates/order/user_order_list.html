@@ -17,11 +17,13 @@
             <div class="card card-link h-100">
                 <a href="" class="card-link">
                     <div class="card-body">
+                        <a href="{% url 'order:buyer_order_detail' object.pk %}">
                         <h4 class="card-title">
                             Order ID {{ object.id }}
                         </h4>
+                        </a>
                         {% for item in object.get_order_items.all %}
-                        <p class="card-text text-muted">
+                        <p  class="card-text text-muted">
                             {{ item.user_plant.plant.scientific_name }}
                         </p>
                         <p class="card-text text-muted">
@@ -49,6 +51,7 @@
                         <h4 class="card-title">
                             Order ID {{ object.id }}
                         </h4>
+                        </a>
                         {% for item in object.get_order_items.all %}
                         <p class="card-text text-muted">
                             {{ item.user_plant.plant.scientific_name }}

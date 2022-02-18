@@ -16,4 +16,14 @@ urlpatterns = [
         name='address_create',
     ),
     path('', views.UserOrderListView.as_view(), name='user_orders_all'),
+    path(
+        '<int:pk>/',
+        views.BuyerOrderDetailView.as_view(),
+        name='buyer_order_detail',
+    ),
+    path(
+        '<int:pk>/update/',
+        views.BuyerOrderUpdateView.as_view(),
+        name='buyer_order_update',
+    ),
 ]

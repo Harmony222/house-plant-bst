@@ -9,7 +9,7 @@
 
 <div class="card user-form mx-auto my-2">
     <div class="card-body">
-        <h2><span class="h-text">{{ title }}</span> Plant</h2>
+        <h2><span class="h-text">{{ title }}</span></h2>
         <div>
             <h3>BASIC INFO ABOUT PLANT HERE - NEED TO ADD</h3>
         </div>
@@ -27,22 +27,30 @@
                 {% for form in order_item_form.forms %}
                     <label class="form-label">Quantity</label>
                     <div class="row g-3">
+                        {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
                         <div class="col-md-3">
                             {{ form.quantity }}
                         </div>
                         <div class="col-auto">
                             <span id="max_quantity" 
-                                  data-bs-max_quantity="{{ userplant.quantity }}" 
-                                  class="form-text">
-                                  {{ userplant.quantity }} available
+                                data-bs-max_quantity="{{ total_quantity }}" 
+                                class="form-text">
+                                {{ total_quantity }} available
                             </span>
                         </div>
                     </div>
                 {% endfor %}
             </table>
-
+            {% if not update %}
             <button type="submit" class="btn btn-primary custom-btn">Place Order</button>
             <button type="button" class="btn btn-secondary" onclick="goBack()">Cancel</button>
+            {% else %}
+            <button type="submit" class="btn btn-primary custom-btn">Save Changes</button>
+            <button type="button" class="btn btn-secondary" onclick="goBack()">Cancel Edit</button>
+            <button type="button" class="btn btn-danger ">Cancel Order</button>
+            {% endif %}
         </form>
     </div>
 </div>
