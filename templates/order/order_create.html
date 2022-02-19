@@ -73,7 +73,11 @@
                     <h5><b>Total:</b></h5>
                 </div>
                 <div class="col text-end">
+                    {% if not update %}
                     <h5 id="running_total">{{ userplant.unit_price }}</h5>
+                    {% else %}
+                    <h5 id="running_total">{{ object.total_price }}</h5>
+                    {% endif %}
                 </div>
             </div>
             <hr>
