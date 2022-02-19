@@ -116,5 +116,15 @@
     }
 </script>
 
-
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script type="text/javascript">
+    $('#quantity_field').change(function() {
+        var unit_price = parseFloat($('#unit-price').text());
+        console.log(unit_price);
+        var curr_qty = $('#quantity_field').val();
+        console.log(curr_qty);
+        var curr_total = unit_price * curr_qty;
+        $('#running_total').text(curr_total.toString() + '.00');
+    });
+</script>
 {% endblock %}
