@@ -10,6 +10,7 @@
 <div class="card user-form mx-auto my-2">
     <div class="card-body">
         <h2><span class="h-text">{{ title }}</span></h2>
+        <!-- Show Order Plant details -->
         <div>
             <hr>
             <div class="row">
@@ -73,6 +74,8 @@
                     <h5><b>Total:</b></h5>
                 </div>
                 <div class="col text-end">
+                    <!-- Default total is unit_price unless in the Update Order form,
+                        where it should show total_price instead -->
                     {% if not update %}
                     <h5 id="running_total">{{ userplant.unit_price }}</h5>
                     {% else %}
@@ -123,6 +126,7 @@
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script type="text/javascript">
+    // Update the Order's running total whenever Quantity input field is changed
     $('#quantity_field').change(function() {
         var unit_price = parseFloat($('#unit-price').text());
         var curr_qty = $('#quantity_field').val();
