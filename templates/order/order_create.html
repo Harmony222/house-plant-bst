@@ -69,13 +69,14 @@
             <!-- Show running total for Order -->
             <hr>
             <div class="row">
-                <div class="col">
-                    <p>Total:</p>
+                <div class="col-8 text-end">
+                    <h5><b>Total:</b></h5>
                 </div>
-                <div class="col">
-                    <p id="running_total">{{ userplant.unit_price }}</p>
+                <div class="col text-end">
+                    <h5 id="running_total">{{ userplant.unit_price }}</h5>
                 </div>
             </div>
+            <hr>
 
             {% if not update %}
             <button type="submit" class="btn btn-primary custom-btn">Place Order</button>
@@ -120,9 +121,7 @@
 <script type="text/javascript">
     $('#quantity_field').change(function() {
         var unit_price = parseFloat($('#unit-price').text());
-        console.log(unit_price);
         var curr_qty = $('#quantity_field').val();
-        console.log(curr_qty);
         var curr_total = unit_price * curr_qty;
         $('#running_total').text(curr_total.toString() + '.00');
     });
