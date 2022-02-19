@@ -11,8 +11,30 @@
     <div class="card-body">
         <h2><span class="h-text">{{ title }}</span></h2>
         <div>
-            <h3>BASIC INFO ABOUT PLANT HERE - NEED TO ADD</h3>
+            <hr>
+            <div class="row">
+                <div class="col-4">
+                    <img class="card-img-top marketplace-plant-img" src="{% if userplant.image_url != '' %} {{ userplant.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" alt="Card image cap">
+                </div>
+                <div class="col-5">
+                    <div class="row">
+                        <h5>{{ userplant.plant.scientific_name|capfirst }}</h5>
+                    </div>
+                    <div class="row">
+                        <p class="text-muted">
+                            Seller: {{ userplant.user|capfirst }}<br>
+                            Location: {{ userplant.user.location|capfirst }}
+                        </p>  
+                    </div>
+                </div>
+                <div class="col d-flex justify-content-end">
+                    <h5 class="plant-price">$<span id="unit-price">{{ userplant.unit_price }}</span></h5>
+                </div>
+            </div>
         </div>
+        <hr>
+
+
         <form action="" method="post">
             <div>
 
@@ -43,6 +65,18 @@
                     </div>
                 {% endfor %}
             </table>
+
+            <!-- Show running total for Order -->
+            <hr>
+            <div class="row">
+                <div class="col">
+                    <p>Total:</p>
+                </div>
+                <div class="col">
+                    <p id="running_total">{{ userplant.unit_price }}</p>
+                </div>
+            </div>
+
             {% if not update %}
             <button type="submit" class="btn btn-primary custom-btn">Place Order</button>
             <button type="button" class="btn btn-secondary" onclick="goBack()">Cancel</button>
@@ -54,6 +88,9 @@
         </form>
     </div>
 </div>
+
+<!-- Decorative green block div in background -->
+<div class="decorative-bg-div"></div>
 
 <script type="text/javascript">
     function updateQuantityMax() {
@@ -78,4 +115,6 @@
         window.history.back();
     }
 </script>
+
+
 {% endblock %}
