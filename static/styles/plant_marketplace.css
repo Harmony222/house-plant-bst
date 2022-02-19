@@ -11,7 +11,9 @@ img.card-img-top.marketplace-plant-img {
     object-fit: cover;
 }
 
-h6.plant-price {
+h6.plant-price,
+h5.plant-price,
+span.unit-price {
     color: #00b3a1;
 }
 
