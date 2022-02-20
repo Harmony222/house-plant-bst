@@ -127,7 +127,22 @@
               {% endif %}
 
               {% if object.userplant.is_for_trade %}
-              <a href="{% url 'trade:create_trade_new' object.userplant.pk %}" class="bst-link">Trade</a>
+                {% if object.userplant.user == user %}
+                <!-- modal pop up error message to user that they can't trade with their own plant -->
+                <a href="#"
+                data-bs-toggle="modal"
+                data-bs-target="#errorModal"
+                class="bst-link">Trade</a>
+                {% else %}
+                <!-- launch modal and pass UserPlant info to modal -->
+                <a href="#"
+                  data-bs-tradeplantname="{{ object.userplant.plant.scientific_name|capfirst }}"
+                  data-bs-tradeurl="{% url 'trade:create_trade_new' object.userplant.pk %}"
+                  data-bs-tradeuserplantpk="{{ object.userplant.pk }}"
+                  data-bs-toggle="modal"
+                  data-bs-target="#confirmTradeModal"
+                  class="bst-link">Trade</a>
+                {% endif %}
               {% else %}
               <span class="disabled-trade">Trade</span>
               {% endif %}
@@ -168,6 +183,24 @@
   </div>
 </div>
 
+<!-- Confirm Trade Modal -->
+<div class="modal fade" id="confirmTradeModal" tabindex="-1" aria-labelledby="confirmTradeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h4>Would you like to request a trade for <span class="h-text" id="tradeModalPlantName">Plant name</span></h4>
+      </div>
+      <div class="modal-footer">
+        <a type="button" class="btn custom-btn" href="" id="tradeModalPlantConfirm">Yes! Request a trade</a>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Error Modal -->
 <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -176,7 +209,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <h5>You own this plant, please select a different plant to purchase.</h5>
+        <h5>You own this plant, please select a different plant.</h5>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">OK</button>
@@ -201,6 +234,24 @@ confirmBuyModal.addEventListener('show.bs.modal', function (event) {
 
   plantNameSpan.textContent = plantName
   orderConfirmModal.href = orderPlantUrl
+})
+
+var confirmTradeModal = document.getElementById('confirmTradeModal')
+confirmTradeModal.addEventListener('show.bs.modal', function (event) {
+  // Button that triggered the modal
+  let button = event.relatedTarget
+  // Extract info from data-bs-* attributes
+  let userplantpk = button.getAttribute('data-bs-tradeuserplantpk')
+  let plantName = button.getAttribute('data-bs-tradeplantname')
+  let tradePlantUrl = button.getAttribute('data-bs-tradeurl')
+  // Update the modal's content.
+  let plantNameSpan = confirmTradeModal.querySelector('#tradeModalPlantName')
+  let tradeConfirmModal = confirmTradeModal.querySelector('#tradeModalPlantConfirm')
+
+  plantNameSpan.textContent = plantName
+  tradeConfirmModal.href = tradePlantUrl
+    console.log(plantNameSpan)
+    console.log(tradeConfirmModal)
 })
 </script>
 {% endblock %}
