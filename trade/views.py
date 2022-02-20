@@ -21,7 +21,9 @@ class CreateTrade(View):
 
             create_trade_form = TradeForm(
                 user=request.user,
-                seller_plant=seller_plant
+                seller_plant=seller_plant,
+                is_for_shipping=seller_plant.is_for_shipping,
+                is_for_pickup=seller_plant.is_for_pickup
             )
             context = {
                 'form': create_trade_form,
@@ -33,6 +35,11 @@ class CreateTrade(View):
 
     def post(self, request, pk, *args, **kwargs):
         if request.user.is_authenticated:
+
+            for key, value in request.POST.items():
+                print(f'Key: {key}')
+                print(f'Value: {value}')
+
             form = TradeForm(
                 request.POST,
                 user=request.user,
@@ -64,7 +71,9 @@ class CreateTrade(View):
                         return redirect('plant:marketplace_plants')
                 except Exception as e:
                     print("ERROR saving trade: " + str(e))
-            return redirect('trade:create_trade', pk=pk)
+            else:
+                print(form.errors)  # debug errors
+                return redirect('trade:create_trade_new', pk=pk)
         else:
             return redirect('user:profile')
 

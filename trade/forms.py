@@ -15,8 +15,7 @@ class TradeResponseForm(forms.Form):
         self.RESPONSE_CHOICES = [(
             'AC ' + str(item.id),
             'Accept ' + str(item.user_plant.plant.scientific_name)
-        ) for item in self.items
-        ]
+        ) for item in self.items]
         self.RESPONSE_CHOICES.append(('RE', 'Reject'))
         self.fields['trade_response'] = forms.CharField(
             label='Accept or Reject the request?',
@@ -34,13 +33,18 @@ class TradeForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         self.seller_plant = kwargs.pop('seller_plant', None)
+        self.is_for_shipping = kwargs.pop('is_for_shipping', None)
+        self.is_for_pickup = kwargs.pop('is_for_pickup', None)
+        self.show_address_fields = False
         super(TradeForm, self).__init__(*args, **kwargs)
+
         self.fields['seller_plant'] = forms.ModelChoiceField(
             widget=forms.HiddenInput,
             required=True,
             queryset=UserPlant.objects.filter(pk=self.seller_plant.id),
             initial=self.seller_plant
         )
+
         self.fields['user_plants_for_trade'] = NameChoiceField(
             widget=forms.CheckboxSelectMultiple,
             queryset=UserPlant.objects.filter(
@@ -50,6 +54,20 @@ class TradeForm(forms.Form):
                 deleted_by_user=False
             )
         )
+
+        # if the plant is being offered for both shipping and pickup,
+        # the trade requester needs to specify either or both.
+        if self.is_for_shipping and self.is_for_pickup:
+            self.handling_options = [
+                ('shipping_choice', 'Ship'),
+                ('pickup_choice', 'Pickup')
+            ]
+
+            self.fields['handling_methods'] = forms.MultipleChoiceField(
+                required=True,
+                widget=forms.CheckboxSelectMultiple,
+                choices=self.handling_options
+            )
         self.fields['user_plants_for_trade'].label = ''
 
 
