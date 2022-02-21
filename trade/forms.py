@@ -65,9 +65,12 @@ class TradeForm(forms.Form):
 
             self.fields['handling_methods'] = forms.MultipleChoiceField(
                 required=True,
-                widget=forms.CheckboxSelectMultiple,
+                widget=forms.CheckboxSelectMultiple(
+                    attrs={'onchange':'get_addresses();'}
+                ),
                 choices=self.handling_options
             )
+            self.fields['handling_methods'].label = ''
         self.fields['user_plants_for_trade'].label = ''
 
 

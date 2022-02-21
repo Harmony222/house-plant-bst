@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from .models import Trade, Message, TradeItem
+from order.models import Address
 from plant.models import UserPlant
 from .forms import TradeForm, MessageForm, TradeResponseForm
 from django.db.models import Q
@@ -29,48 +30,50 @@ class CreateTrade(View):
                 'form': create_trade_form,
                 'seller_plant_pk': pk
             }
-            return render(request, 'trade/create_trade.html', context)
+            return render(request, 'trade/create_trade.html', context=context)
         else:
             return redirect('user:profile')
 
     def post(self, request, pk, *args, **kwargs):
         if request.user.is_authenticated:
-
-            for key, value in request.POST.items():
-                print(f'Key: {key}')
-                print(f'Value: {value}')
-
+            seller_plant = UserPlant.objects.get(pk=pk)
+            seller = seller_plant.user
             form = TradeForm(
                 request.POST,
                 user=request.user,
-                seller_plant=UserPlant.objects.get(pk=pk)
+                seller_plant=seller_plant,
+                is_for_shipping=seller_plant.is_for_shipping,
+                is_for_pickup=seller_plant.is_for_pickup
             )
             if form.is_valid():
-                seller_plant = form.cleaned_data['seller_plant']
-                seller = seller_plant.user
-                buyer = request.user
-                try:
-                    existing_trade_id = _trade_exists(seller, buyer,
-                                                      seller_plant)
-                    if existing_trade_id is not None:
-                        return redirect('trade:trade',
-                                        pk=existing_trade_id)
-                    if _plant_is_available(seller_plant):
-                        trade_id = _create_new_trade_and_items(
-                            seller,
-                            buyer,
-                            seller_plant,
-                            form.cleaned_data['user_plants_for_trade']
-                        )
-                        if trade_id is None:
-                            return redirect('plant:marketplace_plants')
-                        else:
-                            return redirect('trade:trade', pk=trade_id)
-                    else:
-                        # nice to have: plant no longer available message
+                if 'handling_methods' in form.cleaned_data.keys():
+                    handling_methods = form.cleaned_data['handling_methods']
+                else:
+                    handling_methods = ['shipping'] if \
+                        seller_plant.is_for_shipping else ['pickup']
+                new_trade_attributes = {
+                    'seller_plant': form.cleaned_data['seller_plant'],
+                    'seller': seller,
+                    'buyer': request.user,
+                    'buyer_plants': form.cleaned_data['user_plants_for_trade'],
+                    'handling_methods': handling_methods
+                }
+                # try:
+                existing_trade_id = _trade_exists(new_trade_attributes)
+                if existing_trade_id is not None:
+                    return redirect('trade:trade', pk=existing_trade_id)
+                if _plant_is_available(seller_plant):
+                    trade_id = _create_new_trade_and_items(
+                        new_trade_attributes)
+                    if trade_id is None:
                         return redirect('plant:marketplace_plants')
-                except Exception as e:
-                    print("ERROR saving trade: " + str(e))
+                    else:
+                        return redirect('trade:trade', pk=trade_id)
+                else:
+                    # nice to have: plant no longer available message
+                    return redirect('plant:marketplace_plants')
+                # except Exception as e:
+                print("ERROR saving trade: " + str(e))
             else:
                 print(form.errors)  # debug errors
                 return redirect('trade:create_trade_new', pk=pk)
@@ -195,16 +198,16 @@ class TradeView(View):
 
 
 # helper functions
-def _trade_exists(seller, buyer, seller_plant):
+def _trade_exists(new_trade_attr_dict):
     existing_trades = Trade.objects.filter(
-        seller=seller,
-        buyer=buyer,
+        seller = new_trade_attr_dict["seller"],
+        buyer = new_trade_attr_dict["buyer"],
     )
     if existing_trades:
         for trade in existing_trades:
             trade_items = trade.get_trade_items.all()
             for item in trade_items:
-                if item.user_plant == seller_plant:
+                if item.user_plant == new_trade_attr_dict["seller_plant"]:
                     return trade.id
     return None
 
@@ -226,14 +229,38 @@ def _trade_plants_are_available(seller_plant, buyer_plants):
     return buyer_plants_list
 
 
-def _create_new_trade_and_items(seller, buyer, seller_plant, buyer_plants):
+def _create_new_trade_and_items(new_trade_attr_dict):
+    buyer = new_trade_attr_dict['buyer']
+    seller = new_trade_attr_dict['seller']
+    seller_plant = new_trade_attr_dict['seller_plant']
+    buyer_plants = new_trade_attr_dict['buyer_plants']
+    handling_methods = new_trade_attr_dict['handling_methods']
+    is_offered_for_shipping = True if 'shipping_choice' in \
+                                      handling_methods else False
+    is_offered_for_pickup = True if 'pickup_choice' in \
+                                    handling_methods else False
+    if seller_plant.is_for_pickup and seller_plant.is_for_shipping:
+        accepted_handling_method = 'UN'
+    # seller only offered a pickup trade
+    elif seller_plant.is_for_pickup:
+        accepted_handling_method = 'PI'
+        is_offered_for_pickup = True
+    # seller only offered a ship trade
+    else:
+        accepted_handling_method = 'SH'
+        is_offered_for_shipping = True
+
+    # add buyer plants if still available
     buyer_plants = _trade_plants_are_available(seller_plant, buyer_plants)
     if not buyer_plants:
         return None
     new_trade = Trade(
         buyer=buyer,
         seller=seller,
-        trade_status='SE'
+        trade_status='SE',
+        accepted_handling_method=accepted_handling_method,
+        is_offered_for_shipping=is_offered_for_shipping,
+        is_offered_for_pickup=is_offered_for_pickup
     )
     new_trade.save()
 

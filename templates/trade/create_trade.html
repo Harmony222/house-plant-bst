@@ -17,9 +17,25 @@
             <div class="card-body">
                 <div class="row justify-content-center mt-3 mb-5">
                     <div class="col d-flex justify-content-center">
-                        <form method="POST"action="{% url 'trade:create_trade_new' seller_plant_pk %}" enctype="multipart/form-data">
+                        <form id="create_trade_form" method="POST"action="{% url 'trade:create_trade_new' seller_plant_pk %}" enctype="multipart/form-data">
                             {% csrf_token %}
-                            {{ form|crispy }}
+                            {% for field in form %}
+                                <!-- choose handling method(s) if seller offering both shipping or pickup -->
+                                {% if field.name == 'handling_methods' %}
+                                    <h4>Handling Methods</h4>
+                                    {{ field | as_crispy_field }}
+                                {% else %}
+                                    {{ field |as_crispy_field }}
+                                {% endif %}
+                            {% endfor %}
+                            <!-- if seller_plant only offers shipping or shipping chosen as a method, show address form -->
+                            {% if form.is_for_shipping == True %}
+                                <h4>IS FOR SHIPPING IS TRUE</h4>
+                            {% endif %}
+                            <div id="address_div" style="display:none">
+                                <h4>I am the address div</h4>
+                                <a id="openAddressLink" href="{% url 'order:address_create' %}" target="popup" onclick="openAddressWindow()">Add new address</a>
+                            </div>
                             <div class="d-grid gap-2">
                             <button type="submit" class="btn custom-btn mt-3">Submit</button>
                             </div>
@@ -33,4 +49,19 @@
 
 <!-- Decorative green block div in background -->
 <div class="decorative-bg-div"></div>
+<!-- add address field for trade requests with shipping -->
+<script>
+function get_addresses() {
+    let shipping_option = document.getElementById("id_handling_methods_0");
+    let address_div = document.getElementById("address_div");
+    if (shipping_option.checked) {
+        address_div.style.display = "block";
+    }else{
+        address_div.style.display = "none";
+    }
+}
+</script>
+
 {% endblock content %}
+
+
