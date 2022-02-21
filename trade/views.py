@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from .models import Trade, Message, TradeItem
-from order.models import Address
 from plant.models import UserPlant
 from .forms import TradeForm, MessageForm, TradeResponseForm
 from django.db.models import Q

@@ -25,7 +25,7 @@ class TradeResponseForm(forms.Form):
             label='Accept or Reject the request?',
             widget=forms.RadioSelect(
                 choices=self.RESPONSE_CHOICES,
-                attrs={'onchange': f'show_handling();'}
+                attrs={'onchange': 'show_handling();'}
             ),
 
         )
@@ -86,7 +86,7 @@ class TradeForm(forms.Form):
             self.fields['handling_methods'] = forms.MultipleChoiceField(
                 required=True,
                 widget=forms.CheckboxSelectMultiple(
-                    attrs={'onchange':'get_addresses();'}
+                    attrs={'onchange': 'get_addresses();'}
                 ),
                 choices=self.handling_options
             )
