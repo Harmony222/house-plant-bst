@@ -130,6 +130,9 @@ class TradeResponse(View):
                         parsed_trade_response_tokens[0]
                     )
                     if trade.trade_status == 'AC':
+                        # update the accepted_handling_method
+                        trade.accepted_handling_method = \
+                            request.POST.get('handling_methods')
                         # decrement quantity of the seller's user plant
                         seller_plant.user_plant.quantity -= 1
                         seller_plant.user_plant.save()
@@ -295,13 +298,14 @@ def _create_new_trade_and_items(new_trade_attr_dict):
 
 
 def _update_unavailable_trades(trade, seller):
-    # if the seller's plant's quantity <= 0, the trade status
-    # is set to unavailable
+    # if the seller's plant's quantity <= 0, and trade status was 'SE',
+    # the trade status is set to unavailable
     seller_trade_item = trade.get_trade_items \
         .filter(user_plant__user=seller)[0]
     if not _plant_is_available(seller_trade_item.user_plant):
-        trade.trade_status = 'UN'
-        trade.save()
+        if trade.trade_status == 'SE':
+            trade.trade_status = 'UN'
+            trade.save()
     # if the trade status was unavailable, but stock was added, then
     # the trade status changes to sent
     if trade.trade_status == 'UN':

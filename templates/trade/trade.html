@@ -11,10 +11,19 @@
         <h6 class="card-header trade-card-header">
             <div class="row">
                 <div class="col">
-                    <h5>Trade #: {{trade.pk}}</h5>
+                    <h5>Trade #: {{ trade.pk }}</h5>
                 </div>
                 <div class="col d-flex justify-content-end">
-                    <h5>Trade Status: {{trade.get_trade_status_display}}</h5>
+                    <h5>Trade Status: {{ trade.get_trade_status_display }}</h5>
+                    <!-- if the trade has been accepted, show accepted plant name and handling method -->
+                    {% if trade.trade_status == 'AC' %}
+                        {% for trade_item in trade_item_list %}
+                            {% if trade_item.chosen_flag %}
+                            <h5>Accepted Plant: {{ trade_item.user_plant.plant.scientific_name|capfirst }}</h5>
+                            <h5>Handling: {{ trade.get_accepted_handling_method_display }}</h5>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </h6>
