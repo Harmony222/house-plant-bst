@@ -29,11 +29,8 @@
                                 {% endif %}
                             {% endfor %}
                             <!-- if seller_plant only offers shipping or shipping chosen as a method, show address form -->
-                            {% if form.is_for_shipping == True %}
-                                <h4>IS FOR SHIPPING IS TRUE</h4>
-                            {% endif %}
                             <div id="address_div" style="display:none">
-                                <h4>I am the address div</h4>
+                                <h4>I am the address dropdown placeholder!</h4>
                                 <a id="openAddressLink" href="{% url 'order:address_create' %}" target="popup" onclick="openAddressWindow()">Add new address</a>
                             </div>
                             <div class="d-grid gap-2">
@@ -49,7 +46,7 @@
 
 <!-- Decorative green block div in background -->
 <div class="decorative-bg-div"></div>
-<!-- add address field for trade requests with shipping -->
+<!-- add address field for trade requests with shipping --placeholder test hide/show-->
 <script>
 function get_addresses() {
     let shipping_option = document.getElementById("id_handling_methods_0");

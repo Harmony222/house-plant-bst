@@ -31,6 +31,22 @@
                 {% for trade_item in trade_item_list %}
                     {% if trade_item.user_plant.user == trade.seller %}
                         <div class="col m-2 align-self-center">
+                            <p class="card-text text-center">
+                                        {% if not trade_item.user_plant.is_for_pickup and not trade_item.user_plant.is_for_shipping %}
+                                            <em>{{ trade.seller.get_username|capfirst }} has not specified a handling method</em>
+                                        {% else %}
+                                            which is available for:
+                                            {% if trade_item.user_plant.is_for_pickup %}
+                                                <em>Pickup</em>
+                                            {% endif %}
+                                            {% if trade_item.user_plant.is_for_shipping %}
+                                                {% if trade_item.user_plant.is_for_pickup %}
+                                                <em>  |  </em>
+                                                {% endif %}
+                                                <em>Ship</em>
+                                            {% endif %}
+                                        {% endif %}
+                                    </p>
                             <div class="card border-white">
                                 <img class="card-img-top marketplace-plant-img px-0" src="{% if trade_item.user_plant.image_url != '' %} {{ trade_item.user_plant.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" alt="Card image cap">
                                 <div class="card-body px-0 text-center">
@@ -50,6 +66,18 @@
 
                 <!-- Show all plants buyer is offering -->
                 <div class="col m-2">
+                    <p class="card-text text-center">
+                        Requested handling:
+                        {% if trade.is_offered_for_pickup %}
+                            <em>Pickup</em>
+                        {% endif %}
+                        {% if trade.is_offered_for_shipping %}
+                            {% if trade.is_offered_for_pickup %}
+                                <em>  |  </em>
+                            {% endif %}
+                            <em>Shipping</em>
+                        {% endif %}
+                    </p>
                     {% for trade_item in trade_item_list %}
                         {% if trade_item.user_plant.user == trade.buyer %}
                         <div class="row">
@@ -76,11 +104,23 @@
                     <form method="POST" action="{% url 'trade:trade_response' trade.pk %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         {{ form | crispy }}
+                        <h4>Choose a plant option:</h4>
                         {% for choice in trade_response_form.trade_response %}
                         <div class="radio_buttons">
                             {{ choice }}
                         </div>
                         {% endfor %}
+                        <div id="handling" style="display: none">
+                        {% if trade_response_form.handling_methods %}
+                            <br>
+                            <h4>Choose a handling method:</h4>
+                            {% for choice in trade_response_form.handling_methods %}
+                            <div class="radio_buttons">
+                                {{ choice }}
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                        </div>
                         <div class="d-grid gap-2 mt-3">
                             <button class="btn custom-btn" type="submit">Submit Response</button>
                         </div>
@@ -150,5 +190,22 @@
 
 <!-- Decorative green block div in background -->
 <div class="decorative-bg-div"></div>
+
+<!-- show handling for trade requests with accepted radio select chosen --placeholder test hide/show-->
+<script>
+function show_handling() {
+    let trade_response_radio_buttons =
+        document.getElementsByName("trade_response");
+    let reject_button_index = trade_response_radio_buttons.length - 1;
+    let reject_button_id = 'id_trade_response_'+ reject_button_index;
+    let reject_button = document.getElementById(reject_button_id);
+    let handling_div = document.getElementById("handling");
+    if (reject_button.checked){
+            handling_div.style.display = "none";
+    }else {
+        handling_div.style.display = "block";
+    }
+}
+</script>
 
 {% endblock content %}

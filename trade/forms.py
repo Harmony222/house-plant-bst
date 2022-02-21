@@ -11,6 +11,10 @@ class MessageForm(forms.Form):
 class TradeResponseForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.items = kwargs.pop('items', None)
+        self.is_offered_for_shipping = kwargs.pop(
+                                       'is_offered_for_shipping', None)
+        self.is_offered_for_pickup = kwargs.pop(
+                                     'is_offered_for_pickup', None)
         super(TradeResponseForm, self).__init__(*args, **kwargs)
         self.RESPONSE_CHOICES = [(
             'AC ' + str(item.id),
@@ -19,9 +23,24 @@ class TradeResponseForm(forms.Form):
         self.RESPONSE_CHOICES.append(('RE', 'Reject'))
         self.fields['trade_response'] = forms.CharField(
             label='Accept or Reject the request?',
-            widget=forms
-            .RadioSelect(choices=self.RESPONSE_CHOICES)
+            widget=forms.RadioSelect(
+                choices=self.RESPONSE_CHOICES,
+                attrs={'onchange': f'show_handling();'}
+            ),
+
         )
+        self.ACCEPTED_HANDLING_METHOD_CHOICES = []
+        if self.is_offered_for_pickup:
+            self.ACCEPTED_HANDLING_METHOD_CHOICES.append(('PI', 'Pickup'))
+        if self.is_offered_for_shipping:
+            self.ACCEPTED_HANDLING_METHOD_CHOICES.append(('SH', 'Shipping'))
+        if self.ACCEPTED_HANDLING_METHOD_CHOICES:
+            self.fields['handling_methods'] = forms.CharField(
+                label='Choose a handling_method:',
+                widget=forms
+                .RadioSelect(choices=self.ACCEPTED_HANDLING_METHOD_CHOICES),
+                required=False
+            )
 
 
 class NameChoiceField(forms.ModelMultipleChoiceField):

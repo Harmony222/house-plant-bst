@@ -117,8 +117,11 @@ class TradeResponse(View):
                 )
                 form = TradeResponseForm(
                     request.POST,
-                    items=buyer_trade_item_list
+                    items=buyer_trade_item_list,
+                    is_offered_for_shipping=trade.is_offered_for_shipping,
+                    is_offered_for_pickup=trade.is_offered_for_pickup
                 )
+                print(request.POST)
                 if form.is_valid():
                     # parse response
                     parsed_trade_response_tokens = request.POST.\
@@ -183,7 +186,9 @@ class TradeView(View):
             )
             message_list = Message.objects.filter(trade__pk__contains=pk)
             trade_response_form = TradeResponseForm(
-                items=buyer_trade_item_list
+                items=buyer_trade_item_list,
+                is_offered_for_shipping=trade.is_offered_for_shipping,
+                is_offered_for_pickup=trade.is_offered_for_pickup
             )
             context = {
                 'trade': trade,
@@ -251,8 +256,7 @@ def _create_new_trade_and_items(new_trade_attr_dict):
         is_offered_for_shipping = True
     # seller didn't specify, buyer can offer shipping and/or pickup
     else:
-         accepted_handling_method = 'UN'
-
+        accepted_handling_method = 'UN'
 
     # add buyer plants if still available
     buyer_plants = _trade_plants_are_available(seller_plant, buyer_plants)
