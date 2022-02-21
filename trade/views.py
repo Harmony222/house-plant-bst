@@ -200,8 +200,8 @@ class TradeView(View):
 # helper functions
 def _trade_exists(new_trade_attr_dict):
     existing_trades = Trade.objects.filter(
-        seller = new_trade_attr_dict["seller"],
-        buyer = new_trade_attr_dict["buyer"],
+        seller=new_trade_attr_dict["seller"],
+        buyer=new_trade_attr_dict["buyer"],
     )
     if existing_trades:
         for trade in existing_trades:
@@ -246,9 +246,13 @@ def _create_new_trade_and_items(new_trade_attr_dict):
         accepted_handling_method = 'PI'
         is_offered_for_pickup = True
     # seller only offered a ship trade
-    else:
+    elif seller_plant.is_for_shipping:
         accepted_handling_method = 'SH'
         is_offered_for_shipping = True
+    # seller didn't specify, buyer can offer shipping and/or pickup
+    else:
+         accepted_handling_method = 'UN'
+
 
     # add buyer plants if still available
     buyer_plants = _trade_plants_are_available(seller_plant, buyer_plants)

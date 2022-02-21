@@ -49,15 +49,16 @@ class TradeForm(forms.Form):
             widget=forms.CheckboxSelectMultiple,
             queryset=UserPlant.objects.filter(
                 user=self.user,
-                is_for_trade=True,
                 quantity__gt=0,
                 deleted_by_user=False
             )
         )
 
-        # if the plant is being offered for both shipping and pickup,
-        # the trade requester needs to specify either or both.
-        if self.is_for_shipping and self.is_for_pickup:
+        # if the plant is being offered for both shipping and pickup, or if the
+        # plant doesn't specify either for shipping nor pickup, then the trade
+        # requester needs to specify either or both.
+        if (self.is_for_shipping and self.is_for_pickup) or \
+           (not self.is_for_shipping and not self.is_for_pickup):
             self.handling_options = [
                 ('shipping_choice', 'Ship'),
                 ('pickup_choice', 'Pickup')
