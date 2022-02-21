@@ -58,22 +58,22 @@ class CreateTrade(View):
                     'buyer_plants': form.cleaned_data['user_plants_for_trade'],
                     'handling_methods': handling_methods
                 }
-                # try:
-                existing_trade_id = _trade_exists(new_trade_attributes)
-                if existing_trade_id is not None:
-                    return redirect('trade:trade', pk=existing_trade_id)
-                if _plant_is_available(seller_plant):
-                    trade_id = _create_new_trade_and_items(
-                        new_trade_attributes)
-                    if trade_id is None:
-                        return redirect('plant:marketplace_plants')
+                try:
+                    existing_trade_id = _trade_exists(new_trade_attributes)
+                    if existing_trade_id is not None:
+                        return redirect('trade:trade', pk=existing_trade_id)
+                    if _plant_is_available(seller_plant):
+                        trade_id = _create_new_trade_and_items(
+                            new_trade_attributes)
+                        if trade_id is None:
+                            return redirect('plant:marketplace_plants')
+                        else:
+                            return redirect('trade:trade', pk=trade_id)
                     else:
-                        return redirect('trade:trade', pk=trade_id)
-                else:
-                    # nice to have: plant no longer available message
-                    return redirect('plant:marketplace_plants')
-                # except Exception as e:
-                print("ERROR saving trade: " + str(e))
+                        # nice to have: plant no longer available message
+                        return redirect('plant:marketplace_plants')
+                except Exception as e:
+                    print("ERROR saving trade: " + str(e))
             else:
                 print(form.errors)  # debug errors
                 return redirect('trade:create_trade_new', pk=pk)
