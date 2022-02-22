@@ -10,9 +10,32 @@
 <div class="card user-form mx-auto my-2">
     <div class="card-body">
         <h2><span class="h-text">{{ title }}</span></h2>
+        <!-- Show Order Plant details -->
         <div>
-            <h3>BASIC INFO ABOUT PLANT HERE - NEED TO ADD</h3>
+            <hr>
+            <div class="row">
+                <div class="col-4">
+                    <img class="card-img-top marketplace-plant-img" src="{% if userplant.image_url != '' %} {{ userplant.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" alt="Card image cap">
+                </div>
+                <div class="col-5">
+                    <div class="row">
+                        <h5>{{ userplant.plant.scientific_name|capfirst }}</h5>
+                    </div>
+                    <div class="row">
+                        <p class="text-muted">
+                            Seller: {{ userplant.user|capfirst }}<br>
+                            Location: {{ userplant.user.location|capfirst }}
+                        </p>  
+                    </div>
+                </div>
+                <div class="col d-flex justify-content-end">
+                    <h5 class="plant-price">$<span id="unit-price">{{ userplant.unit_price }}</span></h5>
+                </div>
+            </div>
         </div>
+        <hr>
+
+
         <form action="" method="post">
             <div>
 
@@ -43,6 +66,25 @@
                     </div>
                 {% endfor %}
             </table>
+
+            <!-- Show running total for Order -->
+            <hr>
+            <div class="row">
+                <div class="col-8 text-end">
+                    <h5><b>Total:</b></h5>
+                </div>
+                <div class="col text-end">
+                    <!-- Default total is unit_price unless in the Update Order form,
+                        where it should show total_price instead -->
+                    {% if not update %}
+                    <h5 id="running_total">{{ userplant.unit_price }}</h5>
+                    {% else %}
+                    <h5 id="running_total">{{ object.total_price }}</h5>
+                    {% endif %}
+                </div>
+            </div>
+            <hr>
+
             {% if not update %}
             <button type="submit" class="btn btn-primary custom-btn">Place Order</button>
             <button type="button" class="btn btn-secondary" onclick="goBack()">Cancel</button>
@@ -54,6 +96,9 @@
         </form>
     </div>
 </div>
+
+<!-- Decorative green block div in background -->
+<div class="decorative-bg-div"></div>
 
 <script type="text/javascript">
     function updateQuantityMax() {
@@ -77,5 +122,16 @@
     function goBack() {
         window.history.back();
     }
+</script>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script type="text/javascript">
+    // Update the Order's running total whenever Quantity input field is changed
+    $('#quantity_field').change(function() {
+        var unit_price = parseFloat($('#unit-price').text());
+        var curr_qty = $('#quantity_field').val();
+        var curr_total = unit_price * curr_qty;
+        $('#running_total').text(curr_total.toString() + '.00');
+    });
 </script>
 {% endblock %}
