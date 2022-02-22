@@ -17,6 +17,18 @@ class Trade(models.Model):
         (REJECTED, 'Rejected'),
         (UNAVAILABLE, 'Unavailable')
     ]
+
+    # Accepted Handling Method Constants
+    UNDEFINED = 'UN'
+    SHIP = 'SH'
+    PICKUP = 'PI'
+
+    ACCEPTED_HANDLING_METHOD = [
+        (UNDEFINED, 'Undefined'),
+        (SHIP, 'Ship'),
+        (PICKUP, 'Pickup')
+    ]
+
     seller = models.ForeignKey(
         User,
         null=True,
@@ -38,6 +50,13 @@ class Trade(models.Model):
         choices=TRADE_STATUS_CHOICES,
         default=SENT
     )
+    accepted_handling_method = models.CharField(
+        max_length=2,
+        choices=ACCEPTED_HANDLING_METHOD,
+        default=UNDEFINED
+    )
+    is_offered_for_pickup = models.BooleanField(default=False)
+    is_offered_for_shipping = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = 'Trades'

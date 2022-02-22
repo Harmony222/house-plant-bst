@@ -11,10 +11,19 @@
         <h6 class="card-header trade-card-header">
             <div class="row">
                 <div class="col">
-                    <h5>Trade #: {{trade.pk}}</h5>
+                    <h5>Trade #: {{ trade.pk }}</h5>
                 </div>
                 <div class="col d-flex justify-content-end">
-                    <h5>Trade Status: {{trade.get_trade_status_display}}</h5>
+                    <h5>Trade Status: {{ trade.get_trade_status_display }}</h5>
+                    <!-- if the trade has been accepted, show accepted plant name and handling method -->
+                    {% if trade.trade_status == 'AC' %}
+                        {% for trade_item in trade_item_list %}
+                            {% if trade_item.chosen_flag %}
+                            <h5>Accepted Plant: {{ trade_item.user_plant.plant.scientific_name|capfirst }}</h5>
+                            <h5>Handling: {{ trade.get_accepted_handling_method_display }}</h5>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </h6>
@@ -26,11 +35,27 @@
             {% endif %}
 
             <!-- Show the trade request -->
-            <div class="container bg-white p-1 d-flex justify-content-center">  
+            <div class="container bg-white p-1 d-flex justify-content-center">
                 <!-- Show what buyer is requesting from trader -->
                 {% for trade_item in trade_item_list %}
                     {% if trade_item.user_plant.user == trade.seller %}
                         <div class="col m-2 align-self-center">
+                            <p class="card-text text-center">
+                                        {% if not trade_item.user_plant.is_for_pickup and not trade_item.user_plant.is_for_shipping %}
+                                            <em>{{ trade.seller.get_username|capfirst }} has not specified a handling method</em>
+                                        {% else %}
+                                            which is available for:
+                                            {% if trade_item.user_plant.is_for_pickup %}
+                                                <em>Pickup</em>
+                                            {% endif %}
+                                            {% if trade_item.user_plant.is_for_shipping %}
+                                                {% if trade_item.user_plant.is_for_pickup %}
+                                                <em>  |  </em>
+                                                {% endif %}
+                                                <em>Ship</em>
+                                            {% endif %}
+                                        {% endif %}
+                                    </p>
                             <div class="card border-white">
                                 <img class="card-img-top marketplace-plant-img px-0" src="{% if trade_item.user_plant.image_url != '' %} {{ trade_item.user_plant.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" alt="Card image cap">
                                 <div class="card-body px-0 text-center">
@@ -47,9 +72,21 @@
                         <path fill-rule="evenodd" d="M1 11.5a.5.5 0 0 0 .5.5h11.793l-3.147 3.146a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708.708L13.293 11H1.5a.5.5 0 0 0-.5.5zm14-7a.5.5 0 0 1-.5.5H2.707l3.147 3.146a.5.5 0 1 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 4H14.5a.5.5 0 0 1 .5.5z"/>
                     </svg>
                 </div>
-                
+
                 <!-- Show all plants buyer is offering -->
                 <div class="col m-2">
+                    <p class="card-text text-center">
+                        Requested handling:
+                        {% if trade.is_offered_for_pickup %}
+                            <em>Pickup</em>
+                        {% endif %}
+                        {% if trade.is_offered_for_shipping %}
+                            {% if trade.is_offered_for_pickup %}
+                                <em>  |  </em>
+                            {% endif %}
+                            <em>Shipping</em>
+                        {% endif %}
+                    </p>
                     {% for trade_item in trade_item_list %}
                         {% if trade_item.user_plant.user == trade.buyer %}
                         <div class="row">
@@ -65,7 +102,7 @@
                         </div>
                         {% endif %}
                     {% endfor %}
-                </div>  
+                </div>
             </div>
         </div>
 
@@ -76,11 +113,23 @@
                     <form method="POST" action="{% url 'trade:trade_response' trade.pk %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         {{ form | crispy }}
+                        <h4>Choose a plant option:</h4>
                         {% for choice in trade_response_form.trade_response %}
                         <div class="radio_buttons">
                             {{ choice }}
                         </div>
                         {% endfor %}
+                        {% if trade_response_form.handling_methods %}
+                        <div id="handling" style="display: none">
+                            <br>
+                            <h4>Choose a handling method:</h4>
+                            {% for choice in trade_response_form.handling_methods %}
+                            <div class="radio_buttons">
+                                {{ choice }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
                         <div class="d-grid gap-2 mt-3">
                             <button class="btn custom-btn" type="submit">Submit Response</button>
                         </div>
@@ -150,5 +199,22 @@
 
 <!-- Decorative green block div in background -->
 <div class="decorative-bg-div"></div>
+
+<!-- show handling for trade requests with accepted radio select chosen --placeholder test hide/show-->
+<script>
+function show_handling() {
+    let trade_response_radio_buttons =
+        document.getElementsByName("trade_response");
+    let reject_button_index = trade_response_radio_buttons.length - 1;
+    let reject_button_id = 'id_trade_response_'+ reject_button_index;
+    let reject_button = document.getElementById(reject_button_id);
+    let handling_div = document.getElementById("handling");
+    if (reject_button.checked){
+            handling_div.style.display = "none";
+    }else {
+        handling_div.style.display = "block";
+    }
+}
+</script>
 
 {% endblock content %}
