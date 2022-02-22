@@ -116,11 +116,11 @@ class TradeResponse(View):
                 )
                 form = TradeResponseForm(
                     request.POST,
+                    seller_plant=seller_plant,
                     items=buyer_trade_item_list,
                     is_offered_for_shipping=trade.is_offered_for_shipping,
                     is_offered_for_pickup=trade.is_offered_for_pickup
                 )
-                print(request.POST)
                 if form.is_valid():
                     # parse response
                     parsed_trade_response_tokens = request.POST.\
@@ -130,8 +130,14 @@ class TradeResponse(View):
                     )
                     if trade.trade_status == 'AC':
                         # update the accepted_handling_method
-                        trade.accepted_handling_method = \
+                        seller_userplant_handling = 'SH' if \
+                            seller_plant.user_plant.is_for_shipping else 'PI'
+                        post_accepted_handling_method = \
                             request.POST.get('handling_methods')
+                        trade.accepted_handling_method = \
+                            post_accepted_handling_method if \
+                            post_accepted_handling_method is not None else \
+                            seller_userplant_handling
                         # decrement quantity of the seller's user plant
                         seller_plant.user_plant.quantity -= 1
                         seller_plant.user_plant.save()
@@ -187,7 +193,9 @@ class TradeView(View):
                 user_plant__user=seller
             )
             message_list = Message.objects.filter(trade__pk__contains=pk)
+            seller_plant = trade_item_list.filter(user_plant__user=seller)[0]
             trade_response_form = TradeResponseForm(
+                seller_plant=seller_plant,
                 items=buyer_trade_item_list,
                 is_offered_for_shipping=trade.is_offered_for_shipping,
                 is_offered_for_pickup=trade.is_offered_for_pickup

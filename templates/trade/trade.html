@@ -119,8 +119,8 @@
                             {{ choice }}
                         </div>
                         {% endfor %}
-                        <div id="handling" style="display: none">
                         {% if trade_response_form.handling_methods %}
+                        <div id="handling" style="display: none">
                             <br>
                             <h4>Choose a handling method:</h4>
                             {% for choice in trade_response_form.handling_methods %}
@@ -128,8 +128,8 @@
                                 {{ choice }}
                             </div>
                             {% endfor %}
-                        {% endif %}
                         </div>
+                        {% endif %}
                         <div class="d-grid gap-2 mt-3">
                             <button class="btn custom-btn" type="submit">Submit Response</button>
                         </div>

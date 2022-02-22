@@ -11,7 +11,7 @@
     <div class="row justify-content-center">
         <div class="card create-trade-card px-0 my-3">
             <div class="card-header text-center trade-card-header">
-                <h5>Choose some plants you have for trade</h5>
+                <h5>Choose some plants to offer for trade</h5>
                 <h6 class="card-subtitle">(You can offer multiple plants for the trade. Only one will be chosen.)</h6>
             </div>
             <div class="card-body">
@@ -20,7 +20,7 @@
                         <form id="create_trade_form" method="POST"action="{% url 'trade:create_trade_new' seller_plant_pk %}" enctype="multipart/form-data">
                             {% csrf_token %}
                             {% for field in form %}
-                                <!-- choose handling method(s) if seller offering both shipping or pickup -->
+                                <!-- handling method(s) if seller offering both shipping or pickup -->
                                 {% if field.name == 'handling_methods' %}
                                     <h4>Handling Methods</h4>
                                     {{ field | as_crispy_field }}

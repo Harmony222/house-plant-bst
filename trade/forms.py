@@ -15,6 +15,7 @@ class TradeResponseForm(forms.Form):
                                        'is_offered_for_shipping', None)
         self.is_offered_for_pickup = kwargs.pop(
                                      'is_offered_for_pickup', None)
+        self.seller_plant = kwargs.pop('seller_plant', None)
         super(TradeResponseForm, self).__init__(*args, **kwargs)
         self.RESPONSE_CHOICES = [(
             'AC ' + str(item.id),
@@ -27,20 +28,27 @@ class TradeResponseForm(forms.Form):
                 choices=self.RESPONSE_CHOICES,
                 attrs={'onchange': 'show_handling();'}
             ),
-
         )
-        self.ACCEPTED_HANDLING_METHOD_CHOICES = []
-        if self.is_offered_for_pickup:
-            self.ACCEPTED_HANDLING_METHOD_CHOICES.append(('PI', 'Pickup'))
-        if self.is_offered_for_shipping:
-            self.ACCEPTED_HANDLING_METHOD_CHOICES.append(('SH', 'Shipping'))
-        if self.ACCEPTED_HANDLING_METHOD_CHOICES:
-            self.fields['handling_methods'] = forms.CharField(
-                label='Choose a handling_method:',
-                widget=forms
-                .RadioSelect(choices=self.ACCEPTED_HANDLING_METHOD_CHOICES),
-                required=False
-            )
+        # prefill default handling method if seller didn't specify handling or
+        # if there are two handling methods offered by the user:
+        if not seller_userplant_handling_exists(self.seller_plant) or \
+                (self.is_offered_for_shipping and self.is_offered_for_pickup):
+            self.ACCEPTED_HANDLING_METHOD_CHOICES = []
+            if self.is_offered_for_pickup:
+                self.ACCEPTED_HANDLING_METHOD_CHOICES.append(
+                    ('PI', 'Pickup'))
+            if self.is_offered_for_shipping:
+                self.ACCEPTED_HANDLING_METHOD_CHOICES.append(
+                    ('SH', 'Shipping'))
+            if self.ACCEPTED_HANDLING_METHOD_CHOICES:
+                self.fields['handling_methods'] = forms.CharField(
+                    label='Choose a handling_method:',
+                    widget=forms
+                    .RadioSelect(
+                        choices=self.ACCEPTED_HANDLING_METHOD_CHOICES
+                    ),
+                    required=True
+                )
 
 
 class NameChoiceField(forms.ModelMultipleChoiceField):
@@ -72,12 +80,9 @@ class TradeForm(forms.Form):
                 deleted_by_user=False
             )
         )
-
-        # if the plant is being offered for both shipping and pickup, or if the
-        # plant doesn't specify either for shipping nor pickup, then the trade
-        # requester needs to specify either or both.
-        if (self.is_for_shipping and self.is_for_pickup) or \
-           (not self.is_for_shipping and not self.is_for_pickup):
+        # if the plant is being offered for both shipping and pickup,
+        # the trade requester needs to specify either or both.
+        if self.is_for_shipping and self.is_for_pickup:
             self.handling_options = [
                 ('shipping_choice', 'Ship'),
                 ('pickup_choice', 'Pickup')
@@ -85,9 +90,7 @@ class TradeForm(forms.Form):
 
             self.fields['handling_methods'] = forms.MultipleChoiceField(
                 required=True,
-                widget=forms.CheckboxSelectMultiple(
-                    attrs={'onchange': 'get_addresses();'}
-                ),
+                widget=forms.CheckboxSelectMultiple,
                 choices=self.handling_options
             )
             self.fields['handling_methods'].label = ''
@@ -128,3 +131,8 @@ def _card_html_builder(user_plant_obj):
         '</div>'
 
     return image_html_element + card_html_element
+
+
+def seller_userplant_handling_exists(seller_trade_plant):
+    seller_userplant = seller_trade_plant.user_plant
+    return seller_userplant.is_for_shipping or seller_userplant.is_for_pickup
