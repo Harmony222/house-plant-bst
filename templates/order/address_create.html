@@ -15,7 +15,7 @@
             {{ form|crispy }}
 
             <button type="submit" class="btn btn-primary custom-btn">Save</button>
-            <button type="button" class="btn btn-secondary" onclick="goBack()">Cancel</button>
+            <button type="button" class="btn btn-secondary" onclick="closeWindow()">Cancel</button>
         </form>
     </div>
 </div>
@@ -26,8 +26,8 @@
         window.opener.location.reload();
     }
 
-    function goBack() {
-        window.history.back();
+    function closeWindow() {
+        window.close();
     }
 </script>
 {% endblock %}

@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import inlineformset_factory
+from django.db import models
 
 from order.models import Order, Address, OrderItem
 
@@ -13,16 +14,10 @@ class AddressForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['address']
-
-
-# AddressFormSet = modelformset_factory(
-#     Address,
-#     form=AddressForm,
-#     fields=['street', 'city', 'state', 'zip'],
-#     extra=1,
-#     can_delete=False,
-# )
+        fields = ['handling', 'address_for_shipping', 'address_for_pickup']
+        widgets = {
+            'handling': forms.RadioSelect(),
+        }
 
 
 class OrderItemForm(forms.ModelForm):

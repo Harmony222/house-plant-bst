@@ -39,7 +39,7 @@ class OrderCreateView(TemplateTitleMixin, CreateView, LoginRequiredMixin):
         """Limits form address field to address's owned by user"""
         form = super(OrderCreateView, self).get_form(*args, **kwargs)
         form.fields[
-            'address'
+            'address_for_shipping'
         ].queryset = self.request.user.get_user_addresses.all()
         return form
 
@@ -182,7 +182,7 @@ class BuyerOrderUpdateView(
         """Limits form address field to address's owned by user"""
         form = super(BuyerOrderUpdateView, self).get_form(*args, **kwargs)
         form.fields[
-            'address'
+            'address_for_shipping'
         ].queryset = self.request.user.get_user_addresses.all()
         return form
 

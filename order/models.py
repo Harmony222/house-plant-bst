@@ -2,6 +2,7 @@ from django.db import models
 from plant.models import UserPlant
 from django.conf import settings
 from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 
 User = settings.AUTH_USER_MODEL
 
@@ -33,12 +34,33 @@ class Address(models.Model):
 
 
 class Order(models.Model):
-    address = models.ForeignKey(
+    class OrderStatusOptions(models.TextChoices):
+        CREATED = 'CR', _('Created')
+        IN_PROCESS = 'IN', _('In-process')
+        SHIPPED = 'SH', _('Shipped')
+        COMPLETE = 'CO', _('Complete')
+        CANCELED = 'CA', _('Canceled')
+
+    class OrderHandlingOptions(models.TextChoices):
+        SHIPPING = 'SH', _('Shipping')
+        PICKUP = 'PI', _('Pickup')
+        # UNDEFINED = 'UN', _('Undefined')
+
+    address_for_shipping = models.ForeignKey(
         Address,
+        blank=True,
         null=True,
         verbose_name='Ship to address',
         on_delete=models.RESTRICT,
-        related_name='get_order_address',
+        related_name='get_order_shipping_address',
+    )
+    address_for_pickup = models.ForeignKey(
+        Address,
+        blank=True,
+        null=True,
+        verbose_name='Pickup address',
+        on_delete=models.RESTRICT,
+        related_name='get_order_pickup_address',
     )
     seller = models.ForeignKey(
         User,
@@ -59,6 +81,16 @@ class Order(models.Model):
     fulfilled_date = models.DateTimeField(null=True, blank=True)
     total_price = models.DecimalField(
         max_digits=6, decimal_places=2, default=0.00
+    )
+    status = models.CharField(
+        max_length=2,
+        choices=OrderStatusOptions.choices,
+        default=OrderStatusOptions.CREATED,
+    )
+    handling = models.CharField(
+        max_length=2,
+        choices=OrderHandlingOptions.choices,
+        default=OrderHandlingOptions.SHIPPING,
     )
 
     class Meta:
