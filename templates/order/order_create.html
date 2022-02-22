@@ -100,7 +100,7 @@
             {% else %}
             <button type="submit" class="btn btn-primary custom-btn">Save Changes</button>
             <button type="button" class="btn btn-secondary" onclick="goBack()">Cancel Edit</button>
-            <button type="button" class="btn btn-danger ">Cancel Order</button>
+            <a href="{{ object.get_cancel_url }}" class="btn btn-danger ">Cancel Order</a>
             {% endif %}
         </form>
     </div>
@@ -124,41 +124,62 @@
             }
         }
     }
+
     // Opens new window to add a new address Form, refreshes page upon close
     var openAddressLink = document.getElementById('openAddressLink');
     function openAddressWindow() {
         url = openAddressLink.href;
         window.open(url, 'window', 'toolbar=no, menubar=no, resizable=yes, width=600, height=600');
     }
+
     // hide the address for pickup section
     var address_for_pickup_div = document.getElementById('div_id_address_for_pickup');
     var address_for_pickup_select = document.getElementById('id_address_for_pickup');
     address_for_pickup_div.style.display = 'none';
+
     // disable shipping address seletion if Pickup handling method selected and
     // display help text regarding pickup
     var address_for_shipping_select = document.getElementById('id_address_for_shipping');
     var address_for_shipping_div = document.getElementById('div_id_address_for_shipping');
     var pickup_radio_input = document.getElementById('id_handling_1');
     var pickup_label_el = findLabelForControl(pickup_radio_input);
+
     // https://www.javascripttutorial.net/javascript-dom/javascript-change-event/
     document.body.addEventListener('change', function(e) {
         let target = e.target;
         switch (target.id) {
             case 'id_handling_0':
-                address_for_shipping_select.removeAttribute('disabled');
-                address_for_shipping_div.classList.remove('disabledText')
-                openAddressLink.classList.remove('disabledLink');
-                pickup_label_el.innerHTML = 'Pickup';
+                enableShipping();
                 break;
             case 'id_handling_1':
-                address_for_shipping_select.setAttribute('disabled', 'disabled');
-                address_for_shipping_select.selectedIndex = '0';
-                address_for_shipping_div.classList.add('disabledText');
-                openAddressLink.classList.add('disabledLink');
-                pickup_label_el.innerHTML += ' - Seller will be notified to select Pickup address.';
+                disableShipping();
                 break;
         }
     })
+
+    function enableShipping() {
+        address_for_shipping_select.removeAttribute('disabled');
+        address_for_shipping_div.classList.remove('disabledText')
+        openAddressLink.classList.remove('disabledLink');
+        pickup_label_el.innerHTML = 'Pickup';
+
+    }
+    function disableShipping() {
+        address_for_shipping_select.setAttribute('disabled', 'disabled');
+        address_for_shipping_select.selectedIndex = '0';
+        address_for_shipping_div.classList.add('disabledText');
+        openAddressLink.classList.add('disabledLink');
+        pickup_label_el.innerHTML += ' - Seller will be notified to select Pickup address.';
+
+    }
+
+    function setInitialState() {
+        if (pickup_radio_input.checked) {
+            disableShipping();
+        }
+    }
+
+    window.onload = setInitialState()
 
     function updateQuantityMax() {
         // get max quantity from span attribute (which is populated from UserPlant max quantity)

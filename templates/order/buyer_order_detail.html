@@ -1,6 +1,18 @@
 {% extends 'base.html' %} 
-
 {% load static %}
+
+{% block head %}
+<style>
+    .disabledText {
+        opacity: 0.4;
+    }
+    .disabledLink {
+        pointer-events: none;
+        opacity: 0.4;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 
 <div class="container d-flex justify-content-center my-4">
@@ -30,8 +42,7 @@
                     <td>{{ item.quantity }}</td>
                     <td>{{ item.user_plant.unit_price }}</td>
                     <td>{{ item.user_plant.user.username }}</td>
-                    <!-- Shipping is a placeholder until shipping vs pickup logic is implemented in Order -->
-                    <td>Shipping</td>
+                    <td>{{ object.get_handling_display }}</td>
                 </tr>
             {% endfor %}
             <tfoot>
@@ -45,12 +56,23 @@
 
             </tbody>
         </table>
-        <!-- <h5 class="card-subtitle mb-2">Date Placed: {{ object.creation_date }}</h5> -->
 
+        {% if object.handling == 'SH' %}
         <h5 class="mt-3">Shipping address:</h5>
         <p class="card-text mb-2">
-            {{ object.address }}
+            {{ object.address_for_shipping }}
         </p>
+        {% else %}
+        <h5 class="mt-3">Pickup address:</h5>
+            {% if object.address_for_pickup %}
+                <p class="card-text mb-2">
+                {{ object.address_for_pickup }}
+                </p>
+            {% else %}
+                <p>Pending - seller to enter pickup address.</p>
+            {% endif %}
+        {% endif %}
+        
 
         <h5 class="mt-3">Order status:</h5>
         <ul class="list-group list-group-flush">
@@ -87,9 +109,18 @@
 
         <!-- Allow authenticated BUYER to edit the order details -->
         {% if object.buyer == user and user.is_authenticated %}
-        <div class="card-footer bg-white mb-0 ps-0" style="display: flex;">
-            <a href="{{ object.get_buyer_update_url }}" class="btn custom-btn">Edit Order</a>
-        </div>
+            <!-- Only allow user it edit order if not in progress yet -->
+            {% if object.status == 'CR' %}
+            <div class="card-footer bg-white mb-0 ps-0" style="display: flex;">
+                <a href="{{ object.get_buyer_update_url }}" class="btn custom-btn">Edit Order</a>
+            </div>
+            {% else %}
+            <div class="card-footer bg-white mb-0 ps-0" style="display: flex;">
+                <a href="{{ object.get_buyer_update_url }}" class="disabledLink btn custom-btn">Edit Order</a>
+                <span class='form-text ms-2'>Order is in progress - unable to edit order, please contact seller. </span>
+            </div>
+
+            {% endif %}
         {% endif %}
       </div>
     </div>
