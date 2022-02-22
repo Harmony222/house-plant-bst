@@ -5,10 +5,12 @@ from django.views.generic import (
     ListView,
     DetailView,
     UpdateView,
+    DeleteView,
 )
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
+from django.utils import timezone
 
 from plant.mixins import TemplateTitleMixin
 from order.models import Order, Address
@@ -212,3 +214,24 @@ class BuyerOrderUpdateView(
         return reverse_lazy(
             'order:buyer_order_detail', kwargs={'pk': self.object.pk}
         )
+
+
+class OrderCancelView(LoginRequiredMixin, DeleteView):
+    model = Order
+    template_name = 'order/order_cancel.html'
+    success_url = reverse_lazy('order:user_orders_all')
+
+    def form_valid(self, form):
+        """Set status to canceled (does not delete order from database)"""
+        self.object.status = self.object.OrderStatusOptions.CANCELED
+        self.object.canceled_date = timezone.now()
+        self.object.canceled_by = self.request.user
+        self.object.save()
+        return redirect(self.success_url)
+
+    def get_object(self, queryset=None):
+        """Raise 404 error if User is not Order Buyer or Seller"""
+        obj = super().get_object(queryset)
+        if obj.buyer != self.request.user and obj.seller != self.request.user:
+            raise Http404("Order number not found for signed-in user")
+        return obj

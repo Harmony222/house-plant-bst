@@ -26,4 +26,9 @@ urlpatterns = [
         views.BuyerOrderUpdateView.as_view(),
         name='buyer_order_update',
     ),
+    path(
+        '<int:pk>/cancel/',
+        views.OrderCancelView.as_view(),
+        name='order_cancel',
+    ),
 ]

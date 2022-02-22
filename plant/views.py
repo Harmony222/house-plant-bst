@@ -335,7 +335,9 @@ class UserPlantDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('plant:userplant_all')
 
     def form_valid(self, form):
-        """Set UserPlant deleted_by_user field to True"""
+        """Set UserPlant deleted_by_user field to True
+        (does not delete UserPlant from database)
+        """
         self.object.deleted_by_user = True
         self.object.save()
         return redirect(self.success_url)

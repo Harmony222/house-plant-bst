@@ -36,7 +36,7 @@ class Address(models.Model):
 class Order(models.Model):
     class OrderStatusOptions(models.TextChoices):
         CREATED = 'CR', _('Created')
-        IN_PROCESS = 'IN', _('In-process')
+        IN_PROGRESS = 'IN', _('In-progress')
         SHIPPED = 'SH', _('Shipped')
         COMPLETE = 'CO', _('Complete')
         CANCELED = 'CA', _('Canceled')
@@ -79,6 +79,14 @@ class Order(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     in_progress_date = models.DateTimeField(null=True, blank=True)
     fulfilled_date = models.DateTimeField(null=True, blank=True)
+    canceled_date = models.DateTimeField(null=True, blank=True)
+    canceled_by = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        verbose_name='Canceled by user',
+        on_delete=models.SET_NULL,
+    )
     total_price = models.DecimalField(
         max_digits=6, decimal_places=2, default=0.00
     )
@@ -123,6 +131,10 @@ class Order(models.Model):
     def get_buyer_update_url(self):
         """Return the url for buyer to update order"""
         return reverse_lazy('order:buyer_order_update', kwargs={'pk': self.pk})
+
+    def get_cancel_url(self):
+        """Returns the url to cancel the Order"""
+        return reverse_lazy('order:order_cancel', kwargs={'pk': self.pk})
 
 
 class OrderItem(models.Model):
