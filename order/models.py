@@ -142,11 +142,7 @@ class Order(models.Model):
         )
 
     def get_seller_detail_url(self):
-        """Return the url for seller to view order details
-
-        Temporarily will be the same view as buyer detail view until order
-        can contain items from multiple sellers
-        """
+        """Return the url for seller to view order details"""
         return reverse_lazy('order:buyer_order_detail', kwargs={'pk': self.pk})
 
     def get_cancel_url(self):

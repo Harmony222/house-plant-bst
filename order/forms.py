@@ -1,6 +1,5 @@
 from django import forms
-from django.forms import inlineformset_factory
-from django.db import models
+from django.forms import HiddenInput, inlineformset_factory
 
 from order.models import Order, Address, OrderItem
 
@@ -48,3 +47,16 @@ OrderItemFormSet = inlineformset_factory(
     max_num=1,
     can_delete=False,
 )
+
+
+class SellerOrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['handling', 'address_for_pickup', 'status']
+
+    def __init__(self, *args, **kwargs):
+        super(SellerOrderForm, self).__init__(*args, **kwargs)
+        self.fields['status'].widget = HiddenInput(
+            attrs={'id': 'status_field'}
+        )
+        self.fields['handling'].widget = HiddenInput()

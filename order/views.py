@@ -7,6 +7,7 @@ from django.views.generic import (
     UpdateView,
     DeleteView,
 )
+from django.views.generic.edit import ModelFormMixin
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
@@ -14,7 +15,12 @@ from django.utils import timezone
 
 from plant.mixins import TemplateTitleMixin
 from order.models import Order, Address
-from order.forms import OrderForm, OrderItemFormSet, AddressForm
+from order.forms import (
+    OrderForm,
+    OrderItemFormSet,
+    AddressForm,
+    SellerOrderForm,
+)
 from plant.models import UserPlant
 
 
@@ -118,25 +124,68 @@ class UserOrderListView(TemplateTitleMixin, ListView, LoginRequiredMixin):
 
 class BuyerOrderDetailView(
     TemplateTitleMixin,
+    ModelFormMixin,
     DetailView,
     LoginRequiredMixin,
 ):
     model = Order
-    title = 'Order Detail'
+    title = 'Buyer Order Detail'
     template_name = 'order/buyer_order_detail.html'
+    form_class = SellerOrderForm
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'order:buyer_order_detail', kwargs={'pk': self.object.pk}
+        )
 
     def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
+        context = super(BuyerOrderDetailView, self).get_context_data(
+            *args, **kwargs
+        )
+        form = SellerOrderForm(instance=self.object)
+        form.fields[
+            'address_for_pickup'
+        ].queryset = self.request.user.get_user_addresses.all()
+        context['form'] = form
+
         order = context['object']
         context['total_num_items'] = order.get_total_num_items()
+        # print(context)
         return context
 
     def get_object(self, queryset=None):
         """Raise 404 error if User is not Order Buyer"""
         obj = super().get_object(queryset)
-        if obj.buyer != self.request.user:
+        if obj.buyer != self.request.user and obj.seller != self.request.user:
             raise Http404("Order number not found for signed-in user")
+        # if obj.buyer != self.request.user:
+        #     raise Http404("Order number not found for signed-in user")
         return obj
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        print(form)
+        if form.is_valid():
+            print('test form is valid')
+            return self.form_valid(form)
+        else:
+            print(form.errors.as_data())
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        obj = form.save()
+        print('obj', obj)
+        print(obj.status)
+        if obj.status == obj.OrderStatusOptions.IN_PROGRESS:
+            obj.in_progress_date = timezone.now()
+        if (
+            obj.status == obj.OrderStatusOptions.SHIPPED
+            or obj.status == obj.OrderStatusOptions.COMPLETE
+        ):
+            obj.fulfilled_date = timezone.now()
+        obj.save()
+        return super(BuyerOrderDetailView, self).form_valid(form)
 
 
 class BuyerOrderUpdateView(
