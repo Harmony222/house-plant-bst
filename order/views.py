@@ -122,7 +122,7 @@ class BuyerOrderDetailView(
     LoginRequiredMixin,
 ):
     model = Order
-    title = 'Buyer Order Detail'
+    title = 'Order Detail'
     template_name = 'order/buyer_order_detail.html'
 
     def get_context_data(self, *args, **kwargs):
