@@ -122,26 +122,27 @@ class UserOrderListView(TemplateTitleMixin, ListView, LoginRequiredMixin):
         )
 
 
-class BuyerOrderDetailView(
+class OrderDetailView(
     TemplateTitleMixin,
     ModelFormMixin,
     DetailView,
     LoginRequiredMixin,
 ):
     model = Order
-    title = 'Buyer Order Detail'
-    template_name = 'order/buyer_order_detail.html'
+    title = 'Order Detail'
+    template_name = 'order/order_detail.html'
     form_class = SellerOrderForm
 
     def get_success_url(self):
         return reverse_lazy(
-            'order:buyer_order_detail', kwargs={'pk': self.object.pk}
+            'order:order_detail', kwargs={'pk': self.object.pk}
         )
 
     def get_context_data(self, *args, **kwargs):
-        context = super(BuyerOrderDetailView, self).get_context_data(
+        context = super(OrderDetailView, self).get_context_data(
             *args, **kwargs
         )
+        # https://stackoverflow.com/questions/45659986/django-implementing-a-form-within-a-generic-detailview
         form = SellerOrderForm(instance=self.object)
         form.fields[
             'address_for_pickup'
@@ -150,7 +151,6 @@ class BuyerOrderDetailView(
 
         order = context['object']
         context['total_num_items'] = order.get_total_num_items()
-        # print(context)
         return context
 
     def get_object(self, queryset=None):
@@ -158,16 +158,12 @@ class BuyerOrderDetailView(
         obj = super().get_object(queryset)
         if obj.buyer != self.request.user and obj.seller != self.request.user:
             raise Http404("Order number not found for signed-in user")
-        # if obj.buyer != self.request.user:
-        #     raise Http404("Order number not found for signed-in user")
         return obj
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         form = self.get_form()
-        print(form)
         if form.is_valid():
-            print('test form is valid')
             return self.form_valid(form)
         else:
             print(form.errors.as_data())
@@ -175,8 +171,6 @@ class BuyerOrderDetailView(
 
     def form_valid(self, form):
         obj = form.save()
-        print('obj', obj)
-        print(obj.status)
         if obj.status == obj.OrderStatusOptions.IN_PROGRESS:
             obj.in_progress_date = timezone.now()
         if (
@@ -185,7 +179,7 @@ class BuyerOrderDetailView(
         ):
             obj.fulfilled_date = timezone.now()
         obj.save()
-        return super(BuyerOrderDetailView, self).form_valid(form)
+        return super(OrderDetailView, self).form_valid(form)
 
 
 class BuyerOrderUpdateView(
@@ -197,7 +191,6 @@ class BuyerOrderUpdateView(
     title = 'Update Order'
     form_class = OrderForm
     template_name = 'order/order_create.html'
-    # template_name = 'order/buyer_order_update.html'
     success_url = None
 
     def get_object(self, queryset=None):
@@ -261,7 +254,7 @@ class BuyerOrderUpdateView(
 
     def get_success_url(self) -> str:
         return reverse_lazy(
-            'order:buyer_order_detail', kwargs={'pk': self.object.pk}
+            'order:order_detail', kwargs={'pk': self.object.pk}
         )
 
 

@@ -17,7 +17,7 @@
     <div class="row row-cols-3 row-cols-md-3 g-4">
         {% for object in object_list %}
             {% if object.buyer == user and object.status == 'CR' %}
-                {% include 'order/order_snippet.html' with url=object.get_buyer_detail_url %}
+                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
             {% endif %}
         {% endfor %}
     </div>
@@ -26,7 +26,7 @@
     <div class="row row-cols-3 row-cols-md-3 g-4">
         {% for object in object_list %}
             {% if object.buyer == user and object.status == 'IN' %}
-                {% include 'order/order_snippet.html' with url=object.get_buyer_detail_url %}
+                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
             {% endif %}
         {% endfor %}
     </div>
@@ -36,7 +36,7 @@
         {% for object in object_list %}
             {% if object.buyer == user %} 
                 {% if object.status == 'CO' or object.status == 'SH' %}
-                {% include 'order/order_snippet.html' with url=object.get_buyer_detail_url %}
+                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
                 {% endif %}
             {% endif %}
         {% endfor %}
@@ -49,7 +49,7 @@
     <div class="row row-cols-3 row-cols-md-3 g-4">
         {% for object in object_list %}
             {% if object.seller == user and object.status == 'CR' %}
-                {% include 'order/order_snippet.html' with url=object.get_seller_detail_url %}
+                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
             {% endif %}
         {% endfor %}
     </div>
@@ -58,7 +58,7 @@
     <div class="row row-cols-3 row-cols-md-3 g-4">
         {% for object in object_list %}
             {% if object.seller == user and object.status == 'IN' %}
-                {% include 'order/order_snippet.html' with url=object.get_seller_detail_url %}
+                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
             {% endif %}
         {% endfor %}
     </div>
@@ -68,7 +68,7 @@
         {% for object in object_list %}
             {% if object.seller == user %} 
                 {% if object.status == 'CO' or object.status == 'SH' %}
-                {% include 'order/order_snippet.html' with url=object.get_seller_detail_url %}
+                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
                 {% endif %}
             {% endif %}
         {% endfor %}

@@ -65,9 +65,13 @@
 
         {% if object.handling == 'SH' %}
         <h5 class="mt-3">Shipping address:</h5>
-        <p class="card-text mb-2">
-            {{ object.address_for_shipping }}
-        </p>
+            {% if object.address_for_shipping %}
+            <p class="card-text mb-2">{{ object.address_for_shipping }}</p>
+            {% else %}
+            <p class="card-text mb-2">
+                Pending - buyer to enter shipping address.
+            </p>
+            {% endif %}
         {% else %}
         <h5 class="mt-3">Pickup address:</h5>
             {% if object.address_for_pickup %}
@@ -113,7 +117,9 @@
             <ul class="list-inline">
                 <li class='list-inline-item me-0' ><i class="bi bi-dash" style="font-size: 1.4rem;"></i> </li>
                 <li class='list-inline-item'><span class='disabledText'>In progress:</span> Waiting on seller to acknowledge order</li>
+                {% if object.seller == user %}
                 <li class='list-inline-item'><button class='btn btn-sm custom-btn' onclick="markStatus('IN')"> Mark as In Progress</button></li>
+                {% endif %}
             </ul>
         {% endif %}
 
@@ -127,13 +133,17 @@
             <ul class="list-inline">
                 <li class='list-inline-item me-0'><i class="bi bi-dash" style="font-size: 1.4rem;"></i> </li>
                 <li class='list-inline-item'><span class='disabledText'>Order shipped:</span> Waiting on seller to ship order</li>
-                <li class='list-inline-item'><button class='btn btn-sm custom-btn' onclick="markStatus('SH')"> Mark as shipped.</button></li>
+                {% if object.seller == user %}
+                <li class='list-inline-item'><button class='btn btn-sm custom-btn' onclick="markStatus('SH')"> Mark as Shipped</button></li>
+                {% endif %}
             </ul>
             {% else %}
             <ul class="list-inline">
                 <li class='list-inline-item me-0'><i class="bi bi-dash" style="font-size: 1.4rem;"></i> </li>
                 <li class='list-inline-item'><span class='disabledText'>Order completed:</span> Waiting on order pickup</li>
-                <li class='list-inline-item'><button class='btn btn-sm custom-btn' onclick="markStatus('CO')"> Mark as Complete.</button></li>
+                {% if object.seller == user %}
+                <li class='list-inline-item'><button class='btn btn-sm custom-btn' onclick="markStatus('CO')"> Mark as Complete</button></li>
+                {% endif %}
             </ul>
             {% endif %}
         {% endif %}
@@ -175,6 +185,7 @@
 
     // Use to determine if page was reloaded after Address form was open so
     // as to UnHide address form upon reload
+    // https://stackoverflow.com/questions/41904975/refresh-page-and-run-function-after-javascript
     window.onload = function() {
         var reloading = sessionStorage.getItem('reloading');
         if (reloading) {

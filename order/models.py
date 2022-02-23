@@ -132,18 +132,14 @@ class Order(models.Model):
         """Return the url for buyer to update order"""
         return reverse_lazy('order:buyer_order_update', kwargs={'pk': self.pk})
 
-    def get_buyer_detail_url(self):
-        return reverse_lazy('order:buyer_order_detail', kwargs={'pk': self.pk})
+    def get_detail_url(self):
+        return reverse_lazy('order:order_detail', kwargs={'pk': self.pk})
 
     def get_seller_update_url(self):
         """Return the url for seller to update order"""
         return reverse_lazy(
             'order:seller_order_update', kwargs={'pk': self.pk}
         )
-
-    def get_seller_detail_url(self):
-        """Return the url for seller to view order details"""
-        return reverse_lazy('order:buyer_order_detail', kwargs={'pk': self.pk})
 
     def get_cancel_url(self):
         """Returns the url to cancel the Order"""
