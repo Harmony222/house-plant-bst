@@ -78,7 +78,9 @@
                 <ul class='list-inline'>
                     <li class='list-inline-item'>{{ object.address_for_pickup }}</li>
                     {% if object.seller == user %}
-                    <li class='list-inline-item'><button class='btn btn-sm custom-btn' onclick='showAddressForm()'>Change Address</button></li>
+                        {% if object.status == 'CR' or object.status == 'IN' %}
+                        <li class='list-inline-item'><button class='btn btn-sm custom-btn' onclick='showAddressForm()'>Change Address</button></li>
+                        {% endif %}
                     {% endif %}
                 </ul>
 
@@ -86,7 +88,9 @@
                 <ul class='list-inline'>
                     <li class='list-inline-item'>Pending - seller to enter pickup address.</li>
                     {% if object.seller == user %}
-                    <li class='list-inline-item'><button class='btn btn-sm custom-btn' onclick='showAddressForm()'>Add Pickup Address</button></li>
+                        {% if object.status == 'CR' or object.status == 'IN' %}
+                        <li class='list-inline-item'><button class='btn btn-sm custom-btn' onclick='showAddressForm()'>Add Pickup Address</button></li>
+                        {% endif %}
                     {% endif %}
                 </ul>
             {% endif %}
@@ -102,7 +106,7 @@
         </form>
 
         <h5 class="mt-3">Order status:</h5>
-        <ul class="list-group list-group-flush">
+        <ul class="list-group list-group-flush mb-2">
             <ul class="list-inline">
                 <li class='list-inline-item me-0'><i class="bi bi-check" style="font-size: 1.4rem;"></i> </li>
                 <li class='list-inline-item'>Order placed: {{ object.creation_date }}</li>
@@ -117,7 +121,7 @@
             <ul class="list-inline">
                 <li class='list-inline-item me-0' ><i class="bi bi-dash" style="font-size: 1.4rem;"></i> </li>
                 <li class='list-inline-item'><span class='disabledText'>In progress:</span> Waiting on seller to acknowledge order</li>
-                {% if object.seller == user %}
+                {% if object.seller == user and object.status == 'CR' %}
                 <li class='list-inline-item'><button class='btn btn-sm custom-btn' onclick="markStatus('IN')"> Mark as In Progress</button></li>
                 {% endif %}
             </ul>
@@ -133,7 +137,7 @@
             <ul class="list-inline">
                 <li class='list-inline-item me-0'><i class="bi bi-dash" style="font-size: 1.4rem;"></i> </li>
                 <li class='list-inline-item'><span class='disabledText'>Order shipped:</span> Waiting on seller to ship order</li>
-                {% if object.seller == user %}
+                {% if object.seller == user and object.status == 'IN' %}
                 <li class='list-inline-item'><button class='btn btn-sm custom-btn' onclick="markStatus('SH')"> Mark as Shipped</button></li>
                 {% endif %}
             </ul>
@@ -148,38 +152,44 @@
             {% endif %}
         {% endif %}
         </ul>
-
+</div>
+        <!-- Display info about canceled Order -->
+        {% if object.status == 'CA' %}
+            <div class="card-footer bg-danger text-white" style="display: flex;">
+                <span >Order was canceled by {{ object.canceled_by }} on {{ object.canceled_date }}</span>
+            </div>
         <!-- Allow authenticated BUYER to edit the order details-->
-        {% if object.buyer == user and user.is_authenticated %}
+        {% elif object.buyer == user and user.is_authenticated %}
             <!-- Only allow user it edit order if not in progress yet -->
             {% if object.status == 'CR' %}
-            <div class="card-footer bg-white mb-0 ps-0" style="display: flex;">
+            <div class="card-footer bg-white" style="display: flex;">
                 <a href="{{ object.get_buyer_update_url }}" class="btn custom-btn">Edit Order</a>
             </div>
             {% else %}
-            <div class="card-footer bg-white mb-0 ps-0" style="display: flex;">
+            <div class="card-footer bg-white" style="display: flex;">
                 <a href="{{ object.get_buyer_update_url }}" class="disabledLink btn custom-btn">Edit Order</a>
                 <span class='form-text ms-2'>Order is in progress or complete - unable to edit order, please contact seller. </span>
             </div>
 
             {% endif %}
-        {% endif %}
 
         <!-- Allow authenticated SELLER to cancel order -->
-        {% if object.seller == user and user.is_authenticated %}
+        {% elif object.seller == user and user.is_authenticated %}
             <!-- Only allow user it cancel order if in create or in-progress status -->
             {% if object.status == 'CR' or object.status == 'IN' %}
-            <div class="card-footer bg-white mb-0 ps-0" style="display: flex;">
+            <div class="card-footer bg-white" style="display: flex;">
                 <a href="{{ object.get_cancel_url }}" class="btn btn-danger ">Cancel Order</a>
             </div>
             {% else %}
-            <div class="card-footer bg-white mb-0 ps-0" style="display: flex;">
+            <div class="card-footer bg-white" style="display: flex;">
                 <a href="{{ object.get_cancel_url }}" class="disabledLink btn btn-danger ">Cancel Order</a>
                 <span class='form-text ms-2'>Order is complete - unable to cancel order, please contact buyer. </span>
             </div>
             {% endif %}
+
+
         {% endif %}
-      </div>
+
     </div>
 </div>
 
