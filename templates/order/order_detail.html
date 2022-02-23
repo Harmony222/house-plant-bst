@@ -24,8 +24,8 @@
     {% if title %}
     <h2>{{ title }}</h2>
     {% endif %}
-
 </div>
+
 <div class="container d-flex justify-content-center my-4">
     <div class="card" style="width: 40rem">
       <div class="card-body pb-0">
@@ -149,8 +149,6 @@
         {% endif %}
         </ul>
 
-
-
         <!-- Allow authenticated BUYER to edit the order details-->
         {% if object.buyer == user and user.is_authenticated %}
             <!-- Only allow user it edit order if not in progress yet -->
@@ -167,6 +165,20 @@
             {% endif %}
         {% endif %}
 
+        <!-- Allow authenticated SELLER to cancel order -->
+        {% if object.seller == user and user.is_authenticated %}
+            <!-- Only allow user it cancel order if in create or in-progress status -->
+            {% if object.status == 'CR' or object.status == 'IN' %}
+            <div class="card-footer bg-white mb-0 ps-0" style="display: flex;">
+                <a href="{{ object.get_cancel_url }}" class="btn btn-danger ">Cancel Order</a>
+            </div>
+            {% else %}
+            <div class="card-footer bg-white mb-0 ps-0" style="display: flex;">
+                <a href="{{ object.get_cancel_url }}" class="disabledLink btn btn-danger ">Cancel Order</a>
+                <span class='form-text ms-2'>Order is complete - unable to cancel order, please contact buyer. </span>
+            </div>
+            {% endif %}
+        {% endif %}
       </div>
     </div>
 </div>

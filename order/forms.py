@@ -50,6 +50,9 @@ OrderItemFormSet = inlineformset_factory(
 
 
 class SellerOrderForm(forms.ModelForm):
+    """Used in order detail view for seller to update order status and
+    pickup address"""
+
     class Meta:
         model = Order
         fields = ['handling', 'address_for_pickup', 'status']
