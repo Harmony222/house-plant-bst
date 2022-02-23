@@ -296,10 +296,21 @@ class OrderCancelView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('order:user_orders_all')
 
     def form_valid(self, form):
-        """Set status to canceled (does not delete order from database)"""
+        """Set status to canceled
+        - does not delete order from database
+        - add quantity back to UserPlant
+        """
         self.object.status = self.object.OrderStatusOptions.CANCELED
         self.object.canceled_date = timezone.now()
         self.object.canceled_by = self.request.user
+
+        # add quantity back to Userplant quantity
+        userplant_pk = self.object.get_order_items.all()[0].user_plant.pk
+        userplant = get_object_or_404(UserPlant, pk=userplant_pk)
+        curr_quantity_ordered = self.object.get_order_items.all()[0].quantity
+        userplant.quantity += curr_quantity_ordered
+        userplant.save()
+
         self.object.save()
         return redirect(self.success_url)
 
