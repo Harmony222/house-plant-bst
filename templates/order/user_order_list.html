@@ -6,76 +6,224 @@
 
 {% block content %}
 
-{% if title %}
-<h2>{{ title }}</h2>
-{% endif %}
+<div class="container d-flex justify-content-center mt-3 mb-2">
+    {% if title %}
+    <h2>{{ title }}</h2>
+    {% endif %}
+</div>
 
-
-<h3>My Plant Purchases</h3>
-<div class="container my-3">
-    <h5>New Orders</h5>
-    <div class="row row-cols-3 row-cols-md-3 g-4">
-        {% for object in object_list %}
-            {% if object.buyer == user and object.status == 'CR' %}
+<h3 class="mt-0">My Plant Purchases</h3>
+<div class="accordion" id="accordionPanelsStayOpenExample">
+    <!-- User's purchases -->
+    <!-- New/Open purchases -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+        <button class="accordion-button collapsed fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+          New/Open    <span class='ms-4'>{{ object_list.buyer_new|length }} Result{{ object_list.buyer_new|pluralize }}</span> 
+        </button>
+      </h2>
+      <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingOne">
+        <div class="accordion-body">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for object in object_list.buyer_new %}
                 {% include 'order/order_snippet.html' with url=object.get_detail_url %}
-            {% endif %}
+            {% endfor %}
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- In-Progress purchases -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+        <button class="accordion-button collapsed fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+          In Progress    <span class='ms-4'>{{ object_list.buyer_in_progress|length }} Result{{ object_list.buyer_in_progress|pluralize }}</span> 
+        </button>
+      </h2>
+      <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+        <div class="accordion-body">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for object in object_list.buyer_in_progress %}
+                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
+            {% endfor %}
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Completed purchases -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+        <button class="accordion-button collapsed fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+          Completed <span class='ms-4'>{{ object_list.buyer_completed|length }} Result{{ object_list.buyer_completed|pluralize }}</span> 
+        </button>
+      </h2>
+      <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
+        <div class="accordion-body">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for object in object_list.buyer_completed %}
+                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
+            {% endfor %}
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Canceled purchases -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="panelsStayOpen-headingFour">
+        <button class="accordion-button collapsed fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseFour" aria-expanded="false" aria-controls="panelsStayOpen-collapseFour">
+          Canceled <span class='ms-4'>{{ object_list.buyer_canceled|length }} Result{{ object_list.buyer_canceled|pluralize }}</span> 
+        </button>
+      </h2>
+      <div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingFour">
+        <div class="accordion-body">
+            {% for object in object_list.buyer_canceled %}
+                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
+            {% endfor %}
+        </div>
+      </div>
+    </div>
+</div>
+
+<h3 class="mt-0">My Sold Plants</h3>
+<div class="accordion" id="accordionSoldPlants">
+    <!-- User's sold plants -->
+    <!-- New/Open sold items -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="panelSoldPlantsOne">
+        <button class="accordion-button collapsed fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#panelSoldPlants-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+          New/Open    <span class='ms-4'>{{ object_list.seller_new|length }} Result{{ object_list.seller_new|pluralize }}</span> 
+        </button>
+      </h2>
+      <div id="panelSoldPlants-collapseOne" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingOne">
+        <div class="accordion-body">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for object in object_list.seller_new %}
+                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
+            {% endfor %}
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- In-Progress purchases -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="panelSoldPlantsTwo">
+        <button class="accordion-button collapsed fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#panelSoldPlants-collapseTwo" aria-expanded="false" aria-controls="panelsSoldPlants-collapseTwo">
+          In Progress    <span class='ms-4'>{{ object_list.seller_in_progress|length }} Result{{ object_list.seller_in_progress|pluralize }}</span> 
+        </button>
+      </h2>
+      <div id="panelSoldPlants-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelSoldPlants-headingTwo">
+        <div class="accordion-body">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for object in object_list.seller_in_progress %}
+                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
+            {% endfor %}
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Completed purchases -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="panelSoldPlants-headingThree">
+        <button class="accordion-button collapsed fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#panelSoldPlants-collapseThree" aria-expanded="false" aria-controls="panelsSoldPlants-collapseThree">
+          Completed <span class='ms-4'>{{ object_list.seller_completed|length }} Result{{ object_list.seller_completed|pluralize }}</span> 
+        </button>
+      </h2>
+      <div id="panelSoldPlants-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsSoldPlants-headingThree">
+        <div class="accordion-body">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for object in object_list.seller_completed %}
+                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
+            {% endfor %}
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Canceled purchases -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="panelSoldPlants-headingFour">
+        <button class="accordion-button collapsed fs-4" type="button" data-bs-toggle="collapse" data-bs-target="#panelSoldPlants-collapseFour" aria-expanded="false" aria-controls="panelsSoldPlants-collapseFour">
+          Canceled <span class='ms-4'>{{ object_list.seller_canceled|length }} Result{{ object_list.seller_canceled|pluralize }}</span> 
+        </button>
+      </h2>
+      <div id="panelSoldPlants-collapseFour" class="accordion-collapse collapse" aria-labelledby="panelSoldPlants-headingFour">
+        <div class="accordion-body">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for object in object_list.seller_canceled %}
+                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
+            {% endfor %}
+            </div>
+        </div>
+      </div>
+    </div>
+</div>
+<!-- <div class="container my-3">
+    <h5>New/Open</h5>
+    {{ object_list.buyer_new|length }}
+    <div class="row row-cols-3 row-cols-md-3 g-4">
+        {% for object in object_list.buyer_new %}
+            {% include 'order/order_snippet.html' with url=object.get_detail_url %}
         {% endfor %}
     </div>
     <hr>
-    <h5>In Progress Orders</h5>
+    <h5>In Progress</h5>
     <div class="row row-cols-3 row-cols-md-3 g-4">
-        {% for object in object_list %}
-            {% if object.buyer == user and object.status == 'IN' %}
-                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
-            {% endif %}
+        {% for object in object_list.buyer_in_progress %}
+            {% include 'order/order_snippet.html' with url=object.get_detail_url %}
         {% endfor %}
     </div>
     <hr>
-    <h5>Completed Orders</h5>
+    <h5>Completed</h5>
     <div class="row row-cols-3 row-cols-md-3 g-4">
-        {% for object in object_list %}
-            {% if object.buyer == user %} 
-                {% if object.status == 'CO' or object.status == 'SH' %}
-                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
-                {% endif %}
-            {% endif %}
+        {% for object in object_list.buyer_completed %}
+            {% include 'order/order_snippet.html' with url=object.get_detail_url %}
+        {% endfor %}
+    </div>
+    <hr>
+    <h5>Canceled</h5>
+    <div class="row row-cols-3 row-cols-md-3 g-4">
+        {% for object in object_list.buyer_canceled %}
+            {% include 'order/order_snippet.html' with url=object.get_detail_url %}
         {% endfor %}
     </div>
 </div>
 <br>
 <h3>My Sold Plants</h3>
 <div class="container my-3">
-    <h5>New Orders</h5>
+    <h5>New/Open</h5>
     <div class="row row-cols-3 row-cols-md-3 g-4">
-        {% for object in object_list %}
-            {% if object.seller == user and object.status == 'CR' %}
-                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
-            {% endif %}
+        {% for object in object_list.seller_new %}
+            {% include 'order/order_snippet.html' with url=object.get_detail_url %}
         {% endfor %}
     </div>
     <hr>
-    <h5>In Progress Orders</h5>
+    <h5>In Progress</h5>
     <div class="row row-cols-3 row-cols-md-3 g-4">
-        {% for object in object_list %}
-            {% if object.seller == user and object.status == 'IN' %}
-                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
-            {% endif %}
+        {% for object in object_list.seller_in_progress %}
+            {% include 'order/order_snippet.html' with url=object.get_detail_url %}
         {% endfor %}
     </div>
     <hr>
-    <h5>Completed Orders</h5>
+    <h5>Completed</h5>
     <div class="row row-cols-3 row-cols-md-3 g-4">
-        {% for object in object_list %}
-            {% if object.seller == user %} 
-                {% if object.status == 'CO' or object.status == 'SH' %}
-                {% include 'order/order_snippet.html' with url=object.get_detail_url %}
-                {% endif %}
-            {% endif %}
+        {% for object in object_list.seller_completed %}
+            {% include 'order/order_snippet.html' with url=object.get_detail_url %}
+        {% endfor %}
+    </div>
+    <hr>
+    <h5>Canceled</h5>
+    <div class="row row-cols-3 row-cols-md-3 g-4">
+        {% for object in object_list.seller_canceled %}
+            {% include 'order/order_snippet.html' with url=object.get_detail_url %}
         {% endfor %}
     </div>
 </div>
 
-
+ -->
 
 
 {% endblock %}

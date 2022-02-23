@@ -10,7 +10,6 @@ from django.views.generic import (
 from django.views.generic.edit import ModelFormMixin
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
 from django.utils import timezone
 
 from plant.mixins import TemplateTitleMixin
@@ -112,14 +111,47 @@ class AddressCreateView(TemplateTitleMixin, CreateView, LoginRequiredMixin):
 
 class UserOrderListView(TemplateTitleMixin, ListView, LoginRequiredMixin):
     model = Order
-    title = 'User Purchase Order History'
+    title = 'Purchase Order History'
     template_name = 'order/user_order_list.html'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        return queryset.filter(
-            Q(seller=self.request.user) | Q(buyer=self.request.user)
-        )
+        # queryset = super().get_queryset()
+        queryset = {
+            'buyer_new': Order.objects.all()
+            .filter(buyer=self.request.user, status='CR')
+            .order_by('-creation_date'),
+            'buyer_in_progress': Order.objects.all()
+            .filter(buyer=self.request.user, status='IN')
+            .order_by('-creation_date'),
+            'buyer_completed': Order.objects.all()
+            .filter(buyer=self.request.user, status__in=['SH', 'CO'])
+            .order_by('-creation_date'),
+            'buyer_canceled': Order.objects.all()
+            .filter(buyer=self.request.user, status='CA')
+            .order_by('-creation_date'),
+            'seller_new': Order.objects.all()
+            .filter(seller=self.request.user, status='CR')
+            .order_by('-creation_date'),
+            'seller_in_progress': Order.objects.all()
+            .filter(seller=self.request.user, status='IN')
+            .order_by('-creation_date'),
+            'seller_completed': Order.objects.all()
+            .filter(seller=self.request.user, status__in=['SH', 'CO'])
+            .order_by('-creation_date'),
+            'seller_canceled': Order.objects.all()
+            .filter(seller=self.request.user, status='CA')
+            .order_by('-creation_date'),
+        }
+        # return queryset.filter(
+        #     Q(seller=self.request.user) | Q(buyer=self.request.user)
+        # )
+        return queryset
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        print(context)
+
+        return context
 
 
 class OrderDetailView(
