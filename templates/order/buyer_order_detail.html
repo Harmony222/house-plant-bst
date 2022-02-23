@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
 <style>
     .disabledText {
         opacity: 0.4;
@@ -76,32 +77,33 @@
 
         <h5 class="mt-3">Order status:</h5>
         <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-                <input class="form-check-input me-1" checked type="checkbox" value="" disabled>
-                Order placed: {{ object.creation_date }}
-            </li>
+            <ul class="list-inline">
+                <li class='list-inline-item me-0'><i class="bi bi-check" style="font-size: 1.4rem;"></i> </li>
+                <li class='list-inline-item'>Order placed: {{ object.creation_date }}</li>
+            </ul>
+
         {% if object.in_progress_date %}  
-            <li class="list-group-item">
-                <input class="form-check-input me-1" checked type="checkbox" value="" disabled>
-                In progress: {{ object.in_progress_date }}
-            </li>
+            <ul class="list-inline">
+                <li class='list-inline-item me-0'><i class="bi bi-check" style="font-size: 1.4rem;"></i> </li>
+                <li class='list-inline-item'>In progress: {{ object.in_progress_date }}</li>
+            </ul>
         {% else %}
-            <li class="list-group-item">
-                <input class="form-check-input me-1"  type="checkbox" value="" disabled>
-                In progress: Waiting on seller to acknowledge order
-            </li>
+            <ul class="list-inline">
+                <li class='list-inline-item me-0' ><i class="bi bi-dash" style="font-size: 1.4rem;"></i> </li>
+                <li class='list-inline-item'>In progress: Waiting on seller to acknowledge order</li>
+            </ul>
         {% endif %}
 
         {% if object.fullfilled_date %}  
-            <li class="list-group-item">
-                <input class="form-check-input me-1" checked type="checkbox" value="" disabled>
-                Order shipped: {{ object.fulfilled_date }}
-            </li>
+            <ul class="list-inline">
+                <li class='list-inline-item me-0'><i class="bi bi-check" style="font-size: 1.4rem;"></i> </li>
+                <li class='list-inline-item'>Order shipped: {{ object.fulfilled_date }}</li>
+            </ul>
         {% else %}
-            <li class="list-group-item">
-                <input class="form-check-input me-1"  type="checkbox" value="" disabled>
-                Order shipped: Waiting on seller to ship order
-            </li>
+            <ul class="list-inline">
+                <li class='list-inline-item me-0'><i class="bi bi-dash" style="font-size: 1.4rem;"></i> </li>
+                <li class='list-inline-item'>Order shipped: Waiting on seller to ship order</li>
+            </ul>
         {% endif %}
         </ul>
 

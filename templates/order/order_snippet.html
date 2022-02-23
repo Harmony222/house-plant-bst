@@ -1,0 +1,23 @@
+
+        <div class="col">
+            <div class="card card-link h-100">
+                <a href="{{ url }}" class="card-link">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            Order ID {{ object.id }}
+                        </h5>
+                        {% for item in object.get_order_items.all %}
+                        <p class="card-text text-muted">
+                            {{ item.user_plant.plant.scientific_name }}
+                        </p>
+                        <p class="card-text text-muted">
+                            quantity {{ item.quantity }}
+                        </p> 
+                        </p> 
+                        {% endfor %}
+                        <p class="card-text text-muted">
+                            status {{ object.get_status_display }}
+                    </div>
+                </a> 
+            </div>
+        </div>

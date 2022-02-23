@@ -1,6 +1,9 @@
 {% extends 'base.html' %} 
 {% load static %}
 
+{% block head %}
+{% endblock %}
+
 {% block content %}
 
 {% if title %}
@@ -10,61 +13,64 @@
 
 <h3>My Plant Purchases</h3>
 <div class="container my-3">
-    <div class="row row-cols-2 row-cols-md-2 g-4">
+    <h5>New Orders</h5>
+    <div class="row row-cols-3 row-cols-md-3 g-4">
         {% for object in object_list %}
-        {% if object.buyer == user %}
-        <div class="col">
-            <div class="card card-link h-100">
-                <a href="" class="card-link">
-                    <div class="card-body">
-                        <a href="{% url 'order:buyer_order_detail' object.pk %}">
-                        <h4 class="card-title">
-                            Order ID {{ object.id }}
-                        </h4>
-                        </a>
-                        {% for item in object.get_order_items.all %}
-                        <p  class="card-text text-muted">
-                            {{ item.user_plant.plant.scientific_name }}
-                        </p>
-                        <p class="card-text text-muted">
-                            quantity {{ item.quantity }}
-                        </p> 
-                            {% endfor %}
-                    </div>
-                </a> 
-            </div>
-        </div>
-        {% endif %}
+            {% if object.buyer == user and object.status == 'CR' %}
+                {% include 'order/order_snippet.html' with url=object.get_buyer_detail_url %}
+            {% endif %}
+        {% endfor %}
+    </div>
+    <hr>
+    <h5>In Progress Orders</h5>
+    <div class="row row-cols-3 row-cols-md-3 g-4">
+        {% for object in object_list %}
+            {% if object.buyer == user and object.status == 'IN' %}
+                {% include 'order/order_snippet.html' with url=object.get_buyer_detail_url %}
+            {% endif %}
+        {% endfor %}
+    </div>
+    <hr>
+    <h5>Completed Orders</h5>
+    <div class="row row-cols-3 row-cols-md-3 g-4">
+        {% for object in object_list %}
+            {% if object.buyer == user %} 
+                {% if object.status == 'CO' or object.status == 'SH' %}
+                {% include 'order/order_snippet.html' with url=object.get_buyer_detail_url %}
+                {% endif %}
+            {% endif %}
         {% endfor %}
     </div>
 </div>
-
+<br>
 <h3>My Sold Plants</h3>
 <div class="container my-3">
-    <div class="row row-cols-2 row-cols-md-2 g-4">
+    <h5>New Orders</h5>
+    <div class="row row-cols-3 row-cols-md-3 g-4">
         {% for object in object_list %}
-        {% if object.seller == user %}
-        <div class="col">
-            <div class="card card-link h-100">
-                <a href="" class="card-link">
-                    <div class="card-body">
-                        <h4 class="card-title">
-                            Order ID {{ object.id }}
-                        </h4>
-                        </a>
-                        {% for item in object.get_order_items.all %}
-                        <p class="card-text text-muted">
-                            {{ item.user_plant.plant.scientific_name }}
-                        </p>
-                        <p class="card-text text-muted">
-                            quantity {{ item.quantity }}
-                        </p> 
-                            {% endfor %}
-                    </div>
-                </a> 
-            </div>
-        </div>
-        {% endif %}
+            {% if object.seller == user and object.status == 'CR' %}
+                {% include 'order/order_snippet.html' with url=object.get_seller_detail_url %}
+            {% endif %}
+        {% endfor %}
+    </div>
+    <hr>
+    <h5>In Progress Orders</h5>
+    <div class="row row-cols-3 row-cols-md-3 g-4">
+        {% for object in object_list %}
+            {% if object.seller == user and object.status == 'IN' %}
+                {% include 'order/order_snippet.html' with url=object.get_seller_detail_url %}
+            {% endif %}
+        {% endfor %}
+    </div>
+    <hr>
+    <h5>Completed Orders</h5>
+    <div class="row row-cols-3 row-cols-md-3 g-4">
+        {% for object in object_list %}
+            {% if object.seller == user %} 
+                {% if object.status == 'CO' or object.status == 'SH' %}
+                {% include 'order/order_snippet.html' with url=object.get_seller_detail_url %}
+                {% endif %}
+            {% endif %}
         {% endfor %}
     </div>
 </div>
