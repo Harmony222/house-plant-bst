@@ -17,9 +17,9 @@ urlpatterns = [
     ),
     path('', views.UserOrderListView.as_view(), name='user_orders_all'),
     path(
-        '<int:pk>/buyer/',
-        views.BuyerOrderDetailView.as_view(),
-        name='buyer_order_detail',
+        '<int:pk>/',
+        views.OrderDetailView.as_view(),
+        name='order_detail',
     ),
     path(
         '<int:pk>/update/',
