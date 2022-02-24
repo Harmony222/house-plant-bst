@@ -55,6 +55,23 @@ class UserPlantForm(forms.ModelForm):
             'scientific_name'
         )
 
+    def clean(self):
+        super().clean()
+        is_for_sale = self.cleaned_data['is_for_sale']
+        is_for_trade = self.cleaned_data['is_for_trade']
+        if not is_for_sale and not is_for_trade:
+            raise forms.ValidationError(
+                'At least one of "Is for sale" or "Is for trade"'
+                'should be selected'
+            )
+        is_for_pickup = self.cleaned_data['is_for_pickup']
+        is_for_shipping = self.cleaned_data['is_for_shipping']
+        if not is_for_pickup and not is_for_shipping:
+            raise forms.ValidationError(
+                'At least one of "Is for pickup" or "Is for shipping"'
+                'should be selected'
+            )
+
 
 class TagForm(forms.ModelForm):
     class Meta:

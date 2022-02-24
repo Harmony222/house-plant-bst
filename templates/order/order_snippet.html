@@ -5,7 +5,7 @@
         <div class="card card-link h-100" style="width: 18rem;">
             <div class="card-header">
                 <div class="d-flex justify-content-between">
-                    <h5 class="card-title">Order ID {{ object.id }}</h5>
+                    <h6 class="card-title">Order ID {{ object.id }}</h6>
                     <small>${{ object.total_price }}</small>
                 </div>
             </div>
@@ -24,14 +24,19 @@
                 <p class="card-text">Handling method: {{ object.get_handling_display }}</p>
             </div>
             {% if object.buyer == user and object.handling == 'SH' and not object.address_for_shipping %}
-            <div class="card-footer bg-danger text-white">
-                <small>Buyer needs to select shipping address</small>
+            <div class="card-footer bg-danger text-white text-center">
+                <small>Buyer to select shipping address</small>
             </div>
             {% elif object.seller == user and object.handling == 'PI' and not object.address_for_pickup %}
-            <div class="card-footer bg-danger text-white">
-                <small>Seller needs to select pickup address</small>
+            <div class="card-footer bg-danger text-white text-center">
+                <small>Seller to select pickup address</small>
             </div>
             {% else %}
+            <div class="card-footer text-center">
+                <small>{{ object.OrderStatusOptions.IN_PROGRESS }}</small>
+                <small>Seller to select pickup address</small>
+            </div>
+
             {% endif %}
         </div>
     </a>
