@@ -152,7 +152,7 @@
             {% endif %}
         {% endif %}
         </ul>
-</div>
+      </div>
         <!-- Display info about canceled Order -->
         {% if object.status == 'CA' %}
             <div class="card-footer bg-danger text-white" style="display: flex;">
@@ -189,6 +189,10 @@
         {% endif %}
 
     </div>
+</div>
+
+<div class="container d-flex justify-content-center my-4">
+    <a href="{% url 'order:user_orders_all' %}" class="btn custom-btn">Return to Order History</a>
 </div>
 
 <!-- Decorative green block div in background -->
