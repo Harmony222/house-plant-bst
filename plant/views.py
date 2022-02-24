@@ -183,7 +183,6 @@ class MarketplacePlantDetailView(
         context['location'] = self._get_citystate_from_zipcode(
             zipcode, zipcode_data
         )
-        print(context)
 
         return context
 

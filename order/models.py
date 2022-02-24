@@ -37,8 +37,7 @@ class Order(models.Model):
     class OrderStatusOptions(models.TextChoices):
         CREATED = 'CR', _('Created')
         IN_PROGRESS = 'IN', _('In-progress')
-        SHIPPED = 'SH', _('Shipped')
-        COMPLETE = 'CO', _('Complete')
+        FULFILLED = 'FU', _('Fulfilled')
         CANCELED = 'CA', _('Canceled')
 
     class OrderHandlingOptions(models.TextChoices):
@@ -144,6 +143,9 @@ class Order(models.Model):
     def get_cancel_url(self):
         """Returns the url to cancel the Order"""
         return reverse_lazy('order:order_cancel', kwargs={'pk': self.pk})
+
+    # def get_current_status_and_date(self):
+    #     cur_status = self.status
 
 
 class OrderItem(models.Model):

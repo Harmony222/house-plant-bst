@@ -124,7 +124,7 @@ class UserOrderListView(TemplateTitleMixin, ListView, LoginRequiredMixin):
             .filter(buyer=self.request.user, status='IN')
             .order_by('-creation_date'),
             'buyer_completed': Order.objects.all()
-            .filter(buyer=self.request.user, status__in=['SH', 'CO'])
+            .filter(buyer=self.request.user, status='FU')
             .order_by('-creation_date'),
             'buyer_canceled': Order.objects.all()
             .filter(buyer=self.request.user, status='CA')
@@ -136,22 +136,13 @@ class UserOrderListView(TemplateTitleMixin, ListView, LoginRequiredMixin):
             .filter(seller=self.request.user, status='IN')
             .order_by('-creation_date'),
             'seller_completed': Order.objects.all()
-            .filter(seller=self.request.user, status__in=['SH', 'CO'])
+            .filter(seller=self.request.user, status='FU')
             .order_by('-creation_date'),
             'seller_canceled': Order.objects.all()
             .filter(seller=self.request.user, status='CA')
             .order_by('-creation_date'),
         }
-        # return queryset.filter(
-        #     Q(seller=self.request.user) | Q(buyer=self.request.user)
-        # )
         return queryset
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        print(context)
-
-        return context
 
 
 class OrderDetailView(
@@ -205,10 +196,7 @@ class OrderDetailView(
         obj = form.save()
         if obj.status == obj.OrderStatusOptions.IN_PROGRESS:
             obj.in_progress_date = timezone.now()
-        if (
-            obj.status == obj.OrderStatusOptions.SHIPPED
-            or obj.status == obj.OrderStatusOptions.COMPLETE
-        ):
+        if obj.status == obj.OrderStatusOptions.FULFILLED:
             obj.fulfilled_date = timezone.now()
         obj.save()
         return super(OrderDetailView, self).form_valid(form)
@@ -297,6 +285,7 @@ class OrderCancelView(LoginRequiredMixin, DeleteView):
 
     def form_valid(self, form):
         """Set status to canceled
+
         - does not delete order from database
         - add quantity back to UserPlant
         """

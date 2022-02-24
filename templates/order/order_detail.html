@@ -138,15 +138,15 @@
                 <li class='list-inline-item me-0'><i class="bi bi-dash" style="font-size: 1.4rem;"></i> </li>
                 <li class='list-inline-item'><span class='disabledText'>Order shipped:</span> Waiting on seller to ship order</li>
                 {% if object.seller == user and object.status == 'IN' %}
-                <li class='list-inline-item'><button class='btn btn-sm custom-btn' onclick="markStatus('SH')"> Mark as Shipped</button></li>
+                <li class='list-inline-item'><button class='btn btn-sm custom-btn' onclick="markStatus('FU')"> Mark as Shipped</button></li>
                 {% endif %}
             </ul>
             {% else %}
             <ul class="list-inline">
                 <li class='list-inline-item me-0'><i class="bi bi-dash" style="font-size: 1.4rem;"></i> </li>
                 <li class='list-inline-item'><span class='disabledText'>Order completed:</span> Waiting on order pickup</li>
-                {% if object.seller == user %}
-                <li class='list-inline-item'><button class='btn btn-sm custom-btn' onclick="markStatus('CO')"> Mark as Complete</button></li>
+                {% if object.seller == user and object.status == 'IN' %}
+                <li class='list-inline-item'><button class='btn btn-sm custom-btn' onclick="markStatus('FU')"> Mark as Complete</button></li>
                 {% endif %}
             </ul>
             {% endif %}
@@ -170,7 +170,6 @@
                 <a href="{{ object.get_buyer_update_url }}" class="disabledLink btn custom-btn">Edit Order</a>
                 <span class='form-text ms-2'>Order is in progress or complete - unable to edit order, please contact seller. </span>
             </div>
-
             {% endif %}
 
         <!-- Allow authenticated SELLER to cancel order -->
@@ -186,7 +185,6 @@
                 <span class='form-text ms-2'>Order is complete - unable to cancel order, please contact buyer. </span>
             </div>
             {% endif %}
-
 
         {% endif %}
 
