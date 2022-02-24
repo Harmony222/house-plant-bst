@@ -44,7 +44,7 @@
                                         {% if not trade_item.user_plant.is_for_pickup and not trade_item.user_plant.is_for_shipping %}
                                             <em>{{ trade.seller.get_username|capfirst }} has not specified a handling method</em>
                                         {% else %}
-                                            which is available for:
+                                            Available for:
                                             {% if trade_item.user_plant.is_for_pickup %}
                                                 <em>Pickup</em>
                                             {% endif %}
