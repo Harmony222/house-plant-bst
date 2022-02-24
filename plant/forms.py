@@ -57,6 +57,8 @@ class UserPlantForm(forms.ModelForm):
 
     def clean(self):
         super().clean()
+        # https://dontrepeatyourself.org/post/how-to-customize-the-validation-of-forms-in-django/
+        # ensure user selects at least for sale or for trade
         is_for_sale = self.cleaned_data['is_for_sale']
         is_for_trade = self.cleaned_data['is_for_trade']
         if not is_for_sale and not is_for_trade:
@@ -64,6 +66,7 @@ class UserPlantForm(forms.ModelForm):
                 'At least one of "Is for sale" or "Is for trade"'
                 'should be selected'
             )
+        # ensure user selects at least pickup or shipping
         is_for_pickup = self.cleaned_data['is_for_pickup']
         is_for_shipping = self.cleaned_data['is_for_shipping']
         if not is_for_pickup and not is_for_shipping:
