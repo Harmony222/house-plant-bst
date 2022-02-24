@@ -1,3 +1,4 @@
+from time import strftime
 from django.db import models
 from plant.models import UserPlant
 from django.conf import settings
@@ -144,8 +145,21 @@ class Order(models.Model):
         """Returns the url to cancel the Order"""
         return reverse_lazy('order:order_cancel', kwargs={'pk': self.pk})
 
-    # def get_current_status_and_date(self):
-    #     cur_status = self.status
+    def get_current_status_and_date(self):
+        status_dates = {
+            self.OrderStatusOptions.CREATED: self.creation_date,
+            self.OrderStatusOptions.IN_PROGRESS: self.in_progress_date,
+            self.OrderStatusOptions.FULFILLED: self.fulfilled_date,
+            self.OrderStatusOptions.CANCELED: self.canceled_date,
+        }
+        status_date = status_dates[self.status]
+        if status_date is not None:
+            status_date_str = status_date.strftime('%m-%d-%Y %H:%M')
+
+        return {
+            'status': self.get_status_display(),
+            'status_date': status_date_str,
+        }
 
 
 class OrderItem(models.Model):
