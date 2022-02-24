@@ -51,3 +51,12 @@ a.scientific-name {
 a.scientific-name:hover {
     color: #b1d60d;
 }
+
+/* plant resources styles */
+a.custom-page-link {
+    color: black;
+}
+
+a.custom-page-link:hover {
+    color: #00b3a1;
+}

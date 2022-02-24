@@ -6,13 +6,11 @@
 <div class="container my-3">
     {% if user.is_authenticated %}
     <!-- Show Order History if user is logged in -->
-        <h3>{{ user.get_username|capfirst }}'s <span class="h-text">Order</span> History</h3>
+        <h3>{{ user.get_username|capfirst }}'s <span class="h-text">Trade</span> Order History</h3>
         <br>
-        <!-- TODO: Buy/Sell Orders Section -->
         
 
         <!-- Trades Section -->
-        <h3> Trades </h3>
         <div class="row">
             <!-- Row headers -->
             <div class="col">
