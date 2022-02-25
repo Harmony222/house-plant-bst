@@ -2,6 +2,15 @@
 {% load static %}
 
 {% block head %}
+<style>
+    .disabledText {
+        opacity: 0.4;
+    }
+    .disabledLink {
+        pointer-events: none;
+        opacity: 0.4;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -35,16 +44,7 @@
         </div>
         <hr>
 
-
         <form action="" method="post">
-            <div>
-
-            {% csrf_token %}
-            {{ form|crispy }}
-            <a id="openAddressLink" href="{% url 'order:address_create' %}" target="popup"
-                onclick="openAddressWindow()">Add new address</a>
-            </div>
-            <br>
             <table class="table table-borderless">
                 {{ order_item_form.management_form|crispy }}
                 {% for form in order_item_form.forms %}
@@ -84,6 +84,14 @@
                 </div>
             </div>
             <hr>
+            <div>
+
+            {% csrf_token %}
+            {{ form|crispy }}
+            <a id="openAddressLink" href="{% url 'order:address_create' %}" target="popup"
+                onclick="openAddressWindow()">Add new address</a>
+            </div>
+            <br>
 
             {% if not update %}
             <button type="submit" class="btn btn-primary custom-btn">Place Order</button>
@@ -91,7 +99,7 @@
             {% else %}
             <button type="submit" class="btn btn-primary custom-btn">Save Changes</button>
             <button type="button" class="btn btn-secondary" onclick="goBack()">Cancel Edit</button>
-            <button type="button" class="btn btn-danger ">Cancel Order</button>
+            <a href="{{ object.get_cancel_url }}" class="btn btn-danger ">Cancel Order</a>
             {% endif %}
         </form>
     </div>
@@ -101,11 +109,82 @@
 <div class="decorative-bg-div"></div>
 
 <script type="text/javascript">
+    // function to get label element of a form element
+    // https://stackoverflow.com/questions/285522/find-html-label-associated-with-a-given-input
+    function findLabelForControl(el) {
+        var idVal = el.id;
+        console.log(el.id);
+        labels = document.getElementsByTagName('label');
+        console.log(labels);
+        for (var i=0; i < labels.length; i++ ) {
+            if (labels[i].htmlFor == idVal) {
+                console.log('test');
+                return labels[i];
+            }
+        }
+    }
+
+    // Opens new window to add a new address Form, refreshes page upon close
+    var openAddressLink = document.getElementById('openAddressLink');
+    function openAddressWindow() {
+        url = openAddressLink.href;
+        window.open(url, 'window', 'toolbar=no, menubar=no, resizable=yes, width=600, height=600');
+    }
+
+    // hide the address for pickup section
+    var address_for_pickup_div = document.getElementById('div_id_address_for_pickup');
+    var address_for_pickup_select = document.getElementById('id_address_for_pickup');
+    address_for_pickup_div.style.display = 'none';
+
+    // disable shipping address seletion if Pickup handling method selected and
+    // display help text regarding pickup
+    var address_for_shipping_select = document.getElementById('id_address_for_shipping');
+    var address_for_shipping_div = document.getElementById('div_id_address_for_shipping');
+    var pickup_radio_input = document.getElementById('id_handling_1');
+    var pickup_label_el = findLabelForControl(pickup_radio_input);
+
+    // https://www.javascripttutorial.net/javascript-dom/javascript-change-event/
+    document.body.addEventListener('change', function(e) {
+        let target = e.target;
+        switch (target.id) {
+            case 'id_handling_0':
+                enableShipping();
+                break;
+            case 'id_handling_1':
+                disableShipping();
+                break;
+        }
+    })
+
+    function enableShipping() {
+        address_for_shipping_select.removeAttribute('disabled');
+        address_for_shipping_div.classList.remove('disabledText')
+        openAddressLink.classList.remove('disabledLink');
+        pickup_label_el.innerHTML = 'Pickup';
+
+    }
+    
+    function disableShipping() {
+        address_for_shipping_select.setAttribute('disabled', 'disabled');
+        address_for_shipping_select.selectedIndex = '0';
+        address_for_shipping_div.classList.add('disabledText');
+        openAddressLink.classList.add('disabledLink');
+        pickup_label_el.innerHTML += ' - Seller will be notified to select Pickup address.';
+
+    }
+
+    function setInitialState() {
+        if (pickup_radio_input.checked) {
+            disableShipping();
+        }
+    }
+
+    window.onload = setInitialState()
+
     function updateQuantityMax() {
         // get max quantity from span attribute (which is populated from UserPlant max quantity)
         let quantitySpan = document.getElementById('max_quantity')
         let maxQuantity = quantitySpan.getAttribute('data-bs-max_quantity')
-        console.log(maxQuantity)
         // update max quantity of Form's number input selector
         var quantityField = document.getElementById("quantity_field")
         quantityField.max = maxQuantity
@@ -113,11 +192,6 @@
 
     window.onload = updateQuantityMax()
 
-    function openAddressWindow() {
-        openAddressLink = document.getElementById('openAddressLink');
-        url = openAddressLink.href;
-        window.open(url, 'window', 'toolbar=no, menubar=no, resizable=yes, width=600, height=600');
-    }
 
     function goBack() {
         window.history.back();

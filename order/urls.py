@@ -18,12 +18,17 @@ urlpatterns = [
     path('', views.UserOrderListView.as_view(), name='user_orders_all'),
     path(
         '<int:pk>/',
-        views.BuyerOrderDetailView.as_view(),
-        name='buyer_order_detail',
+        views.OrderDetailView.as_view(),
+        name='order_detail',
     ),
     path(
         '<int:pk>/update/',
         views.BuyerOrderUpdateView.as_view(),
         name='buyer_order_update',
+    ),
+    path(
+        '<int:pk>/cancel/',
+        views.OrderCancelView.as_view(),
+        name='order_cancel',
     ),
 ]
