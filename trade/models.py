@@ -25,7 +25,7 @@ class Trade(models.Model):
 
     ACCEPTED_HANDLING_METHOD = [
         (UNDEFINED, 'Undefined'),
-        (SHIP, 'Ship'),
+        (SHIP, 'Shipping'),
         (PICKUP, 'Pickup')
     ]
 

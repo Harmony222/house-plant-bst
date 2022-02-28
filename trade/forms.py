@@ -23,32 +23,37 @@ class TradeResponseForm(forms.Form):
         ) for item in self.items]
         self.RESPONSE_CHOICES.append(('RE', 'Reject'))
         self.fields['trade_response'] = forms.CharField(
-            label='Accept or Reject the request?',
             widget=forms.RadioSelect(
                 choices=self.RESPONSE_CHOICES,
                 attrs={'onchange': 'show_handling();'}
             ),
         )
+        self.ACCEPTED_HANDLING_METHOD_CHOICES = []
         # prefill default handling method if seller didn't specify handling or
         # if there are two handling methods offered by the user:
-        if not seller_userplant_handling_exists(self.seller_plant) or \
-                (self.is_offered_for_shipping and self.is_offered_for_pickup):
-            self.ACCEPTED_HANDLING_METHOD_CHOICES = []
-            if self.is_offered_for_pickup:
-                self.ACCEPTED_HANDLING_METHOD_CHOICES.append(
-                    ('PI', 'Pickup'))
-            if self.is_offered_for_shipping:
-                self.ACCEPTED_HANDLING_METHOD_CHOICES.append(
-                    ('SH', 'Shipping'))
-            if self.ACCEPTED_HANDLING_METHOD_CHOICES:
-                self.fields['handling_methods'] = forms.CharField(
-                    label='Choose a handling_method:',
-                    widget=forms
-                    .RadioSelect(
-                        choices=self.ACCEPTED_HANDLING_METHOD_CHOICES
-                    ),
-                    required=True
-                )
+        if self.is_offered_for_pickup:
+            self.ACCEPTED_HANDLING_METHOD_CHOICES.append(
+                ('PI', 'Pickup'))
+        if self.is_offered_for_shipping:
+            self.ACCEPTED_HANDLING_METHOD_CHOICES.append(
+                ('SH', 'Shipping'))
+        if len(self.ACCEPTED_HANDLING_METHOD_CHOICES) > 1:
+            self.fields['handling_methods'] = forms.CharField(
+                label='Choose a handling_method:',
+                widget=forms
+                .RadioSelect(
+                    choices=self.ACCEPTED_HANDLING_METHOD_CHOICES
+                ),
+                required=True
+            )
+        else:
+            self.fields['handling_methods'] = forms.CharField(
+                widget=forms.RadioSelect(
+                    choices=self.ACCEPTED_HANDLING_METHOD_CHOICES
+                ),
+                required=True,
+                initial=self.ACCEPTED_HANDLING_METHOD_CHOICES[0][0]
+            )
 
 
 class NameChoiceField(forms.ModelMultipleChoiceField):
@@ -80,20 +85,40 @@ class TradeForm(forms.Form):
                 deleted_by_user=False
             )
         )
-        # if the plant is being offered for both shipping and pickup,
-        # the trade requester needs to specify either or both.
-        if self.is_for_shipping and self.is_for_pickup:
+        handling_is_unspecified = not (self.seller_plant.is_for_shipping or \
+                                  self.seller_plant.is_for_pickup)
+        if self.is_for_shipping or handling_is_unspecified:
             self.handling_options = [
-                ('shipping_choice', 'Ship'),
-                ('pickup_choice', 'Pickup')
+                ('shipping_choice', 'Shipping')
             ]
-
-            self.fields['handling_methods'] = forms.MultipleChoiceField(
-                required=True,
-                widget=forms.CheckboxSelectMultiple,
-                choices=self.handling_options
-            )
+            if self.is_for_pickup or handling_is_unspecified:
+                # if the plant is being offered for both shipping and pickup,
+                # the trade requester needs to specify either or both.
+                self.handling_options.append(('pickup_choice', 'Pickup'))
+                self.fields['handling_methods'] = forms.MultipleChoiceField(
+                    required=True,
+                    widget=forms.CheckboxSelectMultiple,
+                    choices=self.handling_options
+                )
+            else:
+                # if the plant is offered only for shipping, default to
+                # shipping and make the field hidden
+                self.fields['handling_methods'] = forms.ChoiceField(
+                    widget=forms.HiddenInput,
+                    required=True,
+                    choices=self.handling_options,
+                    initial=self.handling_options[0][0]
+                )
             self.fields['handling_methods'].label = ''
+        if self.is_for_shipping or handling_is_unspecified:
+            # add the addresses field for any shipping handling method
+            self.fields['addresses'] = forms.ModelChoiceField(
+                label='Choose a shipping address:',
+                widget=forms.Select,
+                queryset=self.user.get_user_addresses.all(),
+                required=False
+            )
+            self.fields['addresses'].label = ''
         self.fields['user_plants_for_trade'].label = ''
 
 
@@ -129,10 +154,4 @@ def _card_html_builder(user_plant_obj):
         '<!-- Don\'t show Buy / Trade / Info since all plants in this list'\
         'are for trade-->'\
         '</div>'
-
     return image_html_element + card_html_element
-
-
-def seller_userplant_handling_exists(seller_trade_plant):
-    seller_userplant = seller_trade_plant.user_plant
-    return seller_userplant.is_for_shipping or seller_userplant.is_for_pickup

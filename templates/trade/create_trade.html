@@ -20,21 +20,29 @@
                         <form id="create_trade_form" method="POST"action="{% url 'trade:create_trade_new' seller_plant_pk %}" enctype="multipart/form-data">
                             {% csrf_token %}
                             {% for field in form %}
-                                <!-- handling method(s) if seller offering both shipping or pickup -->
-                                {% if field.name == 'handling_methods' %}
-                                    <h4>Handling Methods</h4>
+                                <!-- handling method(s) -->
+                                {% if field.name == 'handling_methods' and field|length != 1 %}
+                                    <!-- if seller offering both shipping and pickup, or doesn't specify handling , show the handling methods fields-->
+                                    <h4>Choose a handling method:</h4>
                                     {{ field | as_crispy_field }}
+                                {% elif field.name == 'addresses' %}
+                                    <!-- if both handling methods offered by the seller, remove the address div from the DOM until the requester checks the "shipping" option-->
+                                    {% if form.handling_methods|length > 1 %}
+                                        <div id="address_div" style="display:none">
+                                    {% else %}
+                                        <!-- if seller_plant only offers shipping but not pickup, add the address div to the DOM-->
+                                        <div id="address_div" style="display:block">
+                                    {% endif %}
+                                            <h4>Choose an address:</h4>
+                                            {{ field | as_crispy_field }}
+                                            <a id="openAddressLink" href="{% url 'order:address_create' %}" target="popup" onclick="openAddressWindow()">Add new address</a>
+                                        </div>
                                 {% else %}
-                                    {{ field |as_crispy_field }}
+                                    {{ field | as_crispy_field }}
                                 {% endif %}
                             {% endfor %}
-                            <!-- if seller_plant only offers shipping or shipping chosen as a method, show address form -->
-                            <div id="address_div" style="display:none">
-                                <h4>I am the address dropdown placeholder!</h4>
-                                <a id="openAddressLink" href="{% url 'order:address_create' %}" target="popup" onclick="openAddressWindow()">Add new address</a>
-                            </div>
                             <div class="d-grid gap-2">
-                            <button type="submit" class="btn custom-btn mt-3">Submit</button>
+                                <button type="submit" class="btn custom-btn mt-3">Submit</button>
                             </div>
                         </form>
                     </div>
@@ -46,17 +54,45 @@
 
 <!-- Decorative green block div in background -->
 <div class="decorative-bg-div"></div>
+
 <!-- add address field for trade requests with shipping --placeholder test hide/show-->
 <script>
-function get_addresses() {
-    let shipping_option = document.getElementById("id_handling_methods_0");
-    let address_div = document.getElementById("address_div");
-    if (shipping_option.checked) {
-        address_div.style.display = "block";
-    }else{
-        address_div.style.display = "none";
+    // gets the addresses for the trade requester, adds an address drop-down field to the create trade form
+    function get_addresses() {
+        // get the shipping_option element. It is always the first element with id starting with "id_handling_method"
+        let shipping_option = document.querySelectorAll('[id ^="id_handling_methods"]')[0];
+        console.log(shipping_option)
+        let pickup_option = document.getElementById('id_handling_methods_1');
+        let address_div = document.getElementById('address_div');
+        let form_address_select_field = document.getElementById('id_addresses');
+        console.log(form_address_select_field)
+        if (shipping_option)
+            // if there is a pickup option, initially remove the required attribute from the addresses field
+            if (pickup_option)
+                form_address_select_field.required = false;
+            // if there is only a shipping option, set the addresses field as required
+            else
+                form_address_select_field.required = true;
+            // if the shipping option is checked or unchecked, add the address_div to the DOM and make addresses required (checked) / not required (unchecked)
+            shipping_option.addEventListener('change', function() {
+                if (shipping_option.checked) {
+                    address_div.style.display = 'block';
+                    form_address_select_field.required = true;
+                } else {
+                    // if the shipping option is unchecked, remove the required attribute from the addresses field
+                    address_div.style.display = 'none';
+                    form_address_select_field.required = false;
+                }
+            })
     }
-}
+
+    // Opens new window to add a new address Form, refreshes page upon close
+    var openAddressLink = document.getElementById('openAddressLink');
+    function openAddressWindow() {
+        url = openAddressLink.href;
+        window.open(url, 'window', 'toolbar=no, menubar=no, resizable=yes, width=600, height=600');
+    }
+    document.addEventListener("DOMContentLoaded", get_addresses);
 </script>
 
 {% endblock content %}
