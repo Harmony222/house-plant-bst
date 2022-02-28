@@ -85,8 +85,8 @@ class TradeForm(forms.Form):
                 deleted_by_user=False
             )
         )
-        handling_is_unspecified = not (self.seller_plant.is_for_shipping or \
-                                  self.seller_plant.is_for_pickup)
+        handling_is_unspecified = not (self.seller_plant.is_for_shipping or
+                                       self.seller_plant.is_for_pickup)
         if self.is_for_shipping or handling_is_unspecified:
             self.handling_options = [
                 ('shipping_choice', 'Shipping')

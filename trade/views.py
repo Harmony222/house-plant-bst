@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.views import View
 from .models import Trade, Message, TradeItem
 from plant.models import UserPlant
-from order.models import Address
 from .forms import TradeForm, MessageForm, TradeResponseForm
 from django.db.models import Q
 from django.contrib.auth import get_user_model
