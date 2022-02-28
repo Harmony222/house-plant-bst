@@ -2,6 +2,7 @@ from django.db import models
 from plant.models import UserPlant
 from django.conf import settings
 from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 
 User = settings.AUTH_USER_MODEL
 
@@ -33,12 +34,32 @@ class Address(models.Model):
 
 
 class Order(models.Model):
-    address = models.ForeignKey(
+    class OrderStatusOptions(models.TextChoices):
+        CREATED = 'CR', _('Created')
+        IN_PROGRESS = 'IN', _('In-progress')
+        FULFILLED = 'FU', _('Fulfilled')
+        CANCELED = 'CA', _('Canceled')
+
+    class OrderHandlingOptions(models.TextChoices):
+        SHIPPING = 'SH', _('Shipping')
+        PICKUP = 'PI', _('Pickup')
+        # UNDEFINED = 'UN', _('Undefined')
+
+    address_for_shipping = models.ForeignKey(
         Address,
+        blank=True,
         null=True,
         verbose_name='Ship to address',
         on_delete=models.RESTRICT,
-        related_name='get_order_address',
+        related_name='get_order_shipping_address',
+    )
+    address_for_pickup = models.ForeignKey(
+        Address,
+        blank=True,
+        null=True,
+        verbose_name='Pickup address',
+        on_delete=models.RESTRICT,
+        related_name='get_order_pickup_address',
     )
     seller = models.ForeignKey(
         User,
@@ -57,8 +78,26 @@ class Order(models.Model):
     creation_date = models.DateTimeField(auto_now_add=True)
     in_progress_date = models.DateTimeField(null=True, blank=True)
     fulfilled_date = models.DateTimeField(null=True, blank=True)
+    canceled_date = models.DateTimeField(null=True, blank=True)
+    canceled_by = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        verbose_name='Canceled by user',
+        on_delete=models.SET_NULL,
+    )
     total_price = models.DecimalField(
         max_digits=6, decimal_places=2, default=0.00
+    )
+    status = models.CharField(
+        max_length=2,
+        choices=OrderStatusOptions.choices,
+        default=OrderStatusOptions.CREATED,
+    )
+    handling = models.CharField(
+        max_length=2,
+        choices=OrderHandlingOptions.choices,
+        default=OrderHandlingOptions.SHIPPING,
     )
 
     class Meta:
@@ -91,6 +130,35 @@ class Order(models.Model):
     def get_buyer_update_url(self):
         """Return the url for buyer to update order"""
         return reverse_lazy('order:buyer_order_update', kwargs={'pk': self.pk})
+
+    def get_detail_url(self):
+        return reverse_lazy('order:order_detail', kwargs={'pk': self.pk})
+
+    def get_seller_update_url(self):
+        """Return the url for seller to update order"""
+        return reverse_lazy(
+            'order:seller_order_update', kwargs={'pk': self.pk}
+        )
+
+    def get_cancel_url(self):
+        """Returns the url to cancel the Order"""
+        return reverse_lazy('order:order_cancel', kwargs={'pk': self.pk})
+
+    def get_current_status_and_date(self):
+        status_dates = {
+            self.OrderStatusOptions.CREATED: self.creation_date,
+            self.OrderStatusOptions.IN_PROGRESS: self.in_progress_date,
+            self.OrderStatusOptions.FULFILLED: self.fulfilled_date,
+            self.OrderStatusOptions.CANCELED: self.canceled_date,
+        }
+        status_date = status_dates[self.status]
+        if status_date is not None:
+            status_date_str = status_date.strftime('%m-%d-%Y %H:%M')
+
+        return {
+            'status': self.get_status_display(),
+            'status_date': status_date_str,
+        }
 
 
 class OrderItem(models.Model):

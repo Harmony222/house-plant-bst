@@ -1,0 +1,45 @@
+{% extends '../base.html' %}
+{% block content %}
+
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+    <div class="modal-body">
+        <!-- Buyer can cancel order only if in Created status -->
+        {% if object.buyer == user %}
+            {% if object.status == 'CR' %}
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <h4>Are you sure you want to cancel: "{{ object }}"?</h4>
+                    <br>
+                    <input  class="btn btn-danger" type="submit" value="Yes, Cancel Order" />
+                    <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
+                </form>
+            {% else %}
+                <p>Order is in process and cannot be canceled, please contact the seller.</p>
+                <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
+            {% endif %}
+        {% else %}
+        <!-- Seller can cancel order if in created or in-process status -->
+            {% if object.status == 'CR' or object.status == 'IN' %}
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <h4>Are you sure you want to cancel: "{{ object }}"?</h4>
+                    <br>
+                    <input  class="btn btn-danger" type="submit" value="Yes, Cancel" />
+                    <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
+                </form>
+            {% else %}
+                <p>Order has been shipped or completed and cannot be canceled.</p>
+                <button type="button" class="btn btn-secondary" onclick="goBack()">Go Back</button>
+            {% endif %}
+        {% endif %}
+    </div>
+    </div>
+</div>
+
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
+{% endblock content %}

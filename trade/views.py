@@ -48,14 +48,19 @@ class CreateTrade(View):
                 if 'handling_methods' in form.cleaned_data.keys():
                     handling_methods = form.cleaned_data['handling_methods']
                 else:
-                    handling_methods = ['shipping'] if \
-                        seller_plant.is_for_shipping else ['pickup']
+                    handling_methods = ['shipping_choice'] if \
+                        seller_plant.is_for_shipping else ['pickup_choice']
+                if 'addresses' in form.cleaned_data.keys():
+                    address = form.cleaned_data['addresses']
+                else:
+                    address = None
                 new_trade_attributes = {
                     'seller_plant': form.cleaned_data['seller_plant'],
                     'seller': seller,
                     'buyer': request.user,
                     'buyer_plants': form.cleaned_data['user_plants_for_trade'],
-                    'handling_methods': handling_methods
+                    'handling_methods': handling_methods,
+                    'address': address
                 }
                 try:
                     existing_trade_id = _trade_exists(new_trade_attributes)
@@ -103,7 +108,7 @@ class TradeResponse(View):
         if request.user.is_authenticated:
             trade = Trade.objects.get(pk=pk)
             if trade.seller == request.user:
-                seller = Trade.objects.get(pk=pk).seller
+                seller = request.user
                 seller_plant = TradeItem.objects.filter(
                     trade__pk=pk,
                     user_plant__user=seller,
@@ -130,14 +135,11 @@ class TradeResponse(View):
                     )
                     if trade.trade_status == 'AC':
                         # update the accepted_handling_method
-                        seller_userplant_handling = 'SH' if \
-                            seller_plant.user_plant.is_for_shipping else 'PI'
                         post_accepted_handling_method = \
                             request.POST.get('handling_methods')
                         trade.accepted_handling_method = \
                             post_accepted_handling_method if \
-                            post_accepted_handling_method is not None else \
-                            seller_userplant_handling
+                            post_accepted_handling_method is not None else 'PI'
                         # decrement quantity of the seller's user plant
                         seller_plant.user_plant.quantity -= 1
                         seller_plant.user_plant.save()
@@ -152,6 +154,8 @@ class TradeResponse(View):
                         chosen_user_plant.save()
                     trade.response_date = datetime.now()
                     trade.save()
+                else:
+                    print(form.errors)  # debug errors
             return redirect('trade:trade', pk=trade.pk)
         else:
             return redirect('user:profile')
@@ -267,6 +271,7 @@ def _create_new_trade_and_items(new_trade_attr_dict):
     # seller didn't specify, buyer can offer shipping and/or pickup
     else:
         accepted_handling_method = 'UN'
+    address = new_trade_attr_dict['address']
 
     # add buyer plants if still available
     buyer_plants = _trade_plants_are_available(seller_plant, buyer_plants)
@@ -278,7 +283,8 @@ def _create_new_trade_and_items(new_trade_attr_dict):
         trade_status='SE',
         accepted_handling_method=accepted_handling_method,
         is_offered_for_shipping=is_offered_for_shipping,
-        is_offered_for_pickup=is_offered_for_pickup
+        is_offered_for_pickup=is_offered_for_pickup,
+        address=address
     )
     new_trade.save()
 

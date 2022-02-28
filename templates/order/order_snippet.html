@@ -1,0 +1,46 @@
+
+
+<a href="{{ url }}" class="card-link ms-0 me-3 mb-3">
+    <div class="card card-link ms-0 h-100" style="width: 18rem;">
+        <div class="card-header">
+            <div class="d-flex justify-content-between">
+                <h6 class="card-title">Order ID {{ object.id }}</h6>
+                <small>${{ object.total_price }}</small>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="d-flex mb-1 justify-content-between">
+                {% for item in object.get_order_items.all %}
+                {{ item.user_plant.plant.scientific_name }}
+                    <p class='card-text text-muted' ># items: {{ item.quantity }}</p>
+                {% endfor %}
+            </div>
+            {% if object.buyer == user %}
+                <p class="mb-1">Seller: {{ object.seller }}</p>
+            {% else %}
+                <p class="mb-1">Buyer: {{ object.buyer }}</p>
+            {% endif %}
+            <p class="card-text">Handling method: {{ object.get_handling_display }}</p>
+        </div>
+        {% if object.buyer == user and object.handling == 'SH' and not object.address_for_shipping %}
+        <div class="card-footer bg-danger text-white text-center">
+            <small>Buyer to select shipping address</small>
+        </div>
+        {% elif object.seller == user and object.handling == 'PI' and not object.address_for_pickup %}
+        <div class="card-footer bg-danger text-white text-center">
+            <small>Seller to select pickup address</small>
+        </div>
+        {% else %}
+        <div class="card-footer text-center">
+            <small>{{ object.get_current_status_and_date.status }} </small>
+            <small>{{ object.get_current_status_and_date.status_date }}</small>
+            {% if object.status == 'CA' %}
+            <br>
+            <small>Canceled by: {{ object.canceled_by }}</small>
+            {% endif %}
+        </div>
+
+        {% endif %}
+    </div>
+</a>
+

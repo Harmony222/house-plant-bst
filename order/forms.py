@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import inlineformset_factory
+from django.forms import HiddenInput, inlineformset_factory
 
 from order.models import Order, Address, OrderItem
 
@@ -13,16 +13,10 @@ class AddressForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['address']
-
-
-# AddressFormSet = modelformset_factory(
-#     Address,
-#     form=AddressForm,
-#     fields=['street', 'city', 'state', 'zip'],
-#     extra=1,
-#     can_delete=False,
-# )
+        fields = ['handling', 'address_for_shipping', 'address_for_pickup']
+        widgets = {
+            'handling': forms.RadioSelect(),
+        }
 
 
 class OrderItemForm(forms.ModelForm):
@@ -53,3 +47,19 @@ OrderItemFormSet = inlineformset_factory(
     max_num=1,
     can_delete=False,
 )
+
+
+class SellerOrderForm(forms.ModelForm):
+    """Used in order detail view for seller to update order status and
+    pickup address"""
+
+    class Meta:
+        model = Order
+        fields = ['handling', 'address_for_pickup', 'status']
+
+    def __init__(self, *args, **kwargs):
+        super(SellerOrderForm, self).__init__(*args, **kwargs)
+        self.fields['status'].widget = HiddenInput(
+            attrs={'id': 'status_field'}
+        )
+        self.fields['handling'].widget = HiddenInput()

@@ -5,14 +5,21 @@ from django.views.generic import (
     ListView,
     DetailView,
     UpdateView,
+    DeleteView,
 )
+from django.views.generic.edit import ModelFormMixin
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Q
+from django.utils import timezone
 
 from plant.mixins import TemplateTitleMixin
 from order.models import Order, Address
-from order.forms import OrderForm, OrderItemFormSet, AddressForm
+from order.forms import (
+    OrderForm,
+    OrderItemFormSet,
+    AddressForm,
+    SellerOrderForm,
+)
 from plant.models import UserPlant
 
 
@@ -39,7 +46,7 @@ class OrderCreateView(TemplateTitleMixin, CreateView, LoginRequiredMixin):
         """Limits form address field to address's owned by user"""
         form = super(OrderCreateView, self).get_form(*args, **kwargs)
         form.fields[
-            'address'
+            'address_for_shipping'
         ].queryset = self.request.user.get_user_addresses.all()
         return form
 
@@ -104,27 +111,67 @@ class AddressCreateView(TemplateTitleMixin, CreateView, LoginRequiredMixin):
 
 class UserOrderListView(TemplateTitleMixin, ListView, LoginRequiredMixin):
     model = Order
-    title = 'User Purchase Order History'
+    title = 'Purchase Order History'
     template_name = 'order/user_order_list.html'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        return queryset.filter(
-            Q(seller=self.request.user) | Q(buyer=self.request.user)
-        )
+        # queryset = super().get_queryset()
+        queryset = {
+            'buyer_new': Order.objects.all()
+            .filter(buyer=self.request.user, status='CR')
+            .order_by('-creation_date'),
+            'buyer_in_progress': Order.objects.all()
+            .filter(buyer=self.request.user, status='IN')
+            .order_by('-creation_date'),
+            'buyer_completed': Order.objects.all()
+            .filter(buyer=self.request.user, status='FU')
+            .order_by('-creation_date'),
+            'buyer_canceled': Order.objects.all()
+            .filter(buyer=self.request.user, status='CA')
+            .order_by('-creation_date'),
+            'seller_new': Order.objects.all()
+            .filter(seller=self.request.user, status='CR')
+            .order_by('-creation_date'),
+            'seller_in_progress': Order.objects.all()
+            .filter(seller=self.request.user, status='IN')
+            .order_by('-creation_date'),
+            'seller_completed': Order.objects.all()
+            .filter(seller=self.request.user, status='FU')
+            .order_by('-creation_date'),
+            'seller_canceled': Order.objects.all()
+            .filter(seller=self.request.user, status='CA')
+            .order_by('-creation_date'),
+        }
+        return queryset
 
 
-class BuyerOrderDetailView(
+class OrderDetailView(
     TemplateTitleMixin,
+    ModelFormMixin,
     DetailView,
     LoginRequiredMixin,
 ):
     model = Order
-    title = 'Buyer Order Detail'
-    template_name = 'order/buyer_order_detail.html'
+    title = 'Order Detail'
+    template_name = 'order/order_detail.html'
+    form_class = SellerOrderForm
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'order:order_detail', kwargs={'pk': self.object.pk}
+        )
 
     def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
+        context = super(OrderDetailView, self).get_context_data(
+            *args, **kwargs
+        )
+        # https://stackoverflow.com/questions/45659986/django-implementing-a-form-within-a-generic-detailview
+        form = SellerOrderForm(instance=self.object)
+        form.fields[
+            'address_for_pickup'
+        ].queryset = self.request.user.get_user_addresses.all()
+        context['form'] = form
+
         order = context['object']
         context['total_num_items'] = order.get_total_num_items()
         return context
@@ -132,9 +179,27 @@ class BuyerOrderDetailView(
     def get_object(self, queryset=None):
         """Raise 404 error if User is not Order Buyer"""
         obj = super().get_object(queryset)
-        if obj.buyer != self.request.user:
+        if obj.buyer != self.request.user and obj.seller != self.request.user:
             raise Http404("Order number not found for signed-in user")
         return obj
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            print(form.errors.as_data())
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        obj = form.save()
+        if obj.status == obj.OrderStatusOptions.IN_PROGRESS:
+            obj.in_progress_date = timezone.now()
+        if obj.status == obj.OrderStatusOptions.FULFILLED:
+            obj.fulfilled_date = timezone.now()
+        obj.save()
+        return super(OrderDetailView, self).form_valid(form)
 
 
 class BuyerOrderUpdateView(
@@ -146,7 +211,6 @@ class BuyerOrderUpdateView(
     title = 'Update Order'
     form_class = OrderForm
     template_name = 'order/order_create.html'
-    # template_name = 'order/buyer_order_update.html'
     success_url = None
 
     def get_object(self, queryset=None):
@@ -182,7 +246,7 @@ class BuyerOrderUpdateView(
         """Limits form address field to address's owned by user"""
         form = super(BuyerOrderUpdateView, self).get_form(*args, **kwargs)
         form.fields[
-            'address'
+            'address_for_shipping'
         ].queryset = self.request.user.get_user_addresses.all()
         return form
 
@@ -210,5 +274,38 @@ class BuyerOrderUpdateView(
 
     def get_success_url(self) -> str:
         return reverse_lazy(
-            'order:buyer_order_detail', kwargs={'pk': self.object.pk}
+            'order:order_detail', kwargs={'pk': self.object.pk}
         )
+
+
+class OrderCancelView(LoginRequiredMixin, DeleteView):
+    model = Order
+    template_name = 'order/order_cancel.html'
+    success_url = reverse_lazy('order:user_orders_all')
+
+    def form_valid(self, form):
+        """Set status to canceled
+
+        - does not delete order from database
+        - add quantity back to UserPlant
+        """
+        self.object.status = self.object.OrderStatusOptions.CANCELED
+        self.object.canceled_date = timezone.now()
+        self.object.canceled_by = self.request.user
+
+        # add quantity back to Userplant quantity
+        userplant_pk = self.object.get_order_items.all()[0].user_plant.pk
+        userplant = get_object_or_404(UserPlant, pk=userplant_pk)
+        curr_quantity_ordered = self.object.get_order_items.all()[0].quantity
+        userplant.quantity += curr_quantity_ordered
+        userplant.save()
+
+        self.object.save()
+        return redirect(self.success_url)
+
+    def get_object(self, queryset=None):
+        """Raise 404 error if User is not Order Buyer or Seller"""
+        obj = super().get_object(queryset)
+        if obj.buyer != self.request.user and obj.seller != self.request.user:
+            raise Http404("Order number not found for signed-in user")
+        return obj
