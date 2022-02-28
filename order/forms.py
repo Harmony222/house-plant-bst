@@ -13,7 +13,7 @@ class AddressForm(forms.ModelForm):
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['handling', 'address_for_shipping', 'address_for_pickup']
+        fields = ['handling', 'address_for_shipping']
         widgets = {
             'handling': forms.RadioSelect(),
         }
