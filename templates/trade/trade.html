@@ -14,13 +14,36 @@
                     <h5>Trade #: {{ trade.pk }}</h5>
                 </div>
                 <div class="col d-flex justify-content-end">
+                    {% if trade.trade_status != 'AC' %}
                     <h5>Trade Status: {{ trade.get_trade_status_display }}</h5>
                     <!-- if the trade has been accepted, show accepted plant name and handling method -->
-                    {% if trade.trade_status == 'AC' %}
+                    {% elif trade.trade_status == 'AC' %}
                         {% for trade_item in trade_item_list %}
                             {% if trade_item.chosen_flag %}
-                            <h5>Accepted Plant: {{ trade_item.user_plant.plant.scientific_name|capfirst }}</h5>
-                            <h5>Handling: {{ trade.get_accepted_handling_method_display }}</h5>
+                            <div class="col text-center trade-status-col">
+                                <div class="row">
+                                    <h5>Trade Status:</h5>
+                                </div>
+                                <div class="row">
+                                    <p class="mb-0">{{ trade.get_trade_status_display }}</p>
+                                </div>
+                            </div>
+                            <div class="col text-center trade-status-col">
+                                <div class="row">
+                                    <h5>Accepted Plant:</h5>
+                                </div>
+                                <div class="row">
+                                    <p class="mb-0">{{ trade_item.user_plant.plant.scientific_name|capfirst }}</p>
+                                </div>
+                            </div>
+                            <div class="col text-center">
+                                <div class="row">
+                                    <h5>Handling:</h5>
+                                </div>
+                                <div class="row">
+                                    <p class="mb-0">{{ trade.get_accepted_handling_method_display }}</p>
+                                </div>
+                            </div>
                             {% endif %}
                         {% endfor %}
                     {% endif %}
@@ -37,15 +60,13 @@
             <!-- if the trade has been accepted, show a message letting the requester and seller know to coordinate receipt -->
             {% if trade.trade_status == 'AC' %}
                 <div class="row">
-                    <div class="card border-white">
-                        <br>
+                    <div class="alert alert-success text-center">
                         {% if request.user == trade.buyer %}
                             <h4>Congratulations, {{ trade.seller.get_username|capfirst }} has accepted your trade request!</h4>
                         {% elif request.user == trade.seller %}
                             <h4>Congratulations on accepting {{ trade.buyer.get_username|capfirst }}'s trade request!</h4>
                         {% endif %}
-                        <p>Coordinate the receipt of the plants by using the messaging feature below</p>
-                        <br>
+                        <p class="mb-0">Coordinate the receipt of the plants by using the messaging feature below</p>
                     </div>
                 </div>
             {% endif %}
