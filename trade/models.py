@@ -1,5 +1,6 @@
 from django.db import models
 from plant.models import UserPlant
+from order.models import Address
 from django.conf import settings
 User = settings.AUTH_USER_MODEL
 
@@ -57,6 +58,13 @@ class Trade(models.Model):
     )
     is_offered_for_pickup = models.BooleanField(default=False)
     is_offered_for_shipping = models.BooleanField(default=False)
+    address = models.ForeignKey(
+        Address,
+        null=True,
+        verbose_name='Address',
+        on_delete=models.SET_NULL,
+        related_name='get_trade_address'
+    )
 
     class Meta:
         verbose_name_plural = 'Trades'
