@@ -75,6 +75,8 @@ class OrderCreateView(TemplateTitleMixin, CreateView, LoginRequiredMixin):
             order_obj = form.save(commit=False)
             order_obj.seller = userplant_obj.user
             order_obj.buyer = self.request.user
+        else:
+            print(form.errors.as_data())
         order_obj.save()
 
         # validate and save OrderItem form

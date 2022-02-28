@@ -18,6 +18,16 @@ class OrderForm(forms.ModelForm):
             'handling': forms.RadioSelect(),
         }
 
+    def clean(self):
+        super().clean()
+        shipping_selected = self.cleaned_data['handling'] == 'SH'
+        if shipping_selected:
+            address = self.cleaned_data['address_for_shipping']
+            if address is None:
+                raise forms.ValidationError(
+                    'Shipping is selected - please enter shipping address'
+                )
+
 
 class OrderItemForm(forms.ModelForm):
     class Meta:
