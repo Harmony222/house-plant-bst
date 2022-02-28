@@ -102,11 +102,20 @@
                         </div>
                         {% endif %}
                     {% endfor %}
-                    <!-- If the requester specified an address, show it
-                    <div class="row">
-                        <div class="card border-white">-->
                 </div>
             </div>
+            <!-- Display requester's address, if specified -->
+            {% if trade.address and trade.accepted_handling_method != 'PI' %}
+                <div class="row">
+                    <div class="card border-white">
+                        <h4>Shipping address:</h4>
+                        {{ trade.address.street }}
+                        <br>
+                        {{ trade.address.city }}, {{ trade.address.state }} {{ trade.address.zip }}
+                        <br><br>
+                    </div>
+                </div>
+            {% endif %}
         </div>
 
         <!-- If user is seller, show form to accept desired plant from buyer -->
