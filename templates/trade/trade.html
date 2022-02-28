@@ -34,6 +34,22 @@
             <p>No Trade Items</p>
             {% endif %}
 
+            <!-- if the trade has been accepted, show a message letting the requester and seller know to coordinate receipt -->
+            {% if trade.trade_status == 'AC' %}
+                <div class="row">
+                    <div class="card border-white">
+                        <br>
+                        {% if request.user == trade.buyer %}
+                            <h4>Congratulations, {{ trade.seller.get_username|capfirst }} has accepted your trade request!</h4>
+                        {% elif request.user == trade.seller %}
+                            <h4>Congratulations on accepting {{ trade.buyer.get_username|capfirst }}'s trade request!</h4>
+                        {% endif %}
+                        <p>Coordinate the receipt of the plants by using the messaging feature below</p>
+                        <br>
+                    </div>
+                </div>
+            {% endif %}
+
             <!-- Show the trade request -->
             <div class="container bg-white p-1 d-flex justify-content-center">
                 <!-- Show what buyer is requesting from trader -->
@@ -41,21 +57,21 @@
                     {% if trade_item.user_plant.user == trade.seller %}
                         <div class="col m-2 align-self-center">
                             <p class="card-text text-center">
-                                        {% if not trade_item.user_plant.is_for_pickup and not trade_item.user_plant.is_for_shipping %}
-                                            <em>{{ trade.seller.get_username|capfirst }} has not specified a handling method</em>
-                                        {% else %}
-                                            which is available for:
-                                            {% if trade_item.user_plant.is_for_pickup %}
-                                                <em>Pickup</em>
-                                            {% endif %}
-                                            {% if trade_item.user_plant.is_for_shipping %}
-                                                {% if trade_item.user_plant.is_for_pickup %}
-                                                <em>  |  </em>
-                                                {% endif %}
-                                                <em>Ship</em>
-                                            {% endif %}
+                                {% if not trade_item.user_plant.is_for_pickup and not trade_item.user_plant.is_for_shipping %}
+                                    <em>{{ trade.seller.get_username|capfirst }} has not specified a handling method</em>
+                                {% else %}
+                                    Available for:
+                                    {% if trade_item.user_plant.is_for_pickup %}
+                                        <em>Pickup</em>
+                                    {% endif %}
+                                    {% if trade_item.user_plant.is_for_shipping %}
+                                        {% if trade_item.user_plant.is_for_pickup %}
+                                        <em>  |  </em>
                                         {% endif %}
-                                    </p>
+                                        <em>Shipping</em>
+                                    {% endif %}
+                                {% endif %}
+                            </p>
                             <div class="card border-white">
                                 <img class="card-img-top marketplace-plant-img px-0" src="{% if trade_item.user_plant.image_url != '' %} {{ trade_item.user_plant.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" alt="Card image cap">
                                 <div class="card-body px-0 text-center">
@@ -104,6 +120,18 @@
                     {% endfor %}
                 </div>
             </div>
+            <!-- Display requester's address, if specified -->
+            {% if trade.address and trade.accepted_handling_method != 'PI' %}
+                <div class="row">
+                    <div class="card border-white">
+                        <h4>Shipping address:</h4>
+                        {{ trade.address.street }}
+                        <br>
+                        {{ trade.address.city }}, {{ trade.address.state }} {{ trade.address.zip }}
+                        <br><br>
+                    </div>
+                </div>
+            {% endif %}
         </div>
 
         <!-- If user is seller, show form to accept desired plant from buyer -->
@@ -120,7 +148,7 @@
                         </div>
                         {% endfor %}
                         {% if trade_response_form.handling_methods %}
-                        <div id="handling" style="display: none">
+                        <div id="handling" hidden>
                             <br>
                             <h4>Choose a handling method:</h4>
                             {% for choice in trade_response_form.handling_methods %}
@@ -202,19 +230,22 @@
 
 <!-- show handling for trade requests with accepted radio select chosen --placeholder test hide/show-->
 <script>
-function show_handling() {
-    let trade_response_radio_buttons =
-        document.getElementsByName("trade_response");
-    let reject_button_index = trade_response_radio_buttons.length - 1;
-    let reject_button_id = 'id_trade_response_'+ reject_button_index;
-    let reject_button = document.getElementById(reject_button_id);
-    let handling_div = document.getElementById("handling");
-    if (reject_button.checked){
-            handling_div.style.display = "none";
-    }else {
-        handling_div.style.display = "block";
+    function show_handling() {
+        let trade_response_radio_buttons =
+            document.getElementsByName('trade_response');
+        let reject_button_index = trade_response_radio_buttons.length - 1;
+        let reject_button_id = 'id_trade_response_'+ reject_button_index;
+        let reject_button = document.getElementById(reject_button_id);
+        let handling_div = document.getElementById('handling');
+        let second_handling_option = document.getElementById('id_handling_methods_1')
+        if (handling_div) {
+            if (reject_button.checked){
+                handling_div.hidden = true;
+            }else if (second_handling_option) {
+                handling_div.hidden = false;
+            }
+        }
     }
-}
 </script>
 
 {% endblock content %}
