@@ -136,30 +136,30 @@ class UserOrderListView(TemplateTitleMixin, ListView, LoginRequiredMixin):
     def get_queryset(self):
         # queryset = super().get_queryset()
         queryset = {
-            'buyer_new': Order.objects.all()
-            .filter(buyer=self.request.user, status='CR')
-            .order_by('-creation_date'),
-            'buyer_in_progress': Order.objects.all()
-            .filter(buyer=self.request.user, status='IN')
-            .order_by('-creation_date'),
-            'buyer_completed': Order.objects.all()
-            .filter(buyer=self.request.user, status='FU')
-            .order_by('-creation_date'),
-            'buyer_canceled': Order.objects.all()
-            .filter(buyer=self.request.user, status='CA')
-            .order_by('-creation_date'),
-            'seller_new': Order.objects.all()
-            .filter(seller=self.request.user, status='CR')
-            .order_by('-creation_date'),
-            'seller_in_progress': Order.objects.all()
-            .filter(seller=self.request.user, status='IN')
-            .order_by('-creation_date'),
-            'seller_completed': Order.objects.all()
-            .filter(seller=self.request.user, status='FU')
-            .order_by('-creation_date'),
-            'seller_canceled': Order.objects.all()
-            .filter(seller=self.request.user, status='CA')
-            .order_by('-creation_date'),
+            'buyer_new': Order.objects.all().filter(
+                buyer=self.request.user, status='CR'
+            ),
+            'buyer_in_progress': Order.objects.all().filter(
+                buyer=self.request.user, status='IN'
+            ),
+            'buyer_completed': Order.objects.all().filter(
+                buyer=self.request.user, status='FU'
+            ),
+            'buyer_canceled': Order.objects.all().filter(
+                buyer=self.request.user, status='CA'
+            ),
+            'seller_new': Order.objects.all().filter(
+                seller=self.request.user, status='CR'
+            ),
+            'seller_in_progress': Order.objects.all().filter(
+                seller=self.request.user, status='IN'
+            ),
+            'seller_completed': Order.objects.all().filter(
+                seller=self.request.user, status='FU'
+            ),
+            'seller_canceled': Order.objects.all().filter(
+                seller=self.request.user, status='CA'
+            ),
         }
         return queryset
 

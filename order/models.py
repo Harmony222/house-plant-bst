@@ -102,6 +102,7 @@ class Order(models.Model):
 
     class Meta:
         verbose_name_plural = 'Orders'
+        ordering = ['-creation_date']
 
     def __str__(self):
         """String for representing the Order object (ex: the Admin site)."""

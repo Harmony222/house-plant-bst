@@ -97,6 +97,7 @@ class UserPlant(models.Model):
 
     class Meta:
         verbose_name_plural = 'User\'s Plants'
+        ordering = ['plant__scientific_name']
 
     def __str__(self):
         username = "Deleted User" if self.user is None else self.user.username
