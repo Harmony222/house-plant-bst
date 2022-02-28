@@ -34,6 +34,22 @@
             <p>No Trade Items</p>
             {% endif %}
 
+            <!-- if the trade has been accepted, show a message letting the requester and seller know to coordinate receipt -->
+            {% if trade.trade_status == 'AC' %}
+                <div class="row">
+                    <div class="card border-white">
+                        <br>
+                        {% if request.user == trade.buyer %}
+                            <h4>Congratulations, {{ trade.seller.get_username|capfirst }} has accepted your trade request!</h4>
+                        {% elif request.user == trade.seller %}
+                            <h4>Congratulations on accepting {{ trade.buyer.get_username|capfirst }}'s trade request!</h4>
+                        {% endif %}
+                        <p>Coordinate the receipt of the plants by using the messaging feature below</p>
+                        <br>
+                    </div>
+                </div>
+            {% endif %}
+
             <!-- Show the trade request -->
             <div class="container bg-white p-1 d-flex justify-content-center">
                 <!-- Show what buyer is requesting from trader -->
