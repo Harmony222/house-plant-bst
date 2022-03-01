@@ -30,17 +30,17 @@
         <div class="card-footer bg-danger text-white text-center">
             <small>Seller to select pickup address</small>
         </div>
-        {% else %}
+        {% endif %}
         <div class="card-footer text-center">
             <small>{{ object.get_current_status_and_date.status }} </small>
             <small>{{ object.get_current_status_and_date.status_date }}</small>
+            
             {% if object.status == 'CA' %}
             <br>
             <small>Canceled by: {{ object.canceled_by }}</small>
             {% endif %}
         </div>
 
-        {% endif %}
     </div>
 </a>
 
