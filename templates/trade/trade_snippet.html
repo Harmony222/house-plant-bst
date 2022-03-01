@@ -34,6 +34,10 @@
         <a class="stretched-link" href="{{ trade_detail_url }}"></a>
     </div>
     <div class="card-footer text-muted">
-        Response Date: {{ trade.response_date }}
+        {% if trade.trade_status != 'UN' %}
+            Response Date: {{ trade.response_date }}
+        {% else %}
+            Plant is temporarily out of stock
+        {% endif %}
     </div>
 </div>

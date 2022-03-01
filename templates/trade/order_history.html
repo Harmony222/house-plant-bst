@@ -12,7 +12,7 @@
 <div class="container my-3">
     {% if user.is_authenticated %}
     <!-- Show Order History if user is logged in -->
-        <h3>{{ user.get_username|capfirst }}'s <span class="h-text">Trade</span> Order History</h3>
+        <h3><span class="h-text">Trade</span> Order History</h3>
         <br>
     <!-- Pending Trades -->
     <h4>Pending Trades</h4>
@@ -129,173 +129,14 @@
         {% endif %}
     </div>
 
-    <!-- Closed Trades -->
-    <h4>Closed Trades</h4>
-    <div class="col bg-white mx-1 mb-3 custom-card p-2">
-        {% if trades_closed %}
-            {% for trade in trades_closed %}
-            <div class="card shadow-sm my-3">
-                <h6 class="card-header trade-card-header">
-                    <div class="row">
-                        <div class="col">
-                            Trade #: {{trade.pk}}
-                        </div>
-                        <div class="col">
-                            Status: {{trade.get_trade_status_display}}
-                        </div>
-                    </div>
-                </h6>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col">
-                            <h6>Seller: 
-                                {% if trade.seller.get_username == None %}
-                                Deleted User
-                                {% else %}
-                                {{ trade.seller.get_username|capfirst }}
-                                {% endif %}
-                            </h6>
-                        </div>
-                        <div class="col">
-                            <h6> Buyer: 
-                                {% if trade.buyer.get_username == None %}
-                                Deleted User
-                                {% else %}
-                                {{ trade.buyer.get_username|capfirst }}
-                                {% endif %}
-                            </h6>
-                        </div>
-                    </div>
-                    <a class="stretched-link" href="{% url 'trade:trade' trade.pk %}"></a>
-                </div>
-            </div>
-           {% endfor %}
-        {% else %}
-           <h5 class="text-center text-muted">There are no closed trades</h5>
-        {% endif %}
-    </div>
-
+    
     {% else %}
         <h3>Login to see your trades</h3>
     {% endif %}
 </div>
 
 
-<div class="container my-3">
-    {% if user.is_authenticated %}
-    <!-- Show Order History if user is logged in -->
-        <h3>{{ user.get_username|capfirst }}'s <span class="h-text">Trade</span> Order History</h3>
-        <br>
-        
 
-        <!-- Trades Section -->
-        <div class="row">
-            <!-- Row headers -->
-            <div class="col">
-                <h4>Pending Trades</h4>
-            </div>
-            <div class="col">
-                <h4>Closed Trades</h4>
-            </div>
-        </div>
-
-        <div class="row">
-            <!-- Pending Trades -->
-            <div class="col bg-white m-1 custom-card py-2">
-                {% if trades_pending %}
-                    {% for trade in trades_pending %}
-                    <div class="card shadow-sm my-3">
-                        <h6 class="card-header trade-card-header">
-                            <div class="row">
-                                <div class="col">
-                                    Trade #: {{trade.pk}}
-                                </div>
-                                <div class="col">
-                                    Status: Awaiting Response
-                                </div>
-                            </div>
-                        </h6>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col">
-                                    <h6>Seller:
-                                        {% if trade.seller.get_username == None %}
-                                        Deleted User
-                                        {% else %}
-                                        {{ trade.seller.get_username|capfirst }}
-                                        {% endif %} 
-                                    </h6>
-                                </div>
-                                <div class="col">
-                                    <h6> Buyer: 
-                                        {% if trade.buyer.get_username == None %}
-                                        Deleted User
-                                        {% else %}
-                                        {{ trade.buyer.get_username|capfirst }}
-                                        {% endif %} 
-                                    </h6>
-                                </div>
-                            </div>
-                            <a class="stretched-link" href="{% url 'trade:trade' trade.pk %}"></a>
-                        </div>
-                    </div>
-                   {% endfor %}
-                
-                {% else %}
-                <h5 class="text-center text-muted">There are no pending trades</h5>
-                {% endif %}
-            </div>
-
-            <!-- Closed Trades -->
-            <div class="col bg-white m-1 custom-card py-2">
-                {% if trades_closed %}
-                    {% for trade in trades_closed %}
-                    <div class="card shadow-sm my-3">
-                        <h6 class="card-header trade-card-header">
-                            <div class="row">
-                                <div class="col">
-                                    Trade #: {{trade.pk}}
-                                </div>
-                                <div class="col">
-                                    Status: {{trade.get_trade_status_display}}
-                                </div>
-                            </div>
-                        </h6>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col">
-                                    <h6>Seller: 
-                                        {% if trade.seller.get_username == None %}
-                                        Deleted User
-                                        {% else %}
-                                        {{ trade.seller.get_username|capfirst }}
-                                        {% endif %}
-                                    </h6>
-                                </div>
-                                <div class="col">
-                                    <h6> Buyer: 
-                                        {% if trade.buyer.get_username == None %}
-                                        Deleted User
-                                        {% else %}
-                                        {{ trade.buyer.get_username|capfirst }}
-                                        {% endif %}
-                                    </h6>
-                                </div>
-                            </div>
-                            <a class="stretched-link" href="{% url 'trade:trade' trade.pk %}"></a>
-                        </div>
-                    </div>
-                   {% endfor %}
-                {% else %}
-                   <h5 class="text-center text-muted">There are no closed trades</h5>
-                {% endif %}
-            </div>
-        </div>
-
-    {% else %}
-        <h3>Login to see your trades</h3>
-    {% endif %}
-</div>
 
 
 <!-- Decorative green block div in background -->

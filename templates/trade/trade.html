@@ -4,6 +4,21 @@
 {% block content %}
 
 {% if user.is_authenticated %}
+
+<!-- if the trade has been accepted, show a message letting the requester and seller know to coordinate receipt -->
+{% if trade.trade_status == 'AC' %}
+<div class="container m-3">
+    <div class="alert alert-success text-center">
+        {% if request.user == trade.buyer %}
+            <h4>Congratulations, {{ trade.seller.get_username|capfirst }} has accepted your trade request!</h4>
+        {% elif request.user == trade.seller %}
+            <h4>Congratulations on accepting {{ trade.buyer.get_username|capfirst }}'s trade request!</h4>
+        {% endif %}
+        <p class="mb-0">Coordinate the receipt of the plants by using the messaging feature below</p>
+    </div>
+</div>
+{% endif %}
+
 <div class="container d-flex justify-content-center m-3">
 
     <div class="card">
@@ -55,20 +70,6 @@
             <!-- show message if no trade items exist -->
             {% if trade_item_list.all.count == 0 %}
             <p>No Trade Items</p>
-            {% endif %}
-
-            <!-- if the trade has been accepted, show a message letting the requester and seller know to coordinate receipt -->
-            {% if trade.trade_status == 'AC' %}
-                <div class="row">
-                    <div class="alert alert-success text-center">
-                        {% if request.user == trade.buyer %}
-                            <h4>Congratulations, {{ trade.seller.get_username|capfirst }} has accepted your trade request!</h4>
-                        {% elif request.user == trade.seller %}
-                            <h4>Congratulations on accepting {{ trade.buyer.get_username|capfirst }}'s trade request!</h4>
-                        {% endif %}
-                        <p class="mb-0">Coordinate the receipt of the plants by using the messaging feature below</p>
-                    </div>
-                </div>
             {% endif %}
 
             <!-- Show the trade request -->
@@ -143,6 +144,7 @@
             </div>
             <!-- Display requester's address, if specified -->
             {% if trade.address and trade.accepted_handling_method != 'PI' %}
+                <hr>
                 <div class="row">
                     <div class="card border-white">
                         <h4>Shipping address:</h4>
