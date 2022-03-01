@@ -16,7 +16,7 @@ class TemplateTitleMixin(object):
 
 
 class ZipcodeCityStateMixin(object):
-    def _get_citystate_from_zipcode(self, zipcode, zipcode_data):
+    def get_citystate_from_zipcode(self, zipcode, zipcode_data):
         """Translates zipcode to city, state string"""
         if zipcode in zipcode_data:
             city_state = (
@@ -27,7 +27,7 @@ class ZipcodeCityStateMixin(object):
             city_state = "Contact seller"
         return city_state
 
-    def _get_zipcode_data(object):
+    def get_zipcode_data(object):
         if not settings.DEBUG:
             file_path = os.path.join(settings.STATIC_ROOT, 'zipcode_data.json')
         else:
@@ -35,3 +35,10 @@ class ZipcodeCityStateMixin(object):
         zipcode_file = open(file_path)
         zipcode_data = json.load(zipcode_file)
         return zipcode_data
+
+    def get_timezone_from_zipcode(self, zipcode, zipcode_data):
+        if zipcode in zipcode_data:
+            timezone = zipcode_data[zipcode]['timezone']
+        else:
+            timezone = 'UTC'
+        return timezone

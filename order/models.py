@@ -43,7 +43,6 @@ class Order(models.Model):
     class OrderHandlingOptions(models.TextChoices):
         SHIPPING = 'SH', _('Shipping')
         PICKUP = 'PI', _('Pickup')
-        # UNDEFINED = 'UN', _('Undefined')
 
     address_for_shipping = models.ForeignKey(
         Address,
@@ -146,6 +145,7 @@ class Order(models.Model):
         return reverse_lazy('order:order_cancel', kwargs={'pk': self.pk})
 
     def get_current_status_and_date(self):
+        """Returns the current order status and date of that status"""
         status_dates = {
             self.OrderStatusOptions.CREATED: self.creation_date,
             self.OrderStatusOptions.IN_PROGRESS: self.in_progress_date,
@@ -153,12 +153,9 @@ class Order(models.Model):
             self.OrderStatusOptions.CANCELED: self.canceled_date,
         }
         status_date = status_dates[self.status]
-        if status_date is not None:
-            status_date_str = status_date.strftime('%m-%d-%Y %H:%M')
-
         return {
             'status': self.get_status_display(),
-            'status_date': status_date_str,
+            'status_date': status_date,
         }
 
 
