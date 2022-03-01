@@ -94,9 +94,15 @@ class OrderHistory(View):
                 _update_unavailable_trades(trade, trade.seller)
             trades_pending = trades.filter(trade_status='SE')
             trades_closed = trades.exclude(trade_status='SE')
+            trades_accepted = trades.filter(trade_status='AC')
+            trades_rejected = trades.filter(trade_status='RE')
+            trades_unavailable = trades.filter(trade_status='UN')
             context = {
                 'trades_pending': trades_pending,
-                'trades_closed': trades_closed
+                'trades_closed': trades_closed,
+                'trades_accepted': trades_accepted,
+                'trades_rejected': trades_rejected,
+                'trades_unavailable': trades_unavailable
             }
             return render(request, 'trade/order_history.html', context)
         else:
