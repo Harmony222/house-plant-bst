@@ -43,31 +43,50 @@ class OrderCreateView(TemplateTitleMixin, CreateView, LoginRequiredMixin):
         return context
 
     def get_form(self, *args, **kwargs):
-        """Limits form address field to address's owned by user"""
+        """Set form fields based on User and UserPlant attributes
+
+        - Limits form address field to address's owned by user
+        - Limits Handling field options to UserPlant handling options
+        """
         form = super(OrderCreateView, self).get_form(*args, **kwargs)
         form.fields[
             'address_for_shipping'
         ].queryset = self.request.user.get_user_addresses.all()
+
+        # set Order form Handling field based on UserPlant handling options
+        # Handling default includes both shipping and pickup options
+        userplant_pk = self.kwargs['userplant_pk']
+        userplant = get_object_or_404(UserPlant, pk=userplant_pk)
+        if userplant.is_for_shipping and not userplant.is_for_pickup:
+            form.fields['handling'].choices = [('SH', 'Shipping')]
+        if not userplant.is_for_shipping and userplant.is_for_pickup:
+            form.fields['handling'].choices = [('PI', 'Pickup')]
+            form.fields['handling'].initial = 'PI'
+
         return form
 
     def form_valid(self, form):
         context = self.get_context_data()
         userplant_obj = context['userplant']
 
+        order_item_form = context['order_item_form'][0]
         # validate and save Order form
         if form.is_valid():
             order_obj = form.save(commit=False)
             order_obj.seller = userplant_obj.user
             order_obj.buyer = self.request.user
+        else:
+            print(form.errors.as_data())
         order_obj.save()
 
         # validate and save OrderItem form
-        order_item_form = context['order_item_form'][0]
         if order_item_form.is_valid():
             order_item_obj = order_item_form.save(commit=False)
             order_item_obj.order = order_obj
             order_item_obj.user_plant = userplant_obj
             order_item_obj.save()
+        else:
+            print(order_item_form.errors.as_data())
 
         # reduce userplant quantity by ordered amount
         purchase_quantity = order_item_obj.quantity
@@ -117,30 +136,30 @@ class UserOrderListView(TemplateTitleMixin, ListView, LoginRequiredMixin):
     def get_queryset(self):
         # queryset = super().get_queryset()
         queryset = {
-            'buyer_new': Order.objects.all()
-            .filter(buyer=self.request.user, status='CR')
-            .order_by('-creation_date'),
-            'buyer_in_progress': Order.objects.all()
-            .filter(buyer=self.request.user, status='IN')
-            .order_by('-creation_date'),
-            'buyer_completed': Order.objects.all()
-            .filter(buyer=self.request.user, status='FU')
-            .order_by('-creation_date'),
-            'buyer_canceled': Order.objects.all()
-            .filter(buyer=self.request.user, status='CA')
-            .order_by('-creation_date'),
-            'seller_new': Order.objects.all()
-            .filter(seller=self.request.user, status='CR')
-            .order_by('-creation_date'),
-            'seller_in_progress': Order.objects.all()
-            .filter(seller=self.request.user, status='IN')
-            .order_by('-creation_date'),
-            'seller_completed': Order.objects.all()
-            .filter(seller=self.request.user, status='FU')
-            .order_by('-creation_date'),
-            'seller_canceled': Order.objects.all()
-            .filter(seller=self.request.user, status='CA')
-            .order_by('-creation_date'),
+            'buyer_new': Order.objects.all().filter(
+                buyer=self.request.user, status='CR'
+            ),
+            'buyer_in_progress': Order.objects.all().filter(
+                buyer=self.request.user, status='IN'
+            ),
+            'buyer_completed': Order.objects.all().filter(
+                buyer=self.request.user, status='FU'
+            ),
+            'buyer_canceled': Order.objects.all().filter(
+                buyer=self.request.user, status='CA'
+            ),
+            'seller_new': Order.objects.all().filter(
+                seller=self.request.user, status='CR'
+            ),
+            'seller_in_progress': Order.objects.all().filter(
+                seller=self.request.user, status='IN'
+            ),
+            'seller_completed': Order.objects.all().filter(
+                seller=self.request.user, status='FU'
+            ),
+            'seller_canceled': Order.objects.all().filter(
+                seller=self.request.user, status='CA'
+            ),
         }
         return queryset
 
@@ -243,11 +262,26 @@ class BuyerOrderUpdateView(
         return context
 
     def get_form(self, *args, **kwargs):
-        """Limits form address field to address's owned by user"""
+        """Set form fields based on User and UserPlant attributes
+
+        - Limits form address field to address's owned by user
+        - Limits Handling field options to UserPlant handling options
+        """
         form = super(BuyerOrderUpdateView, self).get_form(*args, **kwargs)
         form.fields[
             'address_for_shipping'
         ].queryset = self.request.user.get_user_addresses.all()
+
+        # set Order form Handling field based on UserPlant handling options
+        # Handling default includes both shipping and pickup options
+        userplant_pk = self.object.get_order_items.all()[0].user_plant.pk
+        userplant = get_object_or_404(UserPlant, pk=userplant_pk)
+        if userplant.is_for_shipping and not userplant.is_for_pickup:
+            form.fields['handling'].choices = [('SH', 'Shipping')]
+        if not userplant.is_for_shipping and userplant.is_for_pickup:
+            form.fields['handling'].choices = [('PI', 'Pickup')]
+            form.fields['handling'].initial = 'PI'
+
         return form
 
     def form_valid(self, form):

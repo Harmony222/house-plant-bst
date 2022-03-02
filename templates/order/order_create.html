@@ -87,10 +87,25 @@
             <div>
 
             {% csrf_token %}
-            {{ form|crispy }}
+            <!-- {{ form|crispy }} -->
+
+            {{ form.handling|as_crispy_field }}
+
+            <!-- Show any form errors here -->
+            {% if form.non_field_errors %}
+            <div id="error_list" class="alert alert-warning alert-dismissible fade show" role="alert">
+                {{ form.non_field_errors|unordered_list }}
+            <button type="button" id="alert_close_button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+
+            <!-- Only show address form field if Shipping option is available -->
+            {% if userplant.is_for_shipping %}
+            {{ form.address_for_shipping|as_crispy_field }}
             <a id="openAddressLink" href="{% url 'order:address_create' %}" target="popup"
                 onclick="openAddressWindow()">Add new address</a>
             </div>
+            {% endif %}
             <br>
 
             {% if not update %}
@@ -118,8 +133,17 @@
         console.log(labels);
         for (var i=0; i < labels.length; i++ ) {
             if (labels[i].htmlFor == idVal) {
-                console.log('test');
                 return labels[i];
+            }
+        }
+    }
+
+    // Returns radio element if radio value matches provided value
+    function getRadioByValue(val) {
+        var radios = document.getElementsByName('handling');
+        for (var i=0; i < radios.length; i++) {
+            if (radios[i].value === val) {
+                return radios[i];
             }
         }
     }
@@ -132,16 +156,17 @@
     }
 
     // hide the address for pickup section
-    var address_for_pickup_div = document.getElementById('div_id_address_for_pickup');
-    var address_for_pickup_select = document.getElementById('id_address_for_pickup');
-    address_for_pickup_div.style.display = 'none';
+    // var address_for_pickup_div = document.getElementById('div_id_address_for_pickup');
+    // var address_for_pickup_select = document.getElementById('id_address_for_pickup');
+    // address_for_pickup_div.style.display = 'none';
 
     // disable shipping address seletion if Pickup handling method selected and
     // display help text regarding pickup
     var address_for_shipping_select = document.getElementById('id_address_for_shipping');
     var address_for_shipping_div = document.getElementById('div_id_address_for_shipping');
-    var pickup_radio_input = document.getElementById('id_handling_1');
+    var pickup_radio_input = getRadioByValue('PI');
     var pickup_label_el = findLabelForControl(pickup_radio_input);
+    var alert_close_button = document.getElementById('alert_close_button');
 
     // https://www.javascripttutorial.net/javascript-dom/javascript-change-event/
     document.body.addEventListener('change', function(e) {
@@ -152,6 +177,7 @@
                 break;
             case 'id_handling_1':
                 disableShipping();
+                alert_close_button.click();
                 break;
         }
     })

@@ -132,9 +132,9 @@ class MarketplacePlantListView(
         """
         context = super().get_context_data(*args, **kwargs)
         userplant_list = []
-        zipcode_data = self._get_zipcode_data()
+        zipcode_data = self.get_zipcode_data()
         for userplant in context['object_list']:
-            city_state = self._get_citystate_from_zipcode(
+            city_state = self.get_citystate_from_zipcode(
                 userplant.user.location, zipcode_data
             )
             userplant_list.append(
@@ -179,8 +179,8 @@ class MarketplacePlantDetailView(
         context = super().get_context_data(*args, **kwargs)
         context['marketplace'] = True
         zipcode = context['object'].user.location
-        zipcode_data = self._get_zipcode_data()
-        context['location'] = self._get_citystate_from_zipcode(
+        zipcode_data = self.get_zipcode_data()
+        context['location'] = self.get_citystate_from_zipcode(
             zipcode, zipcode_data
         )
 
