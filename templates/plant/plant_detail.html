@@ -11,7 +11,7 @@
 <div class="container my-3">
     <div class="card">
       <div class="card-body pb-0">
-        <h3 class="card-title">{{ object.scientific_name|capfirst }}</h3>
+        <h3 class="card-title">{{ object.scientific_name }}</h3>
         <h4 class="card-subtitle text-muted">Common names:
             <span>
                 {% for name in object.get_common_names.all %}
