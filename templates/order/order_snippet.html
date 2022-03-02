@@ -2,23 +2,23 @@
 
 <a href="{{ url }}" class="card-link ms-0 me-3 mb-3">
     <div class="card card-link ms-0 h-100" style="width: 18rem;">
-        <div class="card-header">
+        <div class="card-header" style="background: #dff2e7;">
             <div class="d-flex justify-content-between">
-                <h6 class="card-title">Order ID {{ object.id }}</h6>
+                <h6 class="card-title">Order #: {{ object.id }}</h6>
                 <small>${{ object.total_price }}</small>
             </div>
         </div>
         <div class="card-body">
             <div class="d-flex mb-1 justify-content-between">
                 {% for item in object.get_order_items.all %}
-                {{ item.user_plant.plant.scientific_name }}
-                    <p class='card-text text-muted' ># items: {{ item.quantity }}</p>
+                {{ item.user_plant.plant.scientific_name|capfirst }}
+                    <p class='card-text text-muted' ># Items: {{ item.quantity }}</p>
                 {% endfor %}
             </div>
             {% if object.buyer == user %}
-                <p class="mb-1">Seller: {{ object.seller }}</p>
+                <p class="mb-1">Seller: {{ object.seller|capfirst }}</p>
             {% else %}
-                <p class="mb-1">Buyer: {{ object.buyer }}</p>
+                <p class="mb-1">Buyer: {{ object.buyer|capfirst }}</p>
             {% endif %}
             <p class="card-text">Handling method: {{ object.get_handling_display }}</p>
         </div>
