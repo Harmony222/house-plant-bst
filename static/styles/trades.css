@@ -19,7 +19,3 @@ div.card.create-trade-card {
 .btn.custom-back-btn {
     background-color: #e6f2f0;
 }
-
-div.col.trade-status-col {
-    border-right: solid 0.5px gray;
-}

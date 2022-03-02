@@ -63,16 +63,15 @@
     <div class="col-sm-6 py-3">
       <div class="card border-light h-100">
           <img class="card-img-top marketplace-plant-img" src="{% if object.userplant.image_url != '' %} {{ object.userplant.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" alt="Card image cap">
-          <div class="card-body ps-2 pe-1 py-1">
-              <h5 class="card-subtitle my-1" style="display: inline-block;">
+          <div class="card-body">
+              <h5 class="card-subtitle my-1" style="display: inline-block; white-space: nowrap;">
                 <!-- Scientific name links to marketplace or userplant detail page -->
                 <a 
                 href="{% if marketplace %} 
                         {% url 'plant:marketplace_plant_detail' object.userplant.pk %}
                       {% else %}
                         {% url 'plant:userplant_detail' object.userplant.pk %}
-                      {% endif %}"
-                class="scientific-name">
+                      {% endif %}">
                     {{ object.userplant.plant.scientific_name|capfirst }}
                 </a>
               </h5>
@@ -95,7 +94,7 @@
 
 
               <!-- Seller and location info -->
-              <p class="plant-card-text mb-1">
+              <p class="plant-card-text">
                   Seller: {{ object.userplant.user.username|capfirst }}
                   <br>
                   Location: {{ object.location }}

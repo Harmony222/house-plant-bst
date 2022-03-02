@@ -35,7 +35,7 @@
                 <a href="{% url 'plant:plant_detail' object.pk %}" class="card-link">
                     <div class="card-body">
                         <h4 class="card-title">
-                            {{ object.scientific_name|capfirst }}      
+                            {{ object.scientific_name }}      
                         </h4>
                         <p class="card-text text-muted">
                             Common names:
@@ -56,26 +56,23 @@
 </div>
 
 
-<nav class="plant-resources-pagination ps-2">
-    <ul class="pagination">
-
+<div class="pagination my-3">
+    <span class="step-links">
         {% if page_obj.has_previous %}
-        <li class="page-item"><a href="?page=1" class="page-link custom-page-link">&laquo; First</a></li>
-        <li class="page-item"><a href="?page={{ page_obj.previous_page_number }}" class="page-link custom-page-link">Previous</a></li>
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
         {% endif %}
 
-        <li class="page-item disabled"><a href="" class="page-link">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-            </a>
-        </li>
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
 
         {% if page_obj.has_next %}
-            <li class="page-item"><a href="?page={{ page_obj.next_page_number }}" class="page-link custom-page-link">Next</a></li>
-            <li class="page-item"><a href="?page={{ page_obj.paginator.num_pages }}" class="page-link custom-page-link">Last &raquo;</a></li>
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
         {% endif %}
-    </ul>
-</nav>
-
+    </span>
+</div>
 
 {{ common_names }}
 
