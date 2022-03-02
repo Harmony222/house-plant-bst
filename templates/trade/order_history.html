@@ -1,125 +1,142 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load crispy_forms_tags %}
-{% block content %}
 
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{% static 'styles/order_history.css' %}" />
+
+{% endblock %}
+
+{% block content %}
 
 <div class="container my-3">
     {% if user.is_authenticated %}
     <!-- Show Order History if user is logged in -->
-        <h3>{{ user.get_username|capfirst }}'s <span class="h-text">Order</span> History</h3>
+        <h3><span class="h-text">Trade</span> Order History</h3>
         <br>
-        <!-- TODO: Buy/Sell Orders Section -->
+    <!-- Pending Trades -->
+    <h4>Pending Trades</h4>
+    <div class="col bg-white mx-1 mb-3 custom-card p-2">
+        {% if trades_pending %}
+            {% for trade in trades_pending %}
+            <div class="card shadow-sm my-3">
+                <h6 class="card-header trade-card-header">
+                    <div class="row">
+                        <div class="col">
+                            Trade #: {{trade.pk}}
+                        </div>
+                        <div class="col">
+                            Status: Awaiting Response
+                        </div>
+                    </div>
+                </h6>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            <h6>Seller:
+                                {% if trade.seller.get_username == None %}
+                                Deleted User
+                                {% else %}
+                                {{ trade.seller.get_username|capfirst }}
+                                {% endif %} 
+                            </h6>
+                        </div>
+                        <div class="col">
+                            <h6> Buyer: 
+                                {% if trade.buyer.get_username == None %}
+                                Deleted User
+                                {% else %}
+                                {{ trade.buyer.get_username|capfirst }}
+                                {% endif %} 
+                            </h6>
+                        </div>
+                    </div>
+                    <a class="stretched-link" href="{% url 'trade:trade' trade.pk %}"></a>
+                </div>
+                <div class="card-footer text-muted">
+                    Requested: {{ trade.request_date }}
+                </div>
+            </div>
+           {% endfor %}
         
+        {% else %}
+        <h5 class="text-center text-muted">There are no pending trades</h5>
+        {% endif %}
+    </div>
 
-        <!-- Trades Section -->
-        <h3> Trades </h3>
-        <div class="row">
-            <!-- Row headers -->
-            <div class="col">
-                <h4>Pending Trades</h4>
-            </div>
-            <div class="col">
-                <h4>Closed Trades</h4>
-            </div>
-        </div>
 
-        <div class="row">
-            <!-- Pending Trades -->
-            <div class="col bg-white m-1 custom-card py-2">
-                {% if trades_pending %}
-                    {% for trade in trades_pending %}
-                    <div class="card shadow-sm my-3">
-                        <h6 class="card-header trade-card-header">
-                            <div class="row">
-                                <div class="col">
-                                    Trade #: {{trade.pk}}
-                                </div>
-                                <div class="col">
-                                    Status: Awaiting Response
-                                </div>
-                            </div>
-                        </h6>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col">
-                                    <h6>Seller:
-                                        {% if trade.seller.get_username == None %}
-                                        Deleted User
-                                        {% else %}
-                                        {{ trade.seller.get_username|capfirst }}
-                                        {% endif %} 
-                                    </h6>
-                                </div>
-                                <div class="col">
-                                    <h6> Buyer: 
-                                        {% if trade.buyer.get_username == None %}
-                                        Deleted User
-                                        {% else %}
-                                        {{ trade.buyer.get_username|capfirst }}
-                                        {% endif %} 
-                                    </h6>
-                                </div>
-                            </div>
-                            <a class="stretched-link" href="{% url 'trade:trade' trade.pk %}"></a>
-                        </div>
-                    </div>
-                   {% endfor %}
-                
-                {% else %}
-                <h5 class="text-center text-muted">There are no pending trades</h5>
-                {% endif %}
+    <!-- Closed Trades -->
+    <h4>Closed Trades</h4>
+    <div class="col bg-white mx-1 mb-3 custom-card p-2">
+        {% if trades_closed %}
+            
+        <!-- Accepted Trades -->
+        <div class="accordion" id="accordionPanelsStayOpenExample">
+            <div class="accordion-item mb-2">
+              <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                <button class="accordion-button collapsed fs-5 {% if trades_accepted|length > 0 %}greenBackground {% else %}greyBackground{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                  Accepted <span class='ms-4'>{{ trades_accepted|length }} Result{{ trades_accepted|pluralize }}</span>
+                </button>
+              </h2>
+              <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingOne">
+                <div class="accordion-body">
+                {% for trade in trades_accepted %}
+                    {% url 'trade:trade' trade.pk as trade_detail_url %}
+                    {% include 'trade/trade_snippet.html' with url=trade_detail_url trade=trade%}
+                {% endfor %}
+                </div>
+              </div>
             </div>
 
-            <!-- Closed Trades -->
-            <div class="col bg-white m-1 custom-card py-2">
-                {% if trades_closed %}
-                    {% for trade in trades_closed %}
-                    <div class="card shadow-sm my-3">
-                        <h6 class="card-header trade-card-header">
-                            <div class="row">
-                                <div class="col">
-                                    Trade #: {{trade.pk}}
-                                </div>
-                                <div class="col">
-                                    Status: {{trade.get_trade_status_display}}
-                                </div>
-                            </div>
-                        </h6>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col">
-                                    <h6>Seller: 
-                                        {% if trade.seller.get_username == None %}
-                                        Deleted User
-                                        {% else %}
-                                        {{ trade.seller.get_username|capfirst }}
-                                        {% endif %}
-                                    </h6>
-                                </div>
-                                <div class="col">
-                                    <h6> Buyer: 
-                                        {% if trade.buyer.get_username == None %}
-                                        Deleted User
-                                        {% else %}
-                                        {{ trade.buyer.get_username|capfirst }}
-                                        {% endif %}
-                                    </h6>
-                                </div>
-                            </div>
-                            <a class="stretched-link" href="{% url 'trade:trade' trade.pk %}"></a>
-                        </div>
-                    </div>
-                   {% endfor %}
-                {% else %}
-                   <h5 class="text-center text-muted">There are no closed trades</h5>
-                {% endif %}
+            <!-- Rejected Trades -->
+            <div class="accordion-item mb-2">
+              <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                <button class="accordion-button collapsed fs-5 {% if trades_rejected|length > 0 %}greenBackground {% else %}greyBackground{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+                    Rejected <span class='ms-4'>{{ trades_rejected|length }} Result{{ trades_rejected|pluralize }}</span>
+                </button>
+              </h2>
+              <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+                <div class="accordion-body">
+                    {% for trade in trades_rejected %}
+                    {% url 'trade:trade' trade.pk as trade_detail_url %}
+                    {% include 'trade/trade_snippet.html' with url=trade_detail_url trade=trade%}
+                {% endfor %}
+                </div>
+              </div>
+            </div>
+
+
+            <!-- Unavailable Trades -->
+            <div class="accordion-item mb-2">
+              <h2 class="accordion-header" id="panelsStayOpen-headingThree">
+                <button class="accordion-button collapsed fs-5 {% if trades_unavailable|length > 0 %}greenBackground {% else %}greyBackground{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+                    Unavailable <span class='ms-4'>{{ trades_unavailable|length }} Result{{ trades_unavailable|pluralize }}</span>
+                </button>
+              </h2>
+              <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
+                <div class="accordion-body">
+                    {% for trade in trades_unavailable %}
+                    {% url 'trade:trade' trade.pk as trade_detail_url %}
+                    {% include 'trade/trade_snippet.html' with url=trade_detail_url trade=trade%}
+                {% endfor %}
+                </div>
+              </div>
             </div>
         </div>
 
+        {% else %}
+           <h5 class="text-center text-muted">There are no closed trades</h5>
+        {% endif %}
+    </div>
+
+    
     {% else %}
         <h3>Login to see your trades</h3>
     {% endif %}
 </div>
+
+
+
 
 
 <!-- Decorative green block div in background -->
