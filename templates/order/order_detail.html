@@ -42,11 +42,11 @@
             {% for item in object.get_order_items.all %}
                 <tr>
                     <td><a href="{% url 'plant:marketplace_plant_detail' item.user_plant.pk %}">
-                        {{ item.user_plant.plant.scientific_name }}
+                        {{ item.user_plant.plant.scientific_name|capfirst }}
                     </a></td>
                     <td>{{ item.quantity }}</td>
                     <td>{{ item.user_plant.unit_price }}</td>
-                    <td>{{ item.user_plant.user.username }}</td>
+                    <td>{{ item.user_plant.user.username|capfirst }}</td>
                     <td>{{ object.get_handling_display }}</td>
                 </tr>
             {% endfor %}
