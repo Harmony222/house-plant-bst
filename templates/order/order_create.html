@@ -128,9 +128,7 @@
     // https://stackoverflow.com/questions/285522/find-html-label-associated-with-a-given-input
     function findLabelForControl(el) {
         var idVal = el.id;
-        console.log(el.id);
         labels = document.getElementsByTagName('label');
-        console.log(labels);
         for (var i=0; i < labels.length; i++ ) {
             if (labels[i].htmlFor == idVal) {
                 return labels[i];
@@ -155,11 +153,6 @@
         window.open(url, 'window', 'toolbar=no, menubar=no, resizable=yes, width=600, height=600');
     }
 
-    // hide the address for pickup section
-    // var address_for_pickup_div = document.getElementById('div_id_address_for_pickup');
-    // var address_for_pickup_select = document.getElementById('id_address_for_pickup');
-    // address_for_pickup_div.style.display = 'none';
-
     // disable shipping address seletion if Pickup handling method selected and
     // display help text regarding pickup
     var address_for_shipping_select = document.getElementById('id_address_for_shipping');
@@ -177,7 +170,9 @@
                 break;
             case 'id_handling_1':
                 disableShipping();
-                alert_close_button.click();
+                if (alert_close_button) {
+                    alert_close_button.click();
+                }
                 break;
         }
     })
@@ -191,10 +186,12 @@
     }
     
     function disableShipping() {
-        address_for_shipping_select.setAttribute('disabled', 'disabled');
-        address_for_shipping_select.selectedIndex = '0';
-        address_for_shipping_div.classList.add('disabledText');
-        openAddressLink.classList.add('disabledLink');
+        if (address_for_shipping_select) {
+            address_for_shipping_select.setAttribute('disabled', 'disabled');
+            address_for_shipping_select.selectedIndex = '0';
+            address_for_shipping_div.classList.add('disabledText');
+            openAddressLink.classList.add('disabledLink');
+        }
         pickup_label_el.innerHTML += ' - Seller will be notified to select Pickup address.';
 
     }
