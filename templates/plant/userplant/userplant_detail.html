@@ -13,8 +13,8 @@
   <div class="card" style="width: 23rem;">
     <img class="img-fluid" src="{% if object.image_url != '' %} {{ object.image_url}} {% else %} {% static 'images/default_userplant_image.png' %} {% endif %}" >
     <div class="card-body">
-      <h3 class="card-title">{{ object.plant.scientific_name }}</h3>
-      <h5 class="card-title">${{ object.unit_price }}</h5>
+      <h3 class="card-title">{{ object.plant.scientific_name|capfirst }}</h3>
+      <h5 class="card-title plant-price">${{ object.unit_price }}</h5>
       <h6 class="card-title">Quantity Available: {{ object.quantity }}</h6>
       <!-- Pill-Tags -->
       <div class="tags my-2">
