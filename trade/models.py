@@ -74,7 +74,6 @@ class Trade(models.Model):
         related_name='get_trade_seller_address'
     )
 
-
     class Meta:
         verbose_name_plural = 'Trades'
 
