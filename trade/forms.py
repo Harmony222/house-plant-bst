@@ -16,7 +16,11 @@ class TradeResponseForm(forms.Form):
         self.is_offered_for_pickup = kwargs.pop(
                                      'is_offered_for_pickup', None)
         self.seller_plant = kwargs.pop('seller_plant', None)
+        self.seller = self.seller_plant.user_plant.user
+        self.requester_address = kwargs.pop('requester_address', None)
+        self.seller_address = kwargs.pop('seller_address', None)
         super(TradeResponseForm, self).__init__(*args, **kwargs)
+
         self.RESPONSE_CHOICES = [(
             'AC ' + str(item.id),
             'Accept ' + str(item.user_plant.plant.scientific_name)
@@ -25,18 +29,19 @@ class TradeResponseForm(forms.Form):
         self.fields['trade_response'] = forms.CharField(
             widget=forms.RadioSelect(
                 choices=self.RESPONSE_CHOICES,
-                attrs={'onchange': 'show_handling();'}
+                # attrs={'onchange': 'show_handling_address();'}
             ),
         )
+
         self.ACCEPTED_HANDLING_METHOD_CHOICES = []
         # prefill default handling method if seller didn't specify handling or
         # if there are two handling methods offered by the user:
-        if self.is_offered_for_pickup:
-            self.ACCEPTED_HANDLING_METHOD_CHOICES.append(
-                ('PI', 'Pickup'))
         if self.is_offered_for_shipping:
             self.ACCEPTED_HANDLING_METHOD_CHOICES.append(
                 ('SH', 'Shipping'))
+        if self.is_offered_for_pickup:
+            self.ACCEPTED_HANDLING_METHOD_CHOICES.append(
+                ('PI', 'Pickup'))
         if len(self.ACCEPTED_HANDLING_METHOD_CHOICES) > 1:
             self.fields['handling_methods'] = forms.CharField(
                 label='Choose a handling_method:',
@@ -44,16 +49,26 @@ class TradeResponseForm(forms.Form):
                 .RadioSelect(
                     choices=self.ACCEPTED_HANDLING_METHOD_CHOICES
                 ),
-                required=True
+                required=False
             )
         else:
             self.fields['handling_methods'] = forms.CharField(
                 widget=forms.RadioSelect(
                     choices=self.ACCEPTED_HANDLING_METHOD_CHOICES
                 ),
-                required=True,
+                required=False,
                 initial=self.ACCEPTED_HANDLING_METHOD_CHOICES[0][0]
             )
+
+        # add the seller_address field if there is a shipping handling option
+        if self.requester_address:
+            self.fields['seller_address'] = forms.ModelChoiceField(
+                label='Choose a shipping address:',
+                widget=forms.Select,
+                queryset=self.seller.get_user_addresses.all(),
+                required=False
+            )
+            self.fields['seller_address'].label = ''
 
 
 class NameChoiceField(forms.ModelMultipleChoiceField):
@@ -67,7 +82,6 @@ class TradeForm(forms.Form):
         self.seller_plant = kwargs.pop('seller_plant', None)
         self.is_for_shipping = kwargs.pop('is_for_shipping', None)
         self.is_for_pickup = kwargs.pop('is_for_pickup', None)
-        self.show_address_fields = False
         super(TradeForm, self).__init__(*args, **kwargs)
 
         self.fields['seller_plant'] = forms.ModelChoiceField(

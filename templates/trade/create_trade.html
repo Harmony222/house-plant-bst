@@ -55,26 +55,20 @@
 <!-- Decorative green block div in background -->
 <div class="decorative-bg-div"></div>
 
-<!-- add address field for trade requests with shipping --placeholder test hide/show-->
+<!-- add address field for trade requests with shipping -->
 <script>
     // gets the addresses for the trade requester, adds an address drop-down field to the create trade form
     function get_addresses() {
         // get the shipping_option element. It is always the first element with id starting with "id_handling_method"
         let shipping_option = document.querySelectorAll('[id ^="id_handling_methods"]')[0];
-        console.log(shipping_option)
         let pickup_option = document.getElementById('id_handling_methods_1');
         let address_div = document.getElementById('address_div');
         let form_address_select_field = document.getElementById('id_addresses');
-        console.log(form_address_select_field)
-        if (shipping_option)
-            // if there is a pickup option, initially remove the required attribute from the addresses field
-            if (pickup_option)
-                form_address_select_field.required = false;
-            // if there is only a shipping option, set the addresses field as required
-            else
-                form_address_select_field.required = true;
+        if (shipping_option) {
+            // if there is a pickup option, initially set addresses to not required
+            form_address_select_field.required = !pickup_option;
             // if the shipping option is checked or unchecked, add the address_div to the DOM and make addresses required (checked) / not required (unchecked)
-            shipping_option.addEventListener('change', function() {
+            shipping_option.addEventListener('change', function () {
                 if (shipping_option.checked) {
                     address_div.style.display = 'block';
                     form_address_select_field.required = true;
@@ -84,13 +78,14 @@
                     form_address_select_field.required = false;
                 }
             })
+        }
     }
 
     // Opens new window to add a new address Form, refreshes page upon close
-    var openAddressLink = document.getElementById('openAddressLink');
+    let openAddressLink = document.getElementById('openAddressLink');
     function openAddressWindow() {
-        url = openAddressLink.href;
-        window.open(url, 'window', 'toolbar=no, menubar=no, resizable=yes, width=600, height=600');
+        let address_url = openAddressLink.href;
+        window.open(address_url, 'window', 'toolbar=no, menubar=no, resizable=yes, width=600, height=600');
     }
     document.addEventListener("DOMContentLoaded", get_addresses);
 </script>
