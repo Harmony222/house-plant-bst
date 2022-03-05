@@ -143,14 +143,14 @@
                 </div>
             </div>
             <!-- Display requester's address, if specified -->
-            {% if trade.address and trade.accepted_handling_method != 'PI' %}
+            {% if trade.requester_address and trade.accepted_handling_method != 'PI' %}
                 <hr>
                 <div class="row">
                     <div class="card border-white">
                         <h4>Shipping address:</h4>
-                        {{ trade.address.street }}
+                        {{ trade.requester_address.street }}
                         <br>
-                        {{ trade.address.city }}, {{ trade.address.state }} {{ trade.address.zip }}
+                        {{ trade.requester_address.city }}, {{ trade.requester_address.state }} {{ trade.requester_address.zip }}
                         <br><br>
                     </div>
                 </div>
