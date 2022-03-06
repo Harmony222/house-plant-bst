@@ -51,16 +51,16 @@ class CreateTrade(View):
                     handling_methods = ['shipping_choice'] if \
                         seller_plant.is_for_shipping else ['pickup_choice']
                 if 'addresses' in form.cleaned_data.keys():
-                    address = form.cleaned_data['addresses']
+                    requester_address = form.cleaned_data['addresses']
                 else:
-                    address = None
+                    requester_address = None
                 new_trade_attributes = {
                     'seller_plant': form.cleaned_data['seller_plant'],
                     'seller': seller,
                     'buyer': request.user,
                     'buyer_plants': form.cleaned_data['user_plants_for_trade'],
                     'handling_methods': handling_methods,
-                    'address': address
+                    'requester_address': requester_address
                 }
                 try:
                     existing_trade_id = _trade_exists(new_trade_attributes)
@@ -131,22 +131,35 @@ class TradeResponse(View):
                     seller_plant=seller_plant,
                     items=buyer_trade_item_list,
                     is_offered_for_shipping=trade.is_offered_for_shipping,
-                    is_offered_for_pickup=trade.is_offered_for_pickup
+                    is_offered_for_pickup=trade.is_offered_for_pickup,
+                    requester_address=trade.requester_address,
+                    seller_address=trade.seller_address
                 )
                 if form.is_valid():
                     # parse response
+                    print(request.POST)
                     parsed_trade_response_tokens = request.POST.\
                         get('trade_response').split()
                     trade.trade_status = (
                         parsed_trade_response_tokens[0]
                     )
                     if trade.trade_status == 'AC':
+                        if 'seller_address' in form.cleaned_data.keys():
+                            trade.seller_address = \
+                                form.cleaned_data['seller_address']
+                        else:
+                            trade.seller_address = None
                         # update the accepted_handling_method
                         post_accepted_handling_method = \
                             request.POST.get('handling_methods')
-                        trade.accepted_handling_method = \
+                        accepted_handling_method = \
                             post_accepted_handling_method if \
-                            post_accepted_handling_method is not None else 'PI'
+                            post_accepted_handling_method is not None else None
+                        if not accepted_handling_method:
+                            accepted_handling_method = 'SH' if \
+                                trade.seller_address else 'PI'
+                        trade.accepted_handling_method = \
+                            accepted_handling_method
                         # decrement quantity of the seller's user plant
                         seller_plant.user_plant.quantity -= 1
                         seller_plant.user_plant.save()
@@ -209,7 +222,8 @@ class TradeView(View):
                 seller_plant=seller_plant,
                 items=buyer_trade_item_list,
                 is_offered_for_shipping=trade.is_offered_for_shipping,
-                is_offered_for_pickup=trade.is_offered_for_pickup
+                is_offered_for_pickup=trade.is_offered_for_pickup,
+                requester_address=trade.requester_address
             )
             context = {
                 'trade': trade,
@@ -278,7 +292,7 @@ def _create_new_trade_and_items(new_trade_attr_dict):
     # seller didn't specify, buyer can offer shipping and/or pickup
     else:
         accepted_handling_method = 'UN'
-    address = new_trade_attr_dict['address']
+    requester_address = new_trade_attr_dict['requester_address']
 
     # add buyer plants if still available
     buyer_plants = _trade_plants_are_available(seller_plant, buyer_plants)
@@ -291,7 +305,7 @@ def _create_new_trade_and_items(new_trade_attr_dict):
         accepted_handling_method=accepted_handling_method,
         is_offered_for_shipping=is_offered_for_shipping,
         is_offered_for_pickup=is_offered_for_pickup,
-        address=address
+        requester_address=requester_address
     )
     new_trade.save()
 

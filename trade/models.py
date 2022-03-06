@@ -58,12 +58,20 @@ class Trade(models.Model):
     )
     is_offered_for_pickup = models.BooleanField(default=False)
     is_offered_for_shipping = models.BooleanField(default=False)
-    address = models.ForeignKey(
+    requester_address = models.ForeignKey(
         Address,
         null=True,
-        verbose_name='Address',
+        verbose_name='Requester\'s Address',
         on_delete=models.SET_NULL,
-        related_name='get_trade_address'
+        related_name='get_trade_requester_address'
+    )
+    seller_address = models.ForeignKey(
+        Address,
+        null=True,
+        blank=True,
+        verbose_name='Seller\'s Address',
+        on_delete=models.SET_NULL,
+        related_name='get_trade_seller_address'
     )
 
     class Meta:

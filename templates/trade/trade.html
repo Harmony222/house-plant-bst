@@ -143,14 +143,26 @@
                 </div>
             </div>
             <!-- Display requester's address, if specified -->
-            {% if trade.address and trade.accepted_handling_method != 'PI' %}
+            {% if trade.requester_address and trade.accepted_handling_method != 'PI' %}
                 <hr>
                 <div class="row">
                     <div class="card border-white">
-                        <h4>Shipping address:</h4>
-                        {{ trade.address.street }}
+                        <h4>{{ trade.buyer.get_username|capfirst }}'s Shipping address:</h4>
+                        {{ trade.requester_address.street }}
                         <br>
-                        {{ trade.address.city }}, {{ trade.address.state }} {{ trade.address.zip }}
+                        {{ trade.requester_address.city }}, {{ trade.requester_address.state }} {{ trade.requester_address.zip }}
+                        <br><br>
+                    </div>
+                </div>
+            {% endif %}
+            <!-- Display seller's address, if specified -->
+            {% if trade.seller_address and trade.accepted_handling_method == 'SH' and trade.trade_status == 'AC' %}
+                <div class="row">
+                    <div class="card border-white">
+                        <h4>{{ trade.seller.get_username|capfirst }}'s Shipping address:</h4>
+                        {{ trade.seller_address.street }}
+                        <br>
+                        {{ trade.seller_address.city }}, {{ trade.seller_address.state }} {{ trade.seller_address.zip }}
                         <br><br>
                     </div>
                 </div>
@@ -161,24 +173,33 @@
         {% if request.user == trade.seller %}
             {% if trade.trade_status == 'SE' %}
                 <div class="card-footer">
-                    <form method="POST" action="{% url 'trade:trade_response' trade.pk %}" enctype="multipart/form-data">
+                    <form method="POST" action="{% url 'trade:trade_response' trade.pk %}" enctype="multipart/form-data" id="trade_response_form">
                         {% csrf_token %}
                         {{ form | crispy }}
-                        <h4>Choose a plant option:</h4>
+                        <h4>{{ trade.seller.get_username }}'s Trade Response</h4>
+                        <h5>Choose a plant option:</h5>
                         {% for choice in trade_response_form.trade_response %}
-                        <div class="radio_buttons">
+                        <div id="response_choices" class="radio_buttons">
                             {{ choice }}
                         </div>
                         {% endfor %}
                         {% if trade_response_form.handling_methods %}
-                        <div id="handling" hidden>
+                        <div id="handling" style="display:none">
                             <br>
-                            <h4>Choose a handling method:</h4>
+                            <h5>Choose a handling method:</h5>
                             {% for choice in trade_response_form.handling_methods %}
                             <div class="radio_buttons">
                                 {{ choice }}
                             </div>
                             {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% if trade_response_form.seller_address %}
+                        <div id="address_div" style="display:none">
+                            <br>
+                            <h5>Choose a shipping address:</h5>
+                            {{ trade_response_form.seller_address | as_crispy_field }}
+                            <a id="openAddressLink" href="{% url 'order:address_create' %}" target="popup" onclick="openAddressWindow()">Add new address</a>
                         </div>
                         {% endif %}
                         <div class="d-grid gap-2 mt-3">
@@ -191,59 +212,55 @@
     </div> <!-- Trade request card end -->
 </div>
 
+<!-- Messages -->
+<div class="container m-3">
+    <div class="card">
+        <!-- Header for Trade # and Trade Status -->
+        <h6 class="card-header trade-card-header">
+            <div class="row">
+                <div class="col">
+                    {% if trade.buyer == request.user %}
+                        <h5>Messages with {{ trade.seller.get_username }}</h5>
+                    {% else %}
+                        <h5>Messages with {{ trade.buyer.get_username }}</h5>
+                    {% endif %}
+                </div>
+            </div>
+        </h6>
 
-
- <!-- Messages -->
-<div class="container">
-    <div class="row">
-        <div class="card col-md-12 mt-5 p-3 shadow-sm">
-           {% if trade.buyer == request.user %}
-                <h5>Messages to @{{ trade.seller.get_username }}</h5>
-            {% else %}
-                <h5>Messages to @{{ trade.buyer.get_username }}</h5>
-            {% endif %}
-        </div>
-    </div>
-
-    {% if message_list.all.count == 0 %}
-    <div class="row my-5">
-        <div class="col-md-12">
+        <!-- show message if no trade items exist -->
+        <div class="card-body">
+            {% if message_list.all.count == 0 %}
             <p>No Messages</p>
-        </div>
-    </div>
-    {% endif %}
-
-    {% for message in message_list %}
-    <div class="row">
-        <div class="col-md-12 my-1">
-            {% if message.sender == request.user %}
-            <div class="sent-message my-3">
-                <p>{{ message.sender.get_username }}: {{ message.message }}</p>
-            </div>
-            {% elif message.recipient == request.user %}
-            <div class="received-message my-3">
-                <p>{{ message.sender.get_username }}: {{ message.message }}</p>
-            </div>
             {% endif %}
-        </div>
-    </div>
-    {% endfor %}
 
-    <div class="row">
-        <div class="card col-md-12 p-3 shadow-sm">
+            <div class="col m-2 align-self-center">
+            {% for message in message_list %}
+                <div class="col-md-12 my-1">
+                    {% if message.sender == request.user %}
+                    <div class="sent-message my-3">
+                        <p>{{ message.sender.get_username }}: {{ message.message }}</p>
+                    </div>
+                    {% elif message.recipient == request.user %}
+                    <div class="received-message my-3">
+                        <p>{{ message.sender.get_username }}: {{ message.message }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            </div>
             <form method="POST" action="{% url 'trade:create_message' trade.pk %}" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form | crispy }}
-                <div class="d-grid gap-2 mt-3">
-                    {{ message_form }}
-                    <button class="btn btn-light" type="submit">Send Message</button>
+                <div class="container-fluid">
+                    {% csrf_token %}
+                    {{ message_form | crispy }}
+                </div>
+                <div class="container d-flex justify-content-center m-3">
+                    <button type="submit" class="btn custom-btn mt-3">Submit</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
-
 {% else %}
     <h3>Login to see your trade</h3>
 {% endif %}
@@ -260,15 +277,94 @@
         let reject_button_id = 'id_trade_response_'+ reject_button_index;
         let reject_button = document.getElementById(reject_button_id);
         let handling_div = document.getElementById('handling');
-        let second_handling_option = document.getElementById('id_handling_methods_1')
-        if (handling_div) {
-            if (reject_button.checked){
-                handling_div.hidden = true;
-            }else if (second_handling_option) {
-                handling_div.hidden = false;
+        let handling_choices = document.querySelectorAll('[id ^="id_handling_methods"]');
+        let form = document.getElementById('trade_response_form').elements;
+        let form_seller_address_field = form['seller_address'];
+        for (let i=0; i < trade_response_radio_buttons.length; ++i) {
+            let button = trade_response_radio_buttons[i];
+            button.addEventListener('click', function() {
+                if (button.checked) {
+                    if (button == reject_button) {
+                        handling_div.style.display = 'none';
+                        handling_choices.forEach( function (choice) {
+                            choice.required = false;
+                            choice.checked = false;
+                        })
+                        form_seller_address_field.required = false;
+                        get_addresses(false);
+                    }
+                    else if (button.value.substring(0, 2)=='AC') {
+                        if (handling_div && handling_choices.length > 1) {
+                            handling_div.style.display = 'block';
+                            handling_choices.forEach( function (choice) {
+                                choice.required = true;
+                            })
+                            get_addresses(false);
+                        } else if (handling_div && handling_choices[0].value == 'SH') {
+                            handling_div.style.display = 'block';
+                            handling_choices.forEach( function (choice) {
+                                choice.checked = true;
+                            })
+                            handling_div.hidden = true;
+                            get_addresses(true);
+                            form_seller_address_field.required = true;
+                        } else {
+                            get_addresses(false);
+                        }
+                    }
+                }
+            })
+        }
+    }
+
+    // gets the addresses for the trade requester, adds an address drop-down field to the create trade form
+    function get_addresses(show_addresses_bool) {
+        // get the shipping_option element. It is always the first element with id starting with "id_handling_method"
+        let shipping_option = document.querySelectorAll('[id ^="id_handling_methods"]')[0];
+        let pickup_option = document.getElementById('id_handling_methods_1');
+        let address_div = document.getElementById('address_div');
+        let form_seller_address_field = document.getElementById('id_seller_address');
+
+        // initial states
+        if (!show_addresses_bool){
+            address_div.style.display = 'none';
+        } else {
+            address_div.style.display = 'block';
+        }
+        if (shipping_option) {
+            shipping_option.checked = false;
+        }
+        if (pickup_option) {
+            pickup_option.checked = false;
+        }
+        form_seller_address_field.required = false;
+
+        if (shipping_option) {
+            shipping_option.addEventListener('change', function () {
+                    shipping_option.required = true;
+                    address_div.style.display = 'block';
+                    form_seller_address_field.required = true;
+            })
+
+            if (pickup_option) {
+                // if the shipping option is checked or unchecked, add the address_div to the DOM and make addresses required (checked) / not required (unchecked)
+                pickup_option.addEventListener('change', function () {
+                    address_div.style.display = 'none';
+                    form_seller_address_field.required = false;
+                })
             }
         }
     }
+
+    // Opens new window to add a new address Form, refreshes page upon close
+    let openAddressLink = document.getElementById('openAddressLink');
+    function openAddressWindow() {
+        let address_url = openAddressLink.href;
+        window.open(address_url, 'window', 'toolbar=no, menubar=no, resizable=yes, width=600, height=600');
+    }
+
+
+    document.addEventListener("DOMContentLoaded", show_handling);
 </script>
 
 {% endblock content %}
